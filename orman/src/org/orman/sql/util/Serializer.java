@@ -1,0 +1,38 @@
+package org.orman.sql.util;
+
+import java.util.List;
+
+import org.orman.sql.Query;
+import org.orman.sql.StringLiteral;
+
+
+public class Serializer {
+	public static String serialize(Object o){
+		
+		if (o instanceof Query){
+			return ((Query) o).nest(); // return nested query
+		}
+		
+		if (o instanceof String){
+			return new StringLiteral(o).toString();
+		}
+		
+		if (o instanceof String[]){
+			return "("+Glue.concat((String[]) o, ", ")+")";
+		}
+		
+		if (o instanceof Object[]){
+			return "("+Glue.concat((Object[]) o, ", ")+")";
+		}
+		
+		if (o instanceof int[]){
+			return "("+Glue.concat((int[]) o, ", ")+")";
+		}
+		
+		if (o instanceof List){
+			return "("+Glue.concat((List) o, ", ")+")";
+		}
+		
+		return o.toString();
+	}
+}

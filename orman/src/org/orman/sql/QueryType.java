@@ -1,0 +1,27 @@
+package org.orman.sql;
+
+public enum QueryType {
+	SELECT("SELECT {SELECT_COLUMN_LIST} FROM {TABLE_LIST} {JOIN}{WHERE}{GROUP_BY} {HAVING}{ORDER_BY}{LIMIT}"),
+	SELECT_DISTINCT("SELECT DISTINCT {SELECT_COLUMN_LIST} FROM {TABLE_LIST} {JOIN}{WHERE}{GROUP_BY}{HAVING}{ORDER_BY}{LIMIT}"),
+	INSERT("INSERT INTO {TABLE_LIST} {COLUMN_LIST} VALUES ({VALUE_LIST})"),
+	UPDATE("UPDATE {TABLE_LIST} SET {COLUMN_VALUE_LIST} {WHERE}"),
+	DELETE("DELETE FROM {TABLE_LIST} {WHERE}"),
+	CREATE_TABLE("CREATE TABLE {TABLE_LIST} ({COLUMN_DESCRIPTION_LIST})"),
+	DROP_TABLE("DROP TABLE {TABLE_LIST}"),
+	USE_DATABASE("USE DATABASE {DATABASE}"),
+	BEGIN_TRANSACTION("BEGIN"),
+	COMMIT_TRANSACTION("COMMIT"),
+	ROLLBACK_TRANSACTION("COMMIT");
+	
+	// TODO implement insert,update,delete,create table stmts.
+
+	private String template;
+
+	private QueryType(String tpl) {
+		this.template = tpl;
+	}
+
+	public String getTemplate() {
+		return this.template.toString();
+	}
+}
