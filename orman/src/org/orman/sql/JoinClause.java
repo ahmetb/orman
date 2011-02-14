@@ -11,7 +11,10 @@ package org.orman.sql;
  */
 public class JoinClause implements ISubclause {
 	
-	private static final String format = "%s %s %s"; // "{JOIN_TYPE} {TABLE} {ON} 
+	private static final String format = "%s %s %s"; // "{JOIN_TYPE} {TABLE} {ON}
+	
+	private static final String ON_FORMAT = "ON %s";
+	private static final String USING_FORMAT = "USING(%s)";
 	
 	private Criterion on;
 	private Table table;
@@ -34,13 +37,25 @@ public class JoinClause implements ISubclause {
 	
 	@Override
 	public String toString() {
-		String onRepr = on.toString();
-		if(onRepr != null && onRepr.length() >2) onRepr = "ON "+onRepr;
+		String joinOnClause = on.toString();
+		if(joinOnClause != null) 
+			joinOnClause = String.format(this.type != JoinType.EQUI_JOIN ? ON_FORMAT : USING_FORMAT,  joinOnClause);
 		
 		String typeRepr = (this.type != null) ? this.type.toString() : "";
 		
 		String tableRepr = table.toString();
 		
-		return String.format(getClauseFormat(), typeRepr, tableRepr, onRepr);
+		return String.format(getClauseFormat(), typeRepr, tableRepr, joinOnClause);
+	}
+	
+	public static void main(String[] args) {
+		int [] a = {1,2,3};
+		Query q = (QueryBuilder.select().from(
+				"sailors").where(
+						C.and(
+								C.notIn("uname", a)
+						).not()).getQuery());
+		
+		System.out.println(q);
 	}
 }

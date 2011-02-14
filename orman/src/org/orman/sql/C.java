@@ -88,7 +88,6 @@ public class C {
 	}
 
 	public static Criterion in(String field, Object val) {
-		System.out.println("___"+val);
 		return new SimpleBinaryCriterion(field, BinaryOp.IN, val);
 	}
 
@@ -100,6 +99,10 @@ public class C {
 	
 	public static Criterion exists(Query nestedQuery) {
 		return new UnaryCriteria(SetUnaryOp.EXISTS, nestedQuery);
+	}
+	
+	public static Criterion notExists(Query nestedQuery) {
+		return new UnaryCriteria(SetUnaryOp.NOT_EXISTS, nestedQuery);
 	}
 	
 	// NESTED QUANTIFIERS QUERYING

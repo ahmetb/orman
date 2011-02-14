@@ -31,6 +31,22 @@ public class QueryBuilder {
 		return new QueryBuilder(queryType);
 	}
 	
+	public static QueryBuilder select(){
+		return new QueryBuilder(QueryType.SELECT);
+	}
+	
+	public static QueryBuilder selectDistinct(){
+		return new QueryBuilder(QueryType.SELECT_DISTINCT);
+	}
+	
+	public static QueryBuilder update(){
+		return new QueryBuilder(QueryType.UPDATE);
+	}
+	
+	public static QueryBuilder delete(){
+		return new QueryBuilder(QueryType.DELETE);
+	}
+	
 	public static QueryBuilder getBuilder(Query existingQuery) {
 		return new QueryBuilder(existingQuery);
 	}
