@@ -30,6 +30,11 @@ public class DataField extends DataSource implements IQueryField {
 	public String getAlias() {
 		return this.alias;
 	}
+	
+	@Override
+	public String getFieldName() {
+		return this.fieldName;
+	}
 
 	@Override
 	public String toString() {

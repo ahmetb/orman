@@ -35,8 +35,14 @@ public class PersistenceSchemeMapper {
 	}
 	
 	
-	private Entity getEntityByTableName(String tblName){
+	public Entity getEntityByTableName(String tblName){
 		return this.tableNames.get(tblName);
+	}
+	
+	public Entity getBindedEntity(Class<?> entityClass){
+		for(Entity e : getEntities())
+			if(e.getClazz().equals(entityClass)) return e;
+		return null;
 	}
 	
 	private boolean checkConflictingEntities(Entity e) {

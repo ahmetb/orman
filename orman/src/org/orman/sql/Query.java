@@ -17,6 +17,7 @@ public class Query extends DataSource implements Aliasable {
 	private List<IQueryField> fieldList;
 	private Map<String, String> valuedFieldMap; 
 	private Map<SubclauseType, ISubclause> subclauses;
+	private String indexName;
 
 	private String alias;
 
@@ -50,7 +51,11 @@ public class Query extends DataSource implements Aliasable {
 	
 	public Query addTable(String tableName, String as) {
 		if (as == null || "".equals(as)) as = acquireTableAlias(tableName);
+		
+		System.out.println("handle = "+as);
+		
 		Table newTable = new Table(tableName, as);
+		newTable.setHandle(as);
 		tables.add(newTable);
 		return this;
 	}
@@ -121,5 +126,13 @@ public class Query extends DataSource implements Aliasable {
 	@Override
 	public String toString(){
 		return QueryBuilder.getBuilder(this).prepareSql();
+	}
+
+	public void setIndexName(String indexName) {
+		this.indexName = indexName;
+	}
+
+	public String getIndexName() {
+		return indexName;
 	}
 }

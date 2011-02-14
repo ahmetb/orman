@@ -32,4 +32,9 @@ public class OperationalField implements IQueryField {
 	public String getAlias() {
 		return this.alias;
 	}
+
+	@Override
+	public String getFieldName() {
+		return this.fieldName;
+	}
 }

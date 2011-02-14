@@ -29,8 +29,9 @@ public class MappingSession {
 	 * then registers to the scheme.
 	 * 
 	 * @param entityClass
+	 * @return scheme props-binded entity  
 	 */
-	public void registerEntity(Class<?> entityClass){
+	public Entity registerEntity(Class<?> entityClass){
 		Entity e = new Entity(entityClass);
 
 		for(Field f : e.getFields()){
@@ -42,5 +43,16 @@ public class MappingSession {
 		PhysicalNameAndTypeBindingEngine.makeBinding(e, configuration.getTableNamePolicy());
 		
 		scheme.addEntity(e);
+		
+		return e;
 	}
+	
+	public Entity getEntity(Class<?> entityClass){
+		return scheme.getBindedEntity(entityClass);
+	}
+	
+	public Entity getEntity(String tableName){
+		return scheme.getEntityByTableName(tableName);
+	}
+	
 }

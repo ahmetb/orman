@@ -1,6 +1,7 @@
 package org.orman.mapper;
 
 import org.orman.mapper.annotation.Column;
+import org.orman.mapper.annotation.Index;
 
 public class Field {
 	private Class<?> clazz;
@@ -9,6 +10,7 @@ public class Field {
 	private String generatedName;
 	private String type;
 	private String customType;
+	private FieldIndexHolder index;
 
 	public Field(Class<?> clazz, String name) {
 		this.clazz = clazz;
@@ -67,4 +69,13 @@ public class Field {
 	public boolean equals(Field f){
 		return this.compareTo(f) == 0;
 	}
+
+	public void setIndex(FieldIndexHolder index) {
+		this.index = index;
+	}
+
+	public FieldIndexHolder getIndex() {
+		return index;
+	}
+
 }

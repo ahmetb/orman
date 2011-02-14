@@ -16,7 +16,7 @@ public class Entity {
 
 	public Entity(Class<?> clazz){
 		if (!clazz.isAnnotationPresent(org.orman.mapper.annotation.Entity.class))
-			throw new NotAnEntityException();
+			throw new NotAnEntityException(clazz.getName());
 		
 		this.clazz = clazz;
 		this.originalName = clazz.getSimpleName();

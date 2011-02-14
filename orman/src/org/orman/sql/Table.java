@@ -16,12 +16,15 @@ public class Table {
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getHandle() {
 		return alias;
 	}
+	
 	public void setHandle(String handle) {
 		this.alias = handle;
 	}

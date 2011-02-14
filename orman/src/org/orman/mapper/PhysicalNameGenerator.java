@@ -70,7 +70,7 @@ public class PhysicalNameGenerator {
 		
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0 ; i < parts.size(); i++){
-			sb.append(parts);
+			sb.append(parts.get(i));
 			if(i != parts.size()-1) sb.append("_");
 		}
 		

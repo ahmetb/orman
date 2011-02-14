@@ -69,6 +69,15 @@ public class QueryBuilder {
 		return this;
 	}
 	
+	/**
+	 * Uses column list storage of the query, be cautious
+	 * while using this except CREATE TABLE queries.
+	 */
+	public QueryBuilder createColumn(String column, String dataType){
+		return this.selectAs(column, dataType);
+	}
+	
+
 	public QueryBuilder sum(String field) {
 		return this.sum(field, "sum");
 	}
@@ -115,8 +124,20 @@ public class QueryBuilder {
 		query.addField(opf);
 		return this;
 	}
-
 	
+	/**
+	 * Uses field list and table list of the query to hold index fields,
+	 * be cautious while using this except CREATE [UNIQUE] index queries.
+	 * 
+	 * Index name STORED ON => field alias
+	 * Index column STORED ON => field list
+	 * Table name STORED ON => table name (use .from())
+	 */
+	public QueryBuilder setIndex(String on, String indexName){
+		this.query.setIndexName(indexName);
+		return this.select(on);
+	}
+
 	public QueryBuilder set(String field, int value){
 		return this.setField(field, new Integer(value));
 	}
@@ -249,7 +270,7 @@ public class QueryBuilder {
 	 * QUERY BUILDER METHODS 
 	 */
 	
-	public String prepareSelectFieldList() {
+	private String prepareSelectFieldList() {
 		List<IQueryField> fields = query.getFieldList();
 		
 		if(fields == null || fields.isEmpty()){
@@ -334,13 +355,38 @@ public class QueryBuilder {
 		return template;
 	}
 	
+	/**
+	 * using DataField objects, build e.g.:
+	 * id INTEGER, name VARCHAR(100) 
+	 */
+	private String prepareFieldDescriptionList() {
+		List<IQueryField> fl = this.query.getFieldList();
+		
+		StringBuffer sb = new StringBuffer();
+		for(int i = 0; i < fl.size(); i++){
+			sb.append(fl.get(i).getFieldName());
+			sb.append(' ');
+			sb.append(fl.get(i).getAlias());
+			
+			if(i != fl.size()-1) sb.append(", ");
+		}
+		
+		return sb.toString();
+	}
 	
+	private String prepareIndexName() {
+		return this.query.getIndexName();
+	}
 
 	private String getTemplateFieldValue(String tplField) throws QueryBuilderException {
 		if ("SELECT_COLUMN_LIST".equals(tplField))
 			return prepareSelectFieldList();
+		if ("COLUMN_DESCRIPTION_LIST".equals(tplField))
+			return prepareFieldDescriptionList();
 		if ("TABLE_LIST".equals(tplField))
 			return prepareTableList();
+		if ("INDEX_NAME".equals(tplField))
+			return prepareIndexName();
 		if ("VALUE_LIST".equals(tplField))
 			return prepareValueList();
 		if ("COLUMN_VALUE_LIST".equals(tplField))
@@ -361,6 +407,7 @@ public class QueryBuilder {
 		return "";
 	}
 	
+
 	private String prepareSubclause(SubclauseType sType) {
 		ISubclause s = this.query.getSubclause(sType);
 		
@@ -388,13 +435,12 @@ public class QueryBuilder {
 	/*
 	 * END QUERY BUILDER METHODS 
 	 */
-	
-	public static void main(String[] args) {
-		String s = QueryBuilder.getBuilder(QueryType.SELECT).from("user").select("id","name")
-		.where(C.and(C.eq("name","ali"), C.notEq("pass",null)))
-		.limit(10).limit(5,10)
-		.prepareSql();
-		System.out.println(s);
-		
-	}
+//	
+//	public static void main(String[] args) {
+//		String s = QueryBuilder.getBuilder(QueryType.SELECT).from("user").select("id","name")
+//		.where(C.and(C.eq("name","ali"), C.notEq("pass",null)))
+//		.prepareSql();
+//		System.out.println(s);
+//		
+//	}
 }
