@@ -13,8 +13,7 @@ import org.orman.mapper.exception.UnmappedFieldException;
 
 public class PersistenceSchemeMapper {
 	private Set<Entity> entities;
-	private Map<String, Entity> tableNames;
-	
+	private Map<String, Entity> tableNames; // no need for DoubleAssociativeMap
 	
 	public PersistenceSchemeMapper(){
 		this.entities = new HashSet<Entity>();

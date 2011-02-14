@@ -37,4 +37,9 @@ public class OperationalField implements IQueryField {
 	public String getFieldName() {
 		return this.fieldName;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getFieldRepresentation();
+	}
 }

@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.orman.sql.exception.NoTableSpecifiedException;
 import org.orman.sql.exception.QueryBuilderException;
 import org.orman.sql.util.Glue;
+import org.orman.sql.util.Serializer;
 
 public class QueryBuilder {
 
@@ -48,6 +49,14 @@ public class QueryBuilder {
 		for(String tbl : tableNames)
 			this.from(tbl);
 		return this;
+	}
+	
+	public QueryBuilder from(Query q) {
+		return this.fromAs(q, null);
+	}
+	
+	public QueryBuilder fromAs(Query q, String as) {
+		return this.fromAs(Serializer.serialize(q), as);
 	}
 
 	public QueryBuilder select(String... columns) {
@@ -435,12 +444,5 @@ public class QueryBuilder {
 	/*
 	 * END QUERY BUILDER METHODS 
 	 */
-//	
-//	public static void main(String[] args) {
-//		String s = QueryBuilder.getBuilder(QueryType.SELECT).from("user").select("id","name")
-//		.where(C.and(C.eq("name","ali"), C.notEq("pass",null)))
-//		.prepareSql();
-//		System.out.println(s);
-//		
-//	}
+	
 }
