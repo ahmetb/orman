@@ -3,6 +3,7 @@ package org.orman.mapper;
 import java.util.List;
 
 import org.orman.mapper.exception.NotAnEntityException;
+import org.orman.mapper.exception.NotDeclaredIdException;
 
 import demo.User;
 
@@ -33,6 +34,12 @@ public class Entity {
 
 	public List<Field> getFields() {
 		return fields;
+	}
+	
+	public Field getIdField(){
+		for(Field f: getFields())
+			if (f.isId()) return f;
+		throw new NotDeclaredIdException(this.getOriginalFullName());
 	}
 
 	public String getOriginalName() {

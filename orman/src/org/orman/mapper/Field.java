@@ -1,7 +1,8 @@
 package org.orman.mapper;
 
+import java.lang.reflect.Method;
+
 import org.orman.mapper.annotation.Column;
-import org.orman.mapper.annotation.Index;
 
 public class Field {
 	private Class<?> clazz;
@@ -11,6 +12,11 @@ public class Field {
 	private String type;
 	private String customType;
 	private FieldIndexHolder index;
+	private boolean isId = false;
+	
+	// Reflection fields
+	private Method setterMethod;
+	private Method getterMethod;
 
 	public Field(Class<?> clazz, String name) {
 		this.clazz = clazz;
@@ -43,7 +49,7 @@ public class Field {
 	
 	@Override
 	public String toString() {
-		return (this.generatedName == null ? this.originalName : this.generatedName) + ":" + this.clazz;
+		return (this.generatedName == null ? this.originalName : this.generatedName) + ":" + this.clazz.getName() + ((this.type != null) ? "("+this.type+")" : "");
 	}
 
 	public String getGeneratedName() {
@@ -78,4 +84,27 @@ public class Field {
 		return index;
 	}
 
+	public void makeId(boolean isId) {
+		this.isId = isId;
+	}
+
+	public boolean isId() {
+		return isId;
+	}
+
+	public void setSetterMethod(Method setterMethod) {
+		this.setterMethod = setterMethod;
+	}
+
+	public Method getSetterMethod() {
+		return setterMethod;
+	}
+
+	public void setGetterMethod(Method getterMethod) {
+		this.getterMethod = getterMethod;
+	}
+
+	public Method getGetterMethod() {
+		return getterMethod;
+	}
 }

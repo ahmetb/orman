@@ -9,7 +9,7 @@ import org.orman.sql.QueryType;
 
 public class DDLQueryGenerator {
 
-	public Query createTable(Entity e) {
+	public static Query createTableQuery(Entity e) {
 		if (e.getGeneratedName() == null) {
 			throw new UnmappedEntityException(e.getOriginalFullName());
 		}
@@ -26,16 +26,15 @@ public class DDLQueryGenerator {
 			qb.createColumn(f.getGeneratedName(), f.getType());
 		}
 
-		System.out.println(qb.prepareSql());
 		return qb.getQuery();
 	}
 
-	public static Query dropTable(Entity e) {
+	public static Query dropTableQuery(Entity e) {
 		return QueryBuilder.getBuilder(QueryType.DROP_TABLE).from(
 				e.getGeneratedName()).getQuery();
 	}
 
-	public static Query createIndex(Entity e, Field on) {
+	public static Query createIndexQuery(Entity e, Field on) {
 		if (on.getIndex() == null) {
 			throw new IndexNotFoundException(on.getOriginalName());
 		}

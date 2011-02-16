@@ -35,6 +35,10 @@ public class QueryBuilder {
 		return new QueryBuilder(QueryType.SELECT);
 	}
 	
+	public static QueryBuilder insert(){
+		return new QueryBuilder(QueryType.INSERT);
+	}
+	
 	public static QueryBuilder selectDistinct(){
 		return new QueryBuilder(QueryType.SELECT_DISTINCT);
 	}
@@ -312,7 +316,7 @@ public class QueryBuilder {
 		int i = 0;
 		for(Entry<String, String> r : e){
 			sb.append(r.getValue());
-			if(i++ != e.size()) sb.append(", ");
+			if(++i != e.size()) sb.append(", ");
 		}
 		return sb.toString();
 	}
@@ -324,7 +328,7 @@ public class QueryBuilder {
 		int i = 0;
 		for(Entry<String, String> r : e){
 			sb.append(r.getKey());
-			if(i++ != e.size()) sb.append(", ");
+			if(++i != e.size()) sb.append(", ");
 		}
 		return sb.toString();
 	}
@@ -337,7 +341,7 @@ public class QueryBuilder {
 		for(Entry<String, String> r : e){
 			sb.append(r.getKey()+"="+r.getValue());
 			
-			if(i++ != e.size()) sb.append(", ");
+			if(++i != e.size()) sb.append(", ");
 		}
 		return sb.toString();
 	}

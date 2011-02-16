@@ -5,8 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.DuplicateColumnNamesException;
 import org.orman.mapper.exception.DuplicateTableNamesException;
+import org.orman.mapper.exception.NotDeclaredIdException;
+import org.orman.mapper.exception.TooManyIdException;
 import org.orman.mapper.exception.UnmappedDataTypeException;
 import org.orman.mapper.exception.UnmappedEntityException;
 import org.orman.mapper.exception.UnmappedFieldException;
@@ -82,6 +85,27 @@ public class PersistenceSchemeMapper {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Ensures that {@link Id} annotation exist exactly once
+	 * in {@link Field}s of given {@link Entity}.
+	 * 
+	 * @throws TooManyIdException if exists more than one.
+	 * @throws NotDeclaredIdException if does not exist any.
+	 * @param e
+	 */
+	public void checkIdBinding(Entity e) {
+		int idOccurrenceCount = 0;
+		
+		for(Field f : e.getFields()){
+			if (f.isId()) idOccurrenceCount++;
+		}
+		
+		if (idOccurrenceCount < 1)
+			throw new NotDeclaredIdException(e.getOriginalFullName());
+		else if (idOccurrenceCount > 1)
+			throw new TooManyIdException(e.getOriginalFullName());
 	}
 	
 }

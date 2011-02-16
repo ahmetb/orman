@@ -4,12 +4,9 @@ public class MappingConfiguration {
 	
 	private PhysicalNamingPolicy columnNamePolicy  = new PhysicalNamingPolicy().uppercase(false).pluralize(false).underscore(true);
 	private PhysicalNamingPolicy tableNamePolicy  = new PhysicalNamingPolicy().uppercase(false).pluralize(true).underscore(true);
-	
 
-	public MappingConfiguration(){
-		
-	}
-	
+	private SchemeCreationPolicy creationPolicy = SchemeCreationPolicy.CREATE;
+
 	public PhysicalNamingPolicy getColumnNamePolicy() {
 		return columnNamePolicy;
 	}
@@ -26,4 +23,11 @@ public class MappingConfiguration {
 		this.tableNamePolicy = tableNamePolicy;
 	}
 
+	public void setCreationPolicy(SchemeCreationPolicy creationPolicy) {
+		this.creationPolicy = creationPolicy;
+	}
+
+	public SchemeCreationPolicy getCreationPolicy() {
+		return creationPolicy;
+	}
 }

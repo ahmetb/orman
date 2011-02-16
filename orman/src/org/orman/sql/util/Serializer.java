@@ -7,6 +7,9 @@ import org.orman.sql.StringLiteral;
 
 
 public class Serializer {
+	
+	private static final String NULL_CONSTANT = "NULL";
+
 	public static String serialize(Object o){
 		
 		if (o instanceof Query){
@@ -33,6 +36,6 @@ public class Serializer {
 			return "("+Glue.concat((List) o, ", ")+")";
 		}
 		
-		return o.toString();
+		return (o == null)? NULL_CONSTANT : o.toString();
 	}
 }
