@@ -13,7 +13,7 @@ import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
 
 public class EntityInspector {
 	
-	private static final Class[] ID_SUPPORTED_TYPES = {Integer.class, Integer.TYPE, Long.class, Long.TYPE, String.class};
+	private static final Class<?>[] ID_SUPPORTED_TYPES = {Integer.class, Integer.TYPE, Long.class, Long.TYPE, String.class};
 	private Class<?> clazz;
 	private List<Field> fields;
 	
@@ -22,11 +22,12 @@ public class EntityInspector {
 		fields = new ArrayList<Field>();
 	}
 
+	@SuppressWarnings("static-access")
 	private List<Field> extractFields(){
 		this.fields.clear();
 		
 		for(java.lang.reflect.Field f : this.clazz.getDeclaredFields()){
-			// Only non-`transient` (threatened as volatile) fields
+			// Only non-`transient` (threatened as persistent) fields
 			if(!Modifier.isTransient(f.getModifiers())){
 				Field newF = new Field(f.getType(), f.getName());
 				
@@ -95,6 +96,10 @@ public class EntityInspector {
 			add("set"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));
 			// "set"+fieldName
 			add("set"+fieldName);
+			//"is"+FieldName
+			add("is"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));
+			// "is"+fieldName
+			add("is"+fieldName);
 			// fieldName
 			add(fieldName);
 		}};

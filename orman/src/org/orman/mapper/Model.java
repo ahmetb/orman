@@ -1,7 +1,10 @@
 package org.orman.mapper;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.orman.sql.C;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
 
@@ -13,9 +16,14 @@ import org.orman.sql.QueryBuilder;
  * 
  */
 public class Model<E> {
+	private static final int DEFAULT_TRANSIENT_HASHCODE = -1;
 	
 	private Class<E> clazz;
 	private Entity __mappedEntity;
+	
+	private int __persistencyHash = DEFAULT_TRANSIENT_HASHCODE;
+	private Object __persistencyId;
+	private int[] __persistencyFieldHashes;
 	
 	@SuppressWarnings("unchecked")
 	public Model(){
@@ -29,13 +37,22 @@ public class Model<E> {
 		return __mappedEntity;
 	}
 	
+	public boolean isPersistent(){
+		return (this.hashCode() == __persistencyHash)
+				&& __persistencyHash != DEFAULT_TRANSIENT_HASHCODE;
+	}
+	
 	public void insert(){
+		// TODO check: is already persistent?
+		
 		Query q = prepareInsertQuery();
-		System.out.println(q.toString());
+		System.out.println(q.toString()); // TODO execute instead.
 		
 		/* TODO if DEFER_TO_DBMS, get last_insert_id 
 		 * and attach to the instance here!  
 		 */
+		
+		makePersistent();
 	}
 	
 	private Query prepareInsertQuery() {
@@ -61,6 +78,84 @@ public class Model<E> {
 		}
 		return qb.getQuery();
 	}
+	
+	public void update(){
+		// TODO check: is persistent to update?
+		
+		Query q = prepareUpdateQuery();
+		System.out.println(q);
+		
+		makePersistent();
+	}
+	
+	private Query prepareUpdateQuery(){
+		List<Field> updatedFields = new ArrayList<Field>();
+		List<Field> fields = getEntity().getFields();
+		
+		for(int i = 0; i < __persistencyFieldHashes.length; i++){
+			Object o = getEntityField(fields.get(i),
+					getEntity(), this);
+			if (((o == null) ? DEFAULT_TRANSIENT_HASHCODE
+					: o.hashCode()) != __persistencyFieldHashes[i])
+				updatedFields.add(fields.get(i));
+		}
+		
+		if(!updatedFields.isEmpty()){
+			QueryBuilder qb = QueryBuilder.update().from(getEntity().getGeneratedName());
+			for(Field f: updatedFields){
+				qb.set(f.getGeneratedName(), getEntityField(f, getEntity(), this));
+			}
+			qb.where(C.eq(getEntity().getIdField().getGeneratedName(), __persistencyId));
+			return qb.getQuery();
+		} else return null;
+	}
+
+	
+	public void delete(){
+		// TODO check: is persistent to delete?
+		Query q = prepareDeleteQuery();
+		System.out.println(q);
+		
+		makeTransient();
+	}
+	
+	private Query prepareDeleteQuery() {
+		return QueryBuilder.delete()
+		.from(getEntity().getGeneratedName())
+		.where(
+				C.eq(getEntity().getIdField().getGeneratedName(), __persistencyId)
+				)
+		.getQuery();
+				
+	}
+
+	private Object getEntityId(){
+		Field idField = getEntity().getIdField();
+		return getEntityField(idField, getEntity(), this);
+	}
+	
+	private void makePersistent(){
+		List<Field> fields = getEntity().getFields();
+		__persistencyFieldHashes = new int[fields.size()];
+		
+		for(int i = 0; i < __persistencyFieldHashes.length; i++){
+			Object o = getEntityField(fields.get(i), getEntity(), this);
+			__persistencyFieldHashes[i] = (o == null) ? DEFAULT_TRANSIENT_HASHCODE
+					: o.hashCode();
+		}
+		__persistencyId = getEntityId();
+		__persistencyHash = this.hashCode();
+	}
+	
+	
+	private void makeTransient() {
+		List<Field> fields = getEntity().getFields();
+		__persistencyFieldHashes = new int[fields.size()];
+		__persistencyId = DEFAULT_TRANSIENT_HASHCODE;
+		__persistencyHash = DEFAULT_TRANSIENT_HASHCODE;
+	}
+
+	
 	
 	/**
 	 * Needs to be casted field.getClazz().
@@ -103,5 +198,22 @@ public class Model<E> {
 			}
 		}
 		return null;
+	}
+
+	// TODO idea: hashcode implementation for check for breaking up persistent instance?
+	/**
+	 * Hashcode implementation for persistent (non-transient) fields.
+	 */
+	@Override
+	public int hashCode() {
+		int hash = 1;
+		for(Field f : getEntity().getFields()){
+			Object o = getEntityField(f, getEntity(), this);
+			hash += (o==null ? 1 : o.hashCode()) * 7; // magic.
+		}
+		
+		// prevent coincidently correspontransiency flag
+		return hash == DEFAULT_TRANSIENT_HASHCODE ? hash | 0x9123 : hash;
+
 	}
 }

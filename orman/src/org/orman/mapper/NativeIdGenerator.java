@@ -17,6 +17,7 @@ import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
  * @author alp
  * 
  */
+
 public class NativeIdGenerator {
 
 	private static Random r = new Random(System.nanoTime());
@@ -27,7 +28,7 @@ public class NativeIdGenerator {
 	 *         of {@link Integer}, {@link String} or {@link Long} according to
 	 *         {@link Id} field of given {@link Entity}.
 	 */
-	public static Object generate(Field field, Model instance) {
+	public static Object generate(Field field, Model<?> instance) {
 		Class<?> idType = field.getClazz();
 
 		if (instance == null)
@@ -50,23 +51,23 @@ public class NativeIdGenerator {
 		throw new UnsupportedIdFieldTypeException(idType.getName());
 	}
 
-	private static String generateString(Model instance) {
+	private static String generateString(Model<?> instance) {
 		return Long.toHexString((instance.hashCode()^randLongSeed())) + ""
 				+ Long.toHexString(instance.hashCode() ^ randSeed() | randLongSeed() & timeSeed());
 	}
 
-	private static Long generateLong(Model instance) {
-		return (Math.abs(timeSeed() ^ instance.hashCode()
-				* (randSeed() ^ timeSeed() ^ instance.hashCode())) % Long.MAX_VALUE)
+	private static Long generateLong(Model<?> instance) {
+		return Math.abs(Math.abs(timeSeed() ^ instance.hashCode()
+				* (randSeed() ^ timeSeed() ^ instance.hashCode())) % Long.MAX_VALUE
 				| instance.hashCode()
 				^ timeSeed()
 				+ instance.hashCode()
-				^ randLongSeed();
+				^ randLongSeed());
 	}
 
-	private static Integer generateInteger(Model instance) {
-		return instance.hashCode() | randSeed() + instance.hashCode()
-				^ ((int) (timeSeed() >> 32) | Integer.MAX_VALUE);
+	private static Integer generateInteger(Model<?> instance) {
+		return Math.abs(instance.hashCode() | randSeed() + instance.hashCode()
+				^ ((int) (timeSeed() >> 32) | Integer.MAX_VALUE));
 	}
 
 	private static long timeSeed() {
