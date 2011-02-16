@@ -9,9 +9,11 @@ import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
+import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
 
 public class EntityInspector {
 	
+	private static final Class[] ID_SUPPORTED_TYPES = {Integer.class, Integer.TYPE, Long.class, Long.TYPE, String.class};
 	private Class<?> clazz;
 	private List<Field> fields;
 	
@@ -56,6 +58,9 @@ public class EntityInspector {
 				if(f.isAnnotationPresent(Id.class)){
 					newF.makeId(true);
 					
+					if (!isSupportedForIdField(f.getType()))
+						throw new UnsupportedIdFieldTypeException(f.getType().getName());
+					
 					// if no custom @Index defined create a default
 					if(newF.getIndex() == null)
 						newF.setIndex(new FieldIndexHolder(null, true));
@@ -64,6 +69,12 @@ public class EntityInspector {
 			}
 		}
 		return this.fields;
+	}
+	
+	private static boolean isSupportedForIdField(Class<?> type){
+		for(int i = 0 ; i < ID_SUPPORTED_TYPES.length; i++)
+			if(type.equals(ID_SUPPORTED_TYPES[i])) return true;
+		return false;
 	}
 	
 	/**
@@ -89,9 +100,10 @@ public class EntityInspector {
 		}};
 		Method m = findMethodLike(forClass, methodNameCandidates);
 		
-		if (m.getParameterTypes().length == 1) // only 1 argument
+		if (m != null && m.getParameterTypes().length == 1) // only 1 argument
 			return m;
-		else return null;
+		else
+			return null;
 	}
 	
 	/**
@@ -118,7 +130,7 @@ public class EntityInspector {
 		
 		Method m = findMethodLike(forClass, methodNameCandidates);
 		
-		if (m.getParameterTypes().length == 0
+		if (m != null && m.getParameterTypes().length == 0
 				&& !m.getReturnType().equals(Void.TYPE)) // non-void and no
 															// arguments
 			return m;

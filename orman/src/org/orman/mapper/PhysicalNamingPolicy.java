@@ -32,5 +32,4 @@ public class PhysicalNamingPolicy {
 		return this;
 	}
 	
-	
 }

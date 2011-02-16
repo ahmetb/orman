@@ -10,7 +10,7 @@ import org.orman.mapper.annotation.Index;
 
 @Entity(table="user")
 public class User extends Model<User> {
-	@Id private long id;
+	@Id public long id;
 	int age;
 	
 	@Index private String lastName;
@@ -20,6 +20,7 @@ public class User extends Model<User> {
 	
 	public User(){
 		age = 5;
+		lastName = "balkan";
 	}
 	
 	public static void main(String[] args) {
@@ -28,18 +29,10 @@ public class User extends Model<User> {
 		MappingSession.start();
 		
 		User u = new User();
-		u.setLastName("balkan");
+		u.setLastName("foo");
 		u.insert();
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public long getId() {
-		return id;
-	}
-	
 	public int getAge() {
 		return age;
 	}

@@ -25,6 +25,7 @@ public class MappingSession {
 	private static DataTypeMapper typeMapper;
 	private static boolean sessionStarted = false;
 
+
 	static{
 		scheme = new PersistenceSchemeMapper();
 		configuration = new MappingConfiguration();
@@ -101,4 +102,15 @@ public class MappingSession {
 		}
 	}
 	
+	public static MappingConfiguration getConfiguration() {
+		return configuration;
+	}
+
+	public static void setConfiguration(MappingConfiguration configuration) {
+		MappingSession.configuration = configuration;
+	}
+
+	public static void setTypeMapper(DataTypeMapper typeMapper) {
+		MappingSession.typeMapper = typeMapper;
+	}
 }
