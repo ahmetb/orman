@@ -13,6 +13,7 @@ public class Field {
 	private String customType;
 	private FieldIndexHolder index;
 	private boolean isId = false;
+	private boolean nullable = true;
 	
 	// Reflection fields
 	private Method setterMethod;
@@ -106,5 +107,13 @@ public class Field {
 
 	public Method getGetterMethod() {
 		return getterMethod;
+	}
+
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
+	}
+
+	public boolean isNullable() {
+		return nullable;
 	}
 }

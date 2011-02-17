@@ -6,8 +6,27 @@ import org.orman.sql.Query;
 public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
-	public void execute(Query q) {
+	public Object[][] executeForRowset(Query q) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object executeForSingleValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void executeOnly(Query q) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Object getLastInsertId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

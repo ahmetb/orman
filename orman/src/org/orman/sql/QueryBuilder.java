@@ -102,7 +102,10 @@ public class QueryBuilder {
 	 * Uses column list storage of the query, be cautious
 	 * while using this except CREATE TABLE queries.
 	 */
-	public QueryBuilder createColumn(String column, String dataType){
+	public QueryBuilder createColumn(String column, String dataType, boolean isNullable){
+		if(!isNullable)
+			dataType += " NOT NULL"; // append NOT NULL if not nullable
+		
 		return this.selectAs(column, dataType);
 	}
 	

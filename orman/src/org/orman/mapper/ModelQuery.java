@@ -152,8 +152,6 @@ public class ModelQuery {
 	}
 
 	
-	
-	
 	/*
 	 * Helper methods:
 	 */

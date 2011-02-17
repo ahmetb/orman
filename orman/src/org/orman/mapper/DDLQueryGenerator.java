@@ -23,7 +23,7 @@ public class DDLQueryGenerator {
 				throw new UnmappedFieldException(f.getOriginalName() + " ("
 						+ e.getOriginalName() + ")");
 			}
-			qb.createColumn(f.getGeneratedName(), f.getType());
+			qb.createColumn(f.getGeneratedName(), f.getType(), f.isNullable());
 		}
 
 		return qb.getQuery();

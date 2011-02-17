@@ -16,14 +16,14 @@ public class BetweenCriteria extends Criterion {
 	public BetweenCriteria(String field, BinaryOp op, Object low, Object high) {
 		this.field = field;
 		this.op = op == null ? null : op.toString();
-		this.l = Serializer.serialize(l);
-		this.h = Serializer.serialize(h);
+		this.l = Serializer.serialize(low);
+		this.h = Serializer.serialize(high);
 	}
 
 	@Override
 	public String toString() {
-		return (field != null ? field : "")
-				+ (op != null & l != null ? op : "") + (l != null ? l : "")
-				+ "AND" + (h != null ? h : "");
+		return (field != null ? field+" " : "")
+				+ (op != null & l != null ? op + " " : "") + (l != null ? l : "")
+				+ " AND " + (h != null ? h : "");
 	}
 }

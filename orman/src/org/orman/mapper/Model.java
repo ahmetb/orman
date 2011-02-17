@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orman.mapper.exception.NotNullableFieldException;
 import org.orman.sql.C;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
@@ -73,8 +74,14 @@ public class Model<E> {
 					useField = false;
 			}
 			
-			if (useField) // use field in query
-				qb.set(f.getGeneratedName(), getEntityField(f, getEntity(), this));
+			if (useField){ // use field in query
+				Object fieldVal = getEntityField(f, getEntity(), this);
+			
+				if(!f.isNullable() && fieldVal == null)
+					throw new NotNullableFieldException(getEntity().getOriginalFullName(), f.getOriginalName());
+				
+				qb.set(f.getGeneratedName(), fieldVal);
+			}
 		}
 		return qb.getQuery();
 	}
@@ -103,7 +110,12 @@ public class Model<E> {
 		if(!updatedFields.isEmpty()){
 			QueryBuilder qb = QueryBuilder.update().from(getEntity().getGeneratedName());
 			for(Field f: updatedFields){
-				qb.set(f.getGeneratedName(), getEntityField(f, getEntity(), this));
+				Object fieldVal = getEntityField(f, getEntity(), this);
+				
+				if(!f.isNullable() && fieldVal == null)
+					throw new NotNullableFieldException(getEntity().getOriginalFullName(), f.getOriginalName());
+				
+				qb.set(f.getGeneratedName(), fieldVal);
 			}
 			qb.where(C.eq(getEntity().getIdField().getGeneratedName(), __persistencyId));
 			return qb.getQuery();
@@ -126,7 +138,6 @@ public class Model<E> {
 				C.eq(getEntity().getIdField().getGeneratedName(), __persistencyId)
 				)
 		.getQuery();
-				
 	}
 
 	private Object getEntityId(){

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
+import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
@@ -53,6 +54,11 @@ public class EntityInspector {
 				if(f.isAnnotationPresent(Index.class)){
 					Index ann = f.getAnnotation(Index.class);
 					newF.setIndex(new FieldIndexHolder(ann.name(), ann.unique()));
+				}
+				
+				// Recognize @NotNull annotation.
+				if(f.isAnnotationPresent(NotNull.class)){
+					newF.setNullable(false);
 				}
 				
 				// Recognize @Id annotation (covers @Index)

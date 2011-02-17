@@ -31,6 +31,6 @@ public class Table {
 	
 	@Override
 	public String toString() {
-		return name + ((alias == null) ? "" : " as " + alias); 
+		return name + ((alias == null) ? "" : " " + alias); 
 	}
 }

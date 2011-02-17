@@ -10,56 +10,52 @@ import org.orman.sql.Criterion;
  *
  */
 public class C extends org.orman.sql.C {
-	private static String formatField(Field f){
-		return f.getGeneratedName();
+	public static Criterion eq(Class<?> entityClass, String fieldName, Object val) {
+		return C.eq(F.field(entityClass, fieldName), val);
 	}
 	
-	public static Criterion eq(Field field, Object val) {
-		return C.eq(formatField(field), val);
-	}
-	
-	public static Criterion notEq(Field field, Object val) {
-		return C.notEq(formatField(field), val);
+	public static Criterion notEq(Class<?> entityClass, String fieldName, Object val) {
+		return C.notEq(F.field(entityClass, fieldName), val);
 	}
 
-	public static Criterion gt(Field field, Object val) {
-		return C.gt(formatField(field), val);
+	public static Criterion gt(Class<?> entityClass, String fieldName, Object val) {
+		return C.gt(F.field(entityClass, fieldName), val);
 	}
 
-	public static Criterion geq(Field field, Object val) {
-		return C.geq(formatField(field), val);
+	public static Criterion geq(Class<?> entityClass, String fieldName, Object val) {
+		return C.geq(F.field(entityClass, fieldName), val);
 	}
 
-	public static Criterion lt(Field field, Object val) {
-		return C.lt(formatField(field), val);
+	public static Criterion lt(Class<?> entityClass, String fieldName, Object val) {
+		return C.lt(F.field(entityClass, fieldName), val);
 	}
 
-	public static Criterion leq(Field field, Object val) {
-		return C.leq(formatField(field), val);
+	public static Criterion leq(Class<?> entityClass, String fieldName, Object val) {
+		return C.leq(F.field(entityClass, fieldName), val);
 	}
 
-	public static Criterion like(Field field, Object pattern) {
-		return C.like(formatField(field), pattern);
+	public static Criterion like(Class<?> entityClass, String fieldName, Object pattern) {
+		return C.like(F.field(entityClass, fieldName), pattern);
 	}
 
-	public static Criterion notLike(Field field, Object pattern) {
-		return C.notLike(formatField(field), pattern);
+	public static Criterion notLike(Class<?> entityClass, String fieldName, Object pattern) {
+		return C.notLike(F.field(entityClass, fieldName), pattern);
 	}
 
-	public static Criterion between(Field field, Object l, Object h) {
-		return C.between(formatField(field), l, h);
+	public static Criterion between(Class<?> entityClass, String fieldName, Object l, Object h) {
+		return C.between(F.field(entityClass, fieldName), l, h);
 	}
 
-	public static Criterion notBetween(Field field, Object l, Object h) {
-		return C.notBetween(formatField(field), l, h);
+	public static Criterion notBetween(Class<?> entityClass, String fieldName, Object l, Object h) {
+		return C.notBetween(F.field(entityClass, fieldName), l, h);
 	}
 
-	public static Criterion in(Field field, Object val) {
-		return C.in(formatField(field), val);
+	public static Criterion in(Class<?> entityClass, String fieldName, Object set) {
+		return C.in(F.field(entityClass, fieldName), set);
 	}
 
-	public static Criterion notIn(Field field, Object val) {
-		return C.notIn(formatField(field), val);
+	public static Criterion notIn(Class<?> entityClass, String fieldName, Object set) {
+		return C.notIn(F.field(entityClass, fieldName), set);
 	}
 
 }
