@@ -17,95 +17,115 @@ import org.orman.mapper.exception.UnmappedFieldException;
 public class PersistenceSchemeMapper {
 	private Set<Entity> entities;
 	private Map<String, Entity> tableNames; // no need for DoubleAssociativeMap
-	
-	public PersistenceSchemeMapper(){
+
+	public PersistenceSchemeMapper() {
 		this.entities = new HashSet<Entity>();
 		this.tableNames = new HashMap<String, Entity>();
 	}
-	
+
 	/**
-	 * Precondition: Name should be binded, otherwise {@link UnmappedEntityException}
+	 * Precondition: Name should be binded, otherwise
+	 * {@link UnmappedEntityException}
 	 */
-	public void addEntity(Entity e){
-		if(e.getGeneratedName() == null || "".equals(e.getGeneratedName()))
+	public void addEntity(Entity e) {
+		if (e.getGeneratedName() == null || "".equals(e.getGeneratedName()))
 			throw new UnmappedEntityException(e.getOriginalFullName());
-		
+
 		checkConflictingEntities(e); // exception stops the check.
 
 		this.entities.add(e);
 		this.tableNames.put(e.getGeneratedName(), e);
 	}
-	
-	
-	public Entity getEntityByTableName(String tblName){
+
+	public Entity getEntityByTableName(String tblName) {
 		return this.tableNames.get(tblName);
 	}
-	
-	public Entity getBindedEntity(Class<?> entityClass){
-		for(Entity e : getEntities())
-			if(e.getClazz().equals(entityClass)) return e;
+
+	public Entity getBindedEntity(Class<?> entityClass) {
+		for (Entity e : getEntities())
+			if (e.getClazz().equals(entityClass))
+				return e;
 		return null;
 	}
-	
+
 	private boolean checkConflictingEntities(Entity e) {
-		for(Entity f: this.entities){
-			if( e != f  && e.equals(f)){
-				throw new DuplicateTableNamesException(f.getOriginalName(), e.getOriginalName());
+		for (Entity f : this.entities) {
+			if (e != f && e.equals(f)) {
+				throw new DuplicateTableNamesException(f.getOriginalName(), e
+						.getOriginalName());
 			}
 		}
 		return true;
 	}
-	
 
-	public Set<Entity> getEntities(){
+	public Set<Entity> getEntities() {
 		return this.entities;
 	}
 
-
 	/**
-	 * Precondition: Name and type should be binded before,
-	 * otherwise {@link UnmappedFieldException}
+	 * Precondition: Name and type should be binded before, otherwise
+	 * {@link UnmappedFieldException}
 	 */
 	public void checkConflictingFields(Entity e) {
-		for(Field f : e.getFields()){
+		for (Field f : e.getFields()) {
 			// unbinded column name
 			if (f.getGeneratedName() == null || "".equals(f.getGeneratedName()))
 				throw new UnmappedFieldException(f.getOriginalName());
-			
-			
+
 			// unbinded column data type
-			if (f.getType() == null){
-				throw new UnmappedDataTypeException(f.getOriginalName(), f.getClazz().getName());
+			if (f.getType() == null) {
+				throw new UnmappedDataTypeException(f.getOriginalName(), f
+						.getClazz().getName());
 			}
-			
-			// conflicting column name bindings			
-			for(Field g: e.getFields()){
-				if (f !=g && f.equals(g)){
-					throw new DuplicateColumnNamesException(f.getOriginalName(), g.getOriginalName());
+
+			// conflicting column name bindings
+			for (Field g : e.getFields()) {
+				if (f != g && f.equals(g)) {
+					throw new DuplicateColumnNamesException(
+							f.getOriginalName(), g.getOriginalName());
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * Ensures that {@link Id} annotation exist exactly once
-	 * in {@link Field}s of given {@link Entity}.
+	 * Ensures that {@link Id} annotation exist exactly once in {@link Field}s
+	 * of given {@link Entity}.
 	 * 
-	 * @throws TooManyIdException if exists more than one.
-	 * @throws NotDeclaredIdException if does not exist any.
+	 * @throws TooManyIdException
+	 *             if exists more than one.
+	 * @throws NotDeclaredIdException
+	 *             if does not exist any.
 	 * @param e
 	 */
 	public void checkIdBinding(Entity e) {
 		int idOccurrenceCount = 0;
-		
-		for(Field f : e.getFields()){
-			if (f.isId()) idOccurrenceCount++;
+
+		for (Field f : e.getFields()) {
+			if (f.isId())
+				idOccurrenceCount++;
 		}
-		
+
 		if (idOccurrenceCount < 1)
 			throw new NotDeclaredIdException(e.getOriginalFullName());
 		else if (idOccurrenceCount > 1)
 			throw new TooManyIdException(e.getOriginalFullName());
 	}
-	
+
+	/**
+	 * WARNING: Be cautious when two Entities have the same class name. e.g.
+	 * com.app.model.User and com.app.model.administrative.User.
+	 * 
+	 * If more than occurrences found with same name, return value will be
+	 * arbitrarily chosen.
+	 * 
+	 */
+	public Entity getEntityByClassName(String className) {
+		for(Entity e: getEntities()){
+			if (e.getOriginalName().equals(className))
+				return e;
+		}
+		return null;
+	}
+
 }

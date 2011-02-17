@@ -23,7 +23,7 @@ public class QueryBuilder {
 		query = new Query(queryType);
 	}
 	
-	private QueryBuilder(Query query) {
+	public QueryBuilder(Query query) {
 		this.query = query;
 	}
 
@@ -67,7 +67,7 @@ public class QueryBuilder {
 	
 	public QueryBuilder from(String... tableNames) {
 		for(String tbl : tableNames)
-			this.from(tbl);
+			this.from(tbl, null);
 		return this;
 	}
 	
@@ -106,7 +106,6 @@ public class QueryBuilder {
 		return this.selectAs(column, dataType);
 	}
 	
-
 	public QueryBuilder sum(String field) {
 		return this.sum(field, "sum");
 	}
@@ -136,7 +135,7 @@ public class QueryBuilder {
 	}
 
 	public QueryBuilder count(String column) {
-		return this.countAs(column, "count");
+		return this.countAs(column, "count"); // TODO should we force as clause?  
 	}
 
 	public QueryBuilder countAs(String column, String as) {
@@ -167,18 +166,6 @@ public class QueryBuilder {
 		return this.select(on);
 	}
 
-	public QueryBuilder set(String field, int value){
-		return this.setField(field, new Integer(value));
-	}
-	
-	public QueryBuilder set(String field, float value){
-		return this.setField(field, new Float(value));
-	}
-	
-	public QueryBuilder set(String field, double value){
-		return this.setField(field, new Double(value));
-	}
-	
 	public QueryBuilder set(String field, Query value){
 		return this.setField(field, value);
 	}
@@ -281,9 +268,7 @@ public class QueryBuilder {
 		return multiQueryOp(MultiQuerySetOp.EXCEPT_ALL, queries);
 	}
 	
-	
-	
-	private Query multiQueryOp(MultiQuerySetOp op, Query... queries){
+	public Query multiQueryOp(MultiQuerySetOp op, Query... queries){
 		Query[] qs = new Query[queries.length+1];
 		qs[0] = this.query; // first query to concat is this->query
 		for(int i = 1; i < qs.length; i++){
@@ -292,7 +277,6 @@ public class QueryBuilder {
 		
 		return new MultipleQuery(op, qs);
 	}
-
 	
 	
 	/*

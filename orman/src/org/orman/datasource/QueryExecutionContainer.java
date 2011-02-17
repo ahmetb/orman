@@ -1,4 +1,4 @@
-package org.orman.mapper;
+package org.orman.datasource;
 
 import org.orman.sql.Query;
 

@@ -52,8 +52,6 @@ public class Query extends DataSource implements Aliasable {
 	public Query addTable(String tableName, String as) {
 		if (as == null || "".equals(as)) as = acquireTableAlias(tableName);
 		
-		System.out.println("handle = "+as);
-		
 		Table newTable = new Table(tableName, as);
 		newTable.setHandle(as);
 		tables.add(newTable);

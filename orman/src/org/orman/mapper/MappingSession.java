@@ -3,6 +3,7 @@ package org.orman.mapper;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.orman.datasource.DataTypeMapper;
 import org.orman.mapper.exception.MappingSessionAlreadyStartedException;
 import org.orman.mapper.exception.UnregisteredEntityException;
 import org.orman.mysql.DataTypeMapperImpl;
@@ -67,8 +68,12 @@ public class MappingSession {
 		return e;
 	}
 	
-	public static Entity getEntity(String tableName){
+	public static Entity getEntityByTableName(String tableName){
 		return scheme.getEntityByTableName(tableName);
+	}
+	
+	public static Entity getEntityByClassName(String className){
+		return scheme.getEntityByClassName(className);
 	}
 	
 	public static void start(){

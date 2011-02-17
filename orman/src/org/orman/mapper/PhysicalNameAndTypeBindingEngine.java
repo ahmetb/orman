@@ -1,5 +1,7 @@
 package org.orman.mapper;
 
+import org.orman.datasource.DataTypeMapper;
+
 public class PhysicalNameAndTypeBindingEngine {
 	private static final String INDEX_POSTFIX = "_index";
 

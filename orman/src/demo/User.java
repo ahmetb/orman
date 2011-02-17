@@ -2,11 +2,15 @@ package demo;
 
 import java.io.BufferedReader;
 
+import org.orman.mapper.C;
+import org.orman.mapper.F;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
+import org.orman.sql.QueryType;
 
 @Entity(table="user")
 public class User extends Model<User> {
@@ -34,6 +38,11 @@ public class User extends Model<User> {
 		u.id=6;
 		u.update();
 		u.delete();
+		
+		ModelQuery q = ModelQuery.type(QueryType.SELECT);
+		q.from(User.class).orderBy("-User.id");
+		
+		System.out.println(q.getQuery());
 	}
 
 	public int getAge() {

@@ -1,4 +1,4 @@
-package org.orman.mapper;
+package org.orman.datasource;
 
 public interface DataTypeMapper {
 	public String getTypeFor(Class<?> clazz);

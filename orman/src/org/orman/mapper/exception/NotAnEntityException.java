@@ -1,7 +1,7 @@
 package org.orman.mapper.exception;
 
 public class NotAnEntityException extends RuntimeException {
-	private static final String message = "The following is not eligible to be an entity. Use @Entity annotation.: %s";
+	private static final String message = "The following class is not eligible to be an entity. Use @Entity annotation.: %s";
 	
 	private String s;
 	

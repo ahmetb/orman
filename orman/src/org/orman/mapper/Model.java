@@ -83,7 +83,7 @@ public class Model<E> {
 		// TODO check: is persistent to update?
 		
 		Query q = prepareUpdateQuery();
-		System.out.println(q);
+		System.out.println(q);  // TODO execute instead.
 		
 		makePersistent();
 	}
@@ -114,7 +114,7 @@ public class Model<E> {
 	public void delete(){
 		// TODO check: is persistent to delete?
 		Query q = prepareDeleteQuery();
-		System.out.println(q);
+		System.out.println(q);  // TODO execute instead.
 		
 		makeTransient();
 	}
