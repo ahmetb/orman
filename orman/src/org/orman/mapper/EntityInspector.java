@@ -12,6 +12,12 @@ import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
 
+/**
+ * Finds fields and getter-setter methods of a given {@link Entity} using Reflection API.
+ * 
+ * @author alp
+ *
+ */
 public class EntityInspector {
 	
 	private static final Class<?>[] ID_SUPPORTED_TYPES = {Integer.class, Integer.TYPE, Long.class, Long.TYPE, String.class};
@@ -23,6 +29,15 @@ public class EntityInspector {
 		fields = new ArrayList<Field>();
 	}
 
+	/**
+	 * 
+	 * Extracts declared non-<code>transient</code> fields of a given Entity. Makes 
+	 * property bindings for fields using their annotations and
+	 * checks for their getter-and setters (finds them automatically)
+	 * if they are non-public fields.
+	 * 
+	 * @return fields of this class.
+	 */
 	@SuppressWarnings("static-access")
 	private List<Field> extractFields(){
 		this.fields.clear();
@@ -78,6 +93,13 @@ public class EntityInspector {
 		return this.fields;
 	}
 	
+	/**
+	 * Checks whether this class (of some field) can be a 
+	 * {@link Id} in terms of its variable type.
+	 * 
+	 * @param type of some field to be an {@link Id} candidate.
+	 * @return true if eligible, false otherwise.
+	 */
 	private static boolean isSupportedForIdField(Class<?> type){
 		for(int i = 0 ; i < ID_SUPPORTED_TYPES.length; i++)
 			if(type.equals(ID_SUPPORTED_TYPES[i])) return true;
@@ -148,6 +170,11 @@ public class EntityInspector {
 		else return null;
 	}
 	
+	/**
+	 * Scans all the declared methods in a given class and
+	 * returns the first <code>public </code> one which is in
+	 * <code>candidateNames</code>.   
+	 */
 	private static Method findMethodLike(Class<?> forClass, List<String> candidateNames){
 		for(Method m : forClass.getDeclaredMethods()){ // methods declared only in this class
 			if (Modifier.isPublic(m.getModifiers())){ // only if method is public.
@@ -159,6 +186,11 @@ public class EntityInspector {
 		return null;
 	}
 
+	/**
+	 * Returns fields of this entity. Note that fields are
+	 * extracted once if this method is used, they are saved
+	 * for future requests. 
+	 */
 	public List<Field> getFields(){
 		if(this.fields.isEmpty()) return extractFields();
 		else return this.fields;

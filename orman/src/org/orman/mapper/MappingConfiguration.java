@@ -1,6 +1,10 @@
 package org.orman.mapper;
 
-
+/**
+ * Holds mapping configuration policies.
+ * 
+ * @author alp
+ */
 public class MappingConfiguration {
 	
 	private PhysicalNamingPolicy columnNamePolicy  = new PhysicalNamingPolicy().uppercase(false).pluralize(false).underscore(true);

@@ -2,6 +2,14 @@ package org.orman.mapper;
 
 import org.orman.mapper.annotation.Id;
 
+/**
+ * Determines the way how compulsory {@link Id}-annotated
+ * fields are threatened before executing queries. They
+ * can be auto incremented by DBMS or native generator of 
+ * framework can be used or it can be manually set. 
+ * 
+ * @author alp
+ */
 public enum IdGenerationPolicy {
 	/**
 	 * Provides a way to set id such that developer should
@@ -31,6 +39,6 @@ public enum IdGenerationPolicy {
 	 * and hash code of the entire entity instance. Attaches
 	 * generated id to the instance after generation.
 	 */
-	ORMAN_ID_GENERATOR
+	ORMAN_ID_GENERATOR,
 	;
 }

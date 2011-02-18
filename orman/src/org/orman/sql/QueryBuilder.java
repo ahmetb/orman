@@ -12,6 +12,22 @@ import org.orman.sql.exception.QueryBuilderException;
 import org.orman.sql.util.Glue;
 import org.orman.sql.util.Serializer;
 
+/**
+ * Used to build pure SQL queries. If you are interested to build SQL queries
+ * with existing persistent old Java classes (@Entity classes), see
+ * {@link ModelQuery} class.
+ * 
+ * Has a private constructor and an instance can be obtained with getBuilder()
+ * method or select(), insert(), update() or delete() methods.
+ * 
+ * Supports chain queries. Use getQuery() method to obtain {@link Query} object.
+ * 
+ * @see {@link org.orman.mapper.ModelQuery} for building queries using
+ *      {@link org.orman.mapper.annotation.Entity}-annotated classes and their
+ *      fields.
+ * @author alp
+ * 
+ */
 public class QueryBuilder {
 
 	/*
@@ -168,6 +184,17 @@ public class QueryBuilder {
 		this.query.setIndexName(indexName);
 		return this.select(on);
 	}
+	
+	/**
+	 * Uses SELECT field list to create views
+	 * 
+	 * View name STORED ON => field name
+	 * View query STORED ON => field alias
+	 */
+	public QueryBuilder viewDetails(String viewName, Query resultQuery){
+		return this.selectAs(viewName, resultQuery.nest());
+	}
+
 
 	public QueryBuilder set(String field, Query value){
 		return this.setField(field, value);

@@ -8,8 +8,9 @@ import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
-import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.NotNull;
+import org.orman.sql.Query;
+import org.orman.sql.QueryBuilder;
 import org.orman.sql.QueryType;
 
 @Entity(table="user")
@@ -79,14 +80,25 @@ public class User extends Model<User> {
 		System.out.println();
 		
 		ModelQuery q = ModelQuery.type(QueryType.SELECT);
-		q.fromAs(User.class, "zaa").orderBy("-User.id").where(
-				C.and(
-					C.eq(User.class, "lastName", 10),
-					C.between(User.class, "age", 3, "balkan")
-				)
-		);
+		q.from(User.class)
+		.where(
+			C.and(
+				C.eq(User.class, "lastName", 10),
+				C.between(User.class, "age", 3, "balkan")
+			)
+		)
+		.orderBy("-User.id")
+		.groupBy("User.lastName")
+		.limit(10)
+		.having(C.gt(User.class, "age", 5));
 		
 		System.out.println(q.getQuery());
+		
+		Query a = QueryBuilder.getBuilder(QueryType.CREATE_VIEW)
+		.viewDetails(
+				"myView", q.getQuery())
+		.getQuery();
+		
+		System.out.println(a);
 	}
-
 }

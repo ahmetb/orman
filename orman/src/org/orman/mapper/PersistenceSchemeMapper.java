@@ -14,18 +14,33 @@ import org.orman.mapper.exception.UnmappedDataTypeException;
 import org.orman.mapper.exception.UnmappedEntityException;
 import org.orman.mapper.exception.UnmappedFieldException;
 
+/**
+ * Holds object mapping scheme and their physical table names.  
+ * 
+ * @author alp
+ *
+ */
 public class PersistenceSchemeMapper {
 	private Set<Entity> entities;
 	private Map<String, Entity> tableNames; // no need for DoubleAssociativeMap
 
+	/**
+	 * Initializes an empty ORM scheme.
+	 */
 	public PersistenceSchemeMapper() {
 		this.entities = new HashSet<Entity>();
 		this.tableNames = new HashMap<String, Entity>();
 	}
 
 	/**
-	 * Precondition: Name should be binded, otherwise
-	 * {@link UnmappedEntityException}
+	 * Adds given entity to the mapping scheme.
+	 * 
+	 * Precondition: Physical table name should be binded.
+	 * 
+	 * @throws UnmappedEntityException if no physical name binding
+	 * done before.
+	 * @throws DuplicateTableNamesException if binded physical name already
+	 * exists in the scheme.
 	 */
 	public void addEntity(Entity e) {
 		if (e.getGeneratedName() == null || "".equals(e.getGeneratedName()))
@@ -37,10 +52,20 @@ public class PersistenceSchemeMapper {
 		this.tableNames.put(e.getGeneratedName(), e);
 	}
 
+	/**
+	 * Returns entity with given physical table name.
+	 * @param tblName case-sensitive physical table name.
+	 * @return
+	 */
 	public Entity getEntityByTableName(String tblName) {
 		return this.tableNames.get(tblName);
 	}
 
+	/**
+	 * Returns {@link Entity} of given class type.
+	 * @param entityClass
+	 * @return null if not found.
+	 */
 	public Entity getBindedEntity(Class<?> entityClass) {
 		for (Entity e : getEntities())
 			if (e.getClazz().equals(entityClass))
@@ -48,6 +73,11 @@ public class PersistenceSchemeMapper {
 		return null;
 	}
 
+	/**
+	 * Checks whether physical name of {@link Entity} <code>e</code> in usage.
+	 * @return <code>true</code> if no conflict found, throws exception otherwise.
+	 * @throws DuplicateTableNamesException if an entity with this physical name exists.
+	 */
 	private boolean checkConflictingEntities(Entity e) {
 		for (Entity f : this.entities) {
 			if (e != f && e.equals(f)) {
@@ -58,13 +88,25 @@ public class PersistenceSchemeMapper {
 		return true;
 	}
 
+	/**
+	 * @return all {@link Entity}s in scheme.
+	 */
 	public Set<Entity> getEntities() {
 		return this.entities;
 	}
 
 	/**
-	 * Precondition: Name and type should be binded before, otherwise
-	 * {@link UnmappedFieldException}
+	 * Precondition: Name and type should be binded.
+	 * 
+	 * @throws UnmappedFieldException
+	 *             if physical column name is not binded.
+	 * @throws UnmappedDataTypeException
+	 *             if physical data type is not binded.
+	 * @throws DuplicateColumnNamesException
+	 *             if there exists more than one fields with same physical
+	 *             column name
+	 * 
+	 * 
 	 */
 	public void checkConflictingFields(Entity e) {
 		for (Field f : e.getFields()) {

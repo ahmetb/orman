@@ -1,6 +1,7 @@
 package org.orman.sql;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,16 +22,11 @@ public class Query extends DataSource implements Aliasable {
 
 	private String alias;
 
-	private Set<String> tableAliases;
-
 	public Query() {
 		tables = new ArrayList<Table>();
+		subclauses = new EnumMap<SubclauseType, ISubclause>(SubclauseType.class);
 		fieldList = new ArrayList<IQueryField>();
 		valuedFieldMap = new HashMap<String, String>();
-		subclauses = new HashMap<SubclauseType, ISubclause>(); // TODO use
-																// enummap
-
-		tableAliases = new HashSet<String>();
 	}
 
 	public Query(QueryType queryType) {
@@ -50,7 +46,7 @@ public class Query extends DataSource implements Aliasable {
 	}
 	
 	public Query addTable(String tableName, String as) {
-		if (as == null || "".equals(as)) as = acquireTableAlias(tableName);
+		if ("".equals(as)) as = null;
 		
 		Table newTable = new Table(tableName, as);
 		newTable.setHandle(as);
@@ -58,16 +54,6 @@ public class Query extends DataSource implements Aliasable {
 		return this;
 	}
 
-	private String acquireTableAlias(String tableName) {
-		String alias = null;
-		int num = 0;
-		do {
-			// myTable->m0, m1, m2, m3, m4, m5
-			alias = tableName.trim().toLowerCase().charAt(0) + "" + (num++);
-		} while (tableAliases.contains(alias));
-
-		return alias;
-	}
 
 	@Override
 	public String getAlias() {

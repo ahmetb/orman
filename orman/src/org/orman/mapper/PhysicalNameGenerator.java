@@ -3,8 +3,22 @@ package org.orman.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provides method to convert given name to a physical name using
+ * some {@link PhysicalNamingPolicy}.
+ * @author alp
+ *
+ */
 public class PhysicalNameGenerator {
 	
+	/**
+	 * Formats given <code>originalName</code> to some other
+	 * physical name using given <code>policy</code>.
+	 * 
+	 * @param originalName of the field, table or anything else.
+	 * @param policy physical naming configuration
+	 * @return converted name
+	 */
 	public static String format(String originalName, PhysicalNamingPolicy policy){
 		if (!policy.isUnderscore()){
 			// do not allow underscorores.
@@ -24,6 +38,11 @@ public class PhysicalNameGenerator {
 		return originalName;
 	}
 	
+	/**
+	 * Converts underscores to camel case.
+	 * @param s
+	 * @return
+	 */
 	private static final String _toCamelCase(String s){
 		StringBuffer sb = new StringBuffer(s);
 		while(sb.indexOf("_")>-1){
@@ -38,6 +57,14 @@ public class PhysicalNameGenerator {
 		return sb.toString();
 	}
 	
+	/**
+	 * Converts camel case {@link String}s to underscored texts.
+	 * 
+	 * e.g. <code>URLBuilderConfiguration</code> will be <code>URL_Builder_Configuration</code>.
+	 * 
+	 * @param s
+	 * @return
+	 */
 	private static final String camelCaseTo_(String s){
 
 		List<String> parts = new ArrayList<String>();;

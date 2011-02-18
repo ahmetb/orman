@@ -7,8 +7,18 @@ import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
 import org.orman.sql.QueryType;
 
+/**
+ * Generates DDL (data description language) {@link Query} for given entity
+ * scheme.
+ * 
+ * @author alp
+ * 
+ */
 public class DDLQueryGenerator {
 
+	/**
+	 * Creates CREATE TABLE {@link Query} for given {@link Entity}.
+	 */
 	public static Query createTableQuery(Entity e) {
 		if (e.getGeneratedName() == null) {
 			throw new UnmappedEntityException(e.getOriginalFullName());
@@ -29,11 +39,19 @@ public class DDLQueryGenerator {
 		return qb.getQuery();
 	}
 
+	/**
+	 * Creates DROP TABLE {@link Query} for given {@link Entity}
+	 */
 	public static Query dropTableQuery(Entity e) {
 		return QueryBuilder.getBuilder(QueryType.DROP_TABLE).from(
 				e.getGeneratedName()).getQuery();
 	}
 
+	/**
+	 * Creates CREATE INDEX {@link Query} for given {@link Entity} on given
+	 * {@link Field}. Uniqueness of the index can be set on {@link Field} method
+	 * <code>getIndex().unique(boolean)</code>.
+	 */
 	public static Query createIndexQuery(Entity e, Field on) {
 		if (on.getIndex() == null) {
 			throw new IndexNotFoundException(on.getOriginalName());

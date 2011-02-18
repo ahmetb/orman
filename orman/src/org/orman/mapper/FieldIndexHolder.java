@@ -1,5 +1,10 @@
 package org.orman.mapper;
 
+/**
+ * Holds index information of a {@link Field} such as 
+ * its name and uniqueness. 
+ * @author alp
+ */
 public class FieldIndexHolder {
 	private boolean unique;
 	private String name;
