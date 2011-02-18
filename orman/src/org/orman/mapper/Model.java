@@ -6,7 +6,8 @@ import java.util.List;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.NotNullableFieldException;
-import org.orman.mapper.exception.UnableToSaveDetachedInstance;
+import org.orman.mapper.exception.UnableToPersistDetachedEntityException;
+import org.orman.mapper.exception.UnableToSaveDetachedInstanceException;
 import org.orman.sql.C;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
@@ -49,8 +50,8 @@ public class Model<E> {
 	}
 
 	public void insert() {
-		// TODO check: is already persistent?
-
+		// TODO discuss: persistency check?
+		
 		Query q = prepareInsertQuery();
 		System.out.println(q.toString()); // TODO execute instead.
 
@@ -97,7 +98,7 @@ public class Model<E> {
 					fieldVal = fieldValueSerializer(fieldVal);
 					
 					if(!instance.isPersistent()){
-						throw new UnableToSaveDetachedInstance(f.getOriginalName(), instance.getClass().toString());
+						throw new UnableToSaveDetachedInstanceException(f.getOriginalName(), instance.getClass().toString());
 					}
 				}
 
@@ -108,7 +109,8 @@ public class Model<E> {
 	}
 
 	public void update() {
-		// TODO check: is persistent to update?
+		if(!isPersistent())
+			throw new UnableToPersistDetachedEntityException(this.getEntity().getOriginalFullName());
 
 		Query q = prepareUpdateQuery();
 		System.out.println(q); // TODO execute instead.
@@ -135,7 +137,7 @@ public class Model<E> {
 					fieldVal = fieldValueSerializer(fieldVal);
 					
 					if(!instance.isPersistent()){
-						throw new UnableToSaveDetachedInstance(f.getOriginalName(), instance.getClass().toString());
+						throw new UnableToSaveDetachedInstanceException(f.getOriginalName(), instance.getClass().toString());
 					}
 				}
 
@@ -161,7 +163,9 @@ public class Model<E> {
 	}
 
 	public void delete() {
-		// TODO check: is persistent to delete?
+		if(!isPersistent())
+			throw new UnableToPersistDetachedEntityException(this.getEntity().getOriginalFullName());
+		
 		Query q = prepareDeleteQuery();
 		System.out.println(q); // TODO execute instead.
 
@@ -227,7 +231,7 @@ public class Model<E> {
 						.get(instance);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
-				e.printStackTrace();
+				e.printStackTrace(); // TODO LOG
 			}
 		} else { // not public field, invoke method!
 			try {
@@ -235,7 +239,7 @@ public class Model<E> {
 			} catch (Exception e) {
 				// TODO caution: assuming getter certainly exists and
 				// accessible.
-				e.printStackTrace();
+				e.printStackTrace(); // TODO log
 			}
 		}
 		return null;
@@ -258,15 +262,14 @@ public class Model<E> {
 						instance, value);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
-				e.printStackTrace();
+				e.printStackTrace(); //TODO log
 			}
 		} else { // not public field, invoke method!
 			try {
 				setter.invoke(instance, value); // no need to hold return value 
 			} catch (Exception e) {
-				// TODO caution: assuming getter certainly exists and
-				// accessible.
-				e.printStackTrace();
+				// TODO caution: assuming getter certainly exists and accessible.
+				e.printStackTrace(); //TODO log
 			}
 		}
 	}

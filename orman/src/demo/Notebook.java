@@ -3,7 +3,6 @@ package demo;
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
-import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.annotation.OneToOne;
 
 @Entity

@@ -154,7 +154,7 @@ public class QueryBuilder {
 	}
 
 	public QueryBuilder count(String column) {
-		return this.countAs(column, "count"); // TODO should we force as clause?  
+		return this.countAs(column, "count"); // TODO discuss: should we force "AS count" clause?  
 	}
 
 	public QueryBuilder countAs(String column, String as) {

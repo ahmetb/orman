@@ -16,8 +16,6 @@ public enum QueryType {
 	COMMIT_TRANSACTION("COMMIT"),
 	ROLLBACK_TRANSACTION("COMMIT");
 	
-	// TODO implement insert,update,delete,create table stmts.
-
 	private String template;
 
 	private QueryType(String tpl) {

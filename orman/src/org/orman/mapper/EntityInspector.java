@@ -92,7 +92,7 @@ public class EntityInspector {
 				}
 				
 				// Recognize @OnyToOne, @OneToMany, @ManyToMany annotations (covers @Index) 
-				if(f.isAnnotationPresent(OneToOne.class)){ // TODO add other annotations.
+				if(f.isAnnotationPresent(OneToOne.class)){ // TODO add other cardinality annotations, too
 					// if no custom @Index defined create a default.
 					if(newF.getIndex() == null)
 						newF.setIndex(new FieldIndexHolder(null, true));

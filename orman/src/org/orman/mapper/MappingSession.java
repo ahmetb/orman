@@ -20,8 +20,6 @@ import org.orman.sql.Query;
  * @author alp
  * 
  */
-// TODO queue registered entities, process them on start()
-// TODO throw exception on get..() methods before start().
 public class MappingSession {
 	private static PersistenceSchemeMapper scheme;
 	private static MappingConfiguration configuration;
@@ -32,7 +30,7 @@ public class MappingSession {
 	static {
 		scheme = new PersistenceSchemeMapper();
 		configuration = new MappingConfiguration();
-		typeMapper = new DataTypeMapperImpl(); // TODO experimental
+		typeMapper = new DataTypeMapperImpl(); // TODO experimental, remove soon
 		// implementation, remove soon.
 	}
 
