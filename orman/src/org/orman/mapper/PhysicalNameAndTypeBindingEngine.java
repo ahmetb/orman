@@ -1,8 +1,11 @@
 package org.orman.mapper;
 
+import java.lang.annotation.Annotation;
+
 import org.orman.datasource.DataTypeMapper;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
+import org.orman.mapper.annotation.OneToOne;
 
 /**
  * Provides methods to make physical name and column type bindings to fields and
@@ -47,13 +50,26 @@ public class PhysicalNameAndTypeBindingEngine {
 					.getOriginalName(), namingPolicy));
 		}
 
-		/* TYPE BINDING */
+		/* DATA TYPE BINDING */
 		if (field.getCustomType() != null) {
 			// use manual field type.
 			field.setType(field.getCustomType());
 		} else {
+			Class<?> fieldType = null;
 			// use Class<?> type of the field.
-			field.setType(dataTypeMapper.getTypeFor(field.getClazz()));
+			
+			
+			if (field.isAnnotationPresent(OneToOne.class)){
+				//  there exists 1:1 set type as matched field's Id type.
+				OneToOne rel = field.getAnnotation(OneToOne.class);
+				Class<?> idType = getIdTypeForClass(field.getClazz());
+				fieldType = idType;
+			} else {
+				// usual conditions
+				fieldType = field.getClazz();
+			}
+			
+			field.setType(dataTypeMapper.getTypeFor(fieldType));
 		}
 
 		/* INDEX SETTINGS BINDING */
@@ -65,5 +81,12 @@ public class PhysicalNameAndTypeBindingEngine {
 				field.getIndex().name(field.getGeneratedName() + INDEX_POSTFIX);
 			}
 		}
+	}
+
+	private static Class<?> getIdTypeForClass(Class<?> clazz) {
+		for(java.lang.reflect.Field f : clazz.getDeclaredFields())
+			if(f.isAnnotationPresent(Id.class))
+				return f.getType();
+		return null;
 	}
 }

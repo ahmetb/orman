@@ -20,7 +20,8 @@ import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
  */
 public class EntityInspector {
 	
-	private static final Class<?>[] ID_SUPPORTED_TYPES = {Integer.class, Integer.TYPE, Long.class, Long.TYPE, String.class};
+	private static final Class<?>[] ID_SUPPORTED_TYPES = { Integer.class,
+			Integer.TYPE, Long.class, Long.TYPE, String.class };
 	private Class<?> clazz;
 	private List<Field> fields;
 	
@@ -80,13 +81,18 @@ public class EntityInspector {
 				if(f.isAnnotationPresent(Id.class)){
 					newF.makeId(true);
 					
-					if (!isSupportedForIdField(f.getType()))
+					if (!isSupportedForIdField(f.getType())){
 						throw new UnsupportedIdFieldTypeException(f.getType().getName());
+					}
 					
 					// if no custom @Index defined create a default
 					if(newF.getIndex() == null)
 						newF.setIndex(new FieldIndexHolder(null, true));
 				}
+				
+				// Save raw field data for future usage
+				newF.setRawField(f);
+				
 				fields.add(newF);
 			}
 		}
@@ -101,6 +107,7 @@ public class EntityInspector {
 	 * @return true if eligible, false otherwise.
 	 */
 	private static boolean isSupportedForIdField(Class<?> type){
+		System.out.println("is "+type);
 		for(int i = 0 ; i < ID_SUPPORTED_TYPES.length; i++)
 			if(type.equals(ID_SUPPORTED_TYPES[i])) return true;
 		return false;

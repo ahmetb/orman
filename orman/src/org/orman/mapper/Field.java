@@ -1,5 +1,6 @@
 package org.orman.mapper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.orman.mapper.annotation.Column;
@@ -29,6 +30,7 @@ public class Field {
 	// Reflection fields
 	private Method setterMethod;
 	private Method getterMethod;
+	private java.lang.reflect.Field rawField;
 
 	public Field(Class<?> clazz, String name) {
 		this.clazz = clazz;
@@ -139,5 +141,21 @@ public class Field {
 	 */
 	public boolean isNullable() {
 		return nullable;
+	}
+
+	public void setRawField(java.lang.reflect.Field rawField) {
+		this.rawField = rawField;
+	}
+
+	public java.lang.reflect.Field getRawField() {
+		return rawField;
+	}
+	
+	public boolean isAnnotationPresent(Class<? extends Annotation> ann){
+		return rawField.isAnnotationPresent(ann);
+	}
+	
+	public <A extends Annotation> A getAnnotation(Class<A> annClass){
+		return rawField.getAnnotation(annClass);
 	}
 }
