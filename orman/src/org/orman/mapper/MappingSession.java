@@ -5,6 +5,7 @@ import java.util.Queue;
 
 import org.orman.datasource.DataTypeMapper;
 import org.orman.mapper.exception.MappingSessionAlreadyStartedException;
+import org.orman.mapper.exception.MappingSessionNotStartedException;
 import org.orman.mapper.exception.UnregisteredEntityException;
 import org.orman.mysql.DataTypeMapperImpl;
 import org.orman.sql.Query;
@@ -45,18 +46,10 @@ public class MappingSession {
 	public static Entity registerEntity(Class<?> entityClass) {
 		Entity e = new Entity(entityClass);
 
-		scheme.checkIdBinding(e);
-
-		for (Field f : e.getFields()) {
-			PhysicalNameAndTypeBindingEngine.makeBinding(f, configuration
-					.getColumnNamePolicy(), typeMapper);
-		}
-
-		scheme.checkConflictingFields(e);
-
+		// BIND TABLE NAME 
 		PhysicalNameAndTypeBindingEngine.makeBinding(e, configuration
 				.getTableNamePolicy());
-
+		
 		scheme.addEntity(e);
 
 		return e;
@@ -73,12 +66,27 @@ public class MappingSession {
 	 * 
 	 */
 	public static Entity getEntity(Class<?> entityClass) {
+		if (!sessionStarted)
+			throw new MappingSessionNotStartedException();
+		
 		Entity e = scheme.getBindedEntity(entityClass);
 
 		if (e == null)
 			throw new UnregisteredEntityException(entityClass.getName());
 
 		return e;
+	}
+	
+	public static boolean entityExists(Class<?> entityClass) {
+		if (!sessionStarted)
+			throw new MappingSessionNotStartedException();
+		
+		try {
+			getEntity(entityClass);
+			return true;
+		} catch (UnregisteredEntityException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -89,6 +97,9 @@ public class MappingSession {
 	 * @return
 	 */
 	public static Entity getEntityByTableName(String tableName) {
+		if (!sessionStarted)
+			throw new MappingSessionNotStartedException();
+		
 		return scheme.getEntityByTableName(tableName);
 	}
 
@@ -111,6 +122,9 @@ public class MappingSession {
 	 * observe their behavior.
 	 */
 	public static Entity getEntityByClassName(String className) {
+		if (!sessionStarted)
+			throw new MappingSessionNotStartedException();
+		
 		return scheme.getEntityByClassName(className);
 	}
 
@@ -124,8 +138,21 @@ public class MappingSession {
 	public static void start() {
 		if (sessionStarted)
 			throw new MappingSessionAlreadyStartedException();
-
-		sessionStarted = true;
+		else sessionStarted = true; // make the session started.
+		
+		// BIND NAMES AND TYPES FOR FIELDS
+		for(Entity e: scheme.getEntities()){
+			scheme.checkIdBinding(e);
+	
+			for (Field f : e.getFields()) {
+				PhysicalNameAndTypeBindingEngine.makeBinding(f, configuration
+						.getColumnNamePolicy(), typeMapper);
+			}
+	
+			scheme.checkConflictingFields(e);
+		}
+		
+		// CONSTRUCT DDL SCHEME FINALLY
 		constructScheme();
 	}
 
@@ -154,8 +181,9 @@ public class MappingSession {
 					}
 				}
 			}
-
-			System.out.println(constructionQueries); // TODO instead, execute.
+			
+			for(Query q : constructionQueries)
+				System.out.println("  "+q.toString()); // TODO instead, execute.
 		}
 	}
 

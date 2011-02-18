@@ -8,10 +8,9 @@ import org.orman.mapper.annotation.OneToOne;
 
 @Entity
 public class Notebook extends Model<Notebook>{
-	@Id public Object id;
-	@NotNull @OneToOne public User whose;
+	@Id public long id;
+	@OneToOne public User whoseIsThat;
 	
-	public Notebook(User u){
-		this.whose=u;
+	public Notebook(){
 	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.NotNullableFieldException;
+import org.orman.mapper.exception.UnableToSaveDetachedInstance;
 import org.orman.sql.C;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
@@ -69,6 +70,7 @@ public class Model<E> {
 		for (Field f : getEntity().getFields()) {
 			boolean useField = true;
 
+			// make id value binding
 			if (f.isId()) {
 				IdGenerationPolicy policy = MappingSession.getConfiguration()
 						.getIdGenerationPolicy();
@@ -80,13 +82,24 @@ public class Model<E> {
 				if (policy == IdGenerationPolicy.DEFER_TO_DBMS)
 					useField = false;
 			}
-
+			
+			
 			if (useField) { // use field in query
 				Object fieldVal = getEntityField(f, getEntity(), this);
 
-				if (!f.isNullable() && fieldVal == null)
+				if (!f.isNullable() && fieldVal == null) // prevent saving null on @NotNull
 					throw new NotNullableFieldException(getEntity()
 							.getOriginalFullName(), f.getOriginalName());
+				
+				if(fieldVal != null && fieldVal instanceof Model<?>){
+					Model<?> instance = (Model<?>) fieldVal;
+					
+					fieldVal = fieldValueSerializer(fieldVal);
+					
+					if(!instance.isPersistent()){
+						throw new UnableToSaveDetachedInstance(f.getOriginalName(), instance.getClass().toString());
+					}
+				}
 
 				qb.set(f.getGeneratedName(), fieldVal);
 			}
@@ -116,6 +129,15 @@ public class Model<E> {
 				if (!f.isNullable() && fieldVal == null)
 					throw new NotNullableFieldException(getEntity()
 							.getOriginalFullName(), f.getOriginalName());
+				
+				if(fieldVal != null && fieldVal instanceof Model<?>){
+					Model<?> instance = (Model<?>) fieldVal;
+					fieldVal = fieldValueSerializer(fieldVal);
+					
+					if(!instance.isPersistent()){
+						throw new UnableToSaveDetachedInstance(f.getOriginalName(), instance.getClass().toString());
+					}
+				}
 
 				qb.set(f.getGeneratedName(), fieldVal);
 			}
@@ -205,6 +227,7 @@ public class Model<E> {
 						.get(instance);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
+				e.printStackTrace();
 			}
 		} else { // not public field, invoke method!
 			try {
@@ -212,6 +235,7 @@ public class Model<E> {
 			} catch (Exception e) {
 				// TODO caution: assuming getter certainly exists and
 				// accessible.
+				e.printStackTrace();
 			}
 		}
 		return null;
@@ -246,6 +270,20 @@ public class Model<E> {
 			}
 		}
 	}
+	
+	/**
+	 * Used to return {@link Id}s of instance if <code>fieldVal</code>
+	 * is an {@link org.orman.mapper.annotation.Entity}, return
+	 * normal value otherwise.
+	 */
+	private Object fieldValueSerializer(Object fieldVal) {
+		if (fieldVal == null) return null;
+		if(MappingSession.entityExists(fieldVal.getClass())){
+			return ((Model<?>)fieldVal).getEntityId();
+		}
+		return fieldVal;
+	}
+
 
 	/**
 	 * Hashcode implementation for persistent entitites.
@@ -256,9 +294,12 @@ public class Model<E> {
 	@Override
 	public int hashCode() {
 		int hash = 1;
+		
 		for (Field f : getEntity().getFields()) {
 			Object o = getEntityField(f, getEntity(), this);
-			hash += (o == null ? 1 : o.hashCode()) * 7; // magic.
+			
+			if(!(o instanceof Model<?>)) // FATAL Model instances are not counted in hashcode!!!
+				hash += (o == null ? 1 : o.hashCode()) * 7; // magic.
 		}
 
 		// prevent coincidently correspontransiency flag

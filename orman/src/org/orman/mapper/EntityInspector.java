@@ -8,6 +8,7 @@ import java.util.List;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.NotNull;
+import org.orman.mapper.annotation.OneToOne;
 import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
@@ -90,6 +91,13 @@ public class EntityInspector {
 						newF.setIndex(new FieldIndexHolder(null, true));
 				}
 				
+				// Recognize @OnyToOne, @OneToMany, @ManyToMany annotations (covers @Index) 
+				if(f.isAnnotationPresent(OneToOne.class)){ // TODO add other annotations.
+					// if no custom @Index defined create a default.
+					if(newF.getIndex() == null)
+						newF.setIndex(new FieldIndexHolder(null, true));
+				}
+				
 				// Save raw field data for future usage
 				newF.setRawField(f);
 				
@@ -98,7 +106,7 @@ public class EntityInspector {
 		}
 		return this.fields;
 	}
-	
+
 	/**
 	 * Checks whether this class (of some field) can be a 
 	 * {@link Id} in terms of its variable type.
@@ -107,7 +115,6 @@ public class EntityInspector {
 	 * @return true if eligible, false otherwise.
 	 */
 	private static boolean isSupportedForIdField(Class<?> type){
-		System.out.println("is "+type);
 		for(int i = 0 ; i < ID_SUPPORTED_TYPES.length; i++)
 			if(type.equals(ID_SUPPORTED_TYPES[i])) return true;
 		return false;

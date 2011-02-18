@@ -14,17 +14,16 @@ import org.orman.sql.QueryType;
 
 @Entity(table="user")
 public class User extends Model<User> {
-	@Id public int id;
+	@Id public String id;
 	@NotNull private String lastName;
 	
 	@OneToOne
-	public Notebook book; 
+	public Notebook bookOfUser; 
 	
 	public boolean isAdmin;
 	
 	public User(){
 	}
-	
 
 	public String getLastName() {
 		return lastName;
@@ -47,8 +46,12 @@ public class User extends Model<User> {
 		MappingSession.registerEntity(Notebook.class);
 		MappingSession.start();
 		
+		
 		User u =new User();
-		u.setLastName("zaa");
+		Notebook n = new Notebook();
+		n.insert();
+		u.setLastName("balkan");
+		u.bookOfUser = n;
 		u.insert();
 		
 		System.out.println();

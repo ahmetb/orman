@@ -53,13 +53,13 @@ public class NativeIdGenerator {
 
 	private static String generateString(Model<?> instance) {
 		return Long.toHexString((instance.hashCode()^randLongSeed())) + ""
-				+ Long.toHexString(instance.hashCode() ^ randSeed() | randLongSeed() & timeSeed());
+				+ Long.toHexString(instance.hashCode() + randSeed() & randLongSeed() & timeSeed());
 	}
 
 	private static Long generateLong(Model<?> instance) {
 		return Math.abs(Math.abs(timeSeed() ^ instance.hashCode()
 				* (randSeed() ^ timeSeed() ^ instance.hashCode())) % Long.MAX_VALUE
-				| instance.hashCode()
+				& instance.hashCode()
 				^ timeSeed()
 				+ instance.hashCode()
 				^ randLongSeed());
