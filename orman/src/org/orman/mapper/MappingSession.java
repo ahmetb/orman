@@ -184,6 +184,7 @@ public class MappingSession {
 			
 			for(Query q : constructionQueries)
 				System.out.println("  "+q.toString()); // TODO instead, execute.
+			System.out.println();
 		}
 	}
 

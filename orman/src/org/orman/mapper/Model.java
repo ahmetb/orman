@@ -276,7 +276,7 @@ public class Model<E> {
 	 * is an {@link org.orman.mapper.annotation.Entity}, return
 	 * normal value otherwise.
 	 */
-	private Object fieldValueSerializer(Object fieldVal) {
+	public static Object fieldValueSerializer(Object fieldVal) {
 		if (fieldVal == null) return null;
 		if(MappingSession.entityExists(fieldVal.getClass())){
 			return ((Model<?>)fieldVal).getEntityId();

@@ -9,8 +9,6 @@ import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
-import org.orman.sql.QueryBuilder;
-import org.orman.sql.QueryType;
 
 @Entity(table="user")
 public class User extends Model<User> {
@@ -54,24 +52,12 @@ public class User extends Model<User> {
 		u.bookOfUser = n;
 		u.insert();
 		
-		System.out.println();
+		Query q = ModelQuery.select().from(User.class).where(
+				C.eq(User.class, "bookOfUser", n) // extract id of entity  
+				).getQuery();
 		
-		ModelQuery q = ModelQuery.type(QueryType.SELECT);
-			q.from(User.class)
-			.where(C.eq(User.class, "lastName", 10))
-			.orderBy("-User.id")
-			.groupBy("User.lastName")
-			.limit(10)
-			.getQuery();
+		System.out.println(q);
 		
-		System.out.println(q.getQuery());
-		
-		
-		Query a = QueryBuilder.getBuilder(QueryType.CREATE_VIEW)
-			.viewDetails(
-					"myView", q.getQuery())
-			.getQuery();
-		
-		System.out.println(a);
+			
 	}
 }
