@@ -119,6 +119,7 @@ public class EntityInspector {
 		if (fieldName == null || "".equals(fieldName))
 			throw new IllegalArgumentException("Field name cannot be empty for finding setter method.");
 		
+		@SuppressWarnings("serial")
 		List<String> methodNameCandidates = new ArrayList<String>(){{
 			//"set"+FieldName
 			add("set"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));
@@ -131,6 +132,7 @@ public class EntityInspector {
 			// fieldName
 			add(fieldName);
 		}};
+		
 		Method m = findMethodLike(forClass, methodNameCandidates);
 		
 		if (m != null && m.getParameterTypes().length == 1) // only 1 argument
@@ -152,6 +154,7 @@ public class EntityInspector {
 		if (fieldName == null || "".equals(fieldName))
 			throw new IllegalArgumentException("Field name cannot be empty for finding getter method.");
 		
+		@SuppressWarnings("serial")
 		List<String> methodNameCandidates = new ArrayList<String>(){{
 			//"get"+FieldName
 			add("get"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));

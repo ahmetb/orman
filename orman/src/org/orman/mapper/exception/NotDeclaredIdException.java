@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+@SuppressWarnings("serial")
 public class NotDeclaredIdException extends RuntimeException {
 	private static String message = "The following class does not define a @Id field: %s";
 	private String s1;

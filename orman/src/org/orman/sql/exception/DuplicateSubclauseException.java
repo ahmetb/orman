@@ -1,7 +1,7 @@
 package org.orman.sql.exception;
 
-import org.orman.sql.SubclauseType;
 
+@SuppressWarnings("serial")
 public class DuplicateSubclauseException extends QueryBuilderException {
 	private String message = "The following subclause is already existing on this query, cannot duplicate: %s";
 

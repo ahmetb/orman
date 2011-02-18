@@ -3,10 +3,8 @@ package org.orman.sql;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.orman.sql.exception.DuplicateSubclauseException;
 import org.orman.sql.util.Serializer;

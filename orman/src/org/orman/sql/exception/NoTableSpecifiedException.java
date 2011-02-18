@@ -1,5 +1,6 @@
 package org.orman.sql.exception;
 
+@SuppressWarnings("serial")
 public class NoTableSpecifiedException extends QueryBuilderException {
 	@Override
 	public String getMessage() {

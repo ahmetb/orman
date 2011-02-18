@@ -32,8 +32,8 @@ public class Serializer {
 			return "("+Glue.concat((int[]) o, ", ")+")";
 		}
 		
-		if (o instanceof List){
-			return "("+Glue.concat((List) o, ", ")+")";
+		if (o instanceof List<?>){
+			return "("+Glue.concat((List<?>) o, ", ")+")";
 		}
 		
 		return (o == null)? NULL_CONSTANT : o.toString();
