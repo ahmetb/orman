@@ -46,4 +46,5 @@ public class SQLite implements Database {
 	public DataTypeMapper getTypeMapper() {
 		return typeMapper;
 	}
+	
 }

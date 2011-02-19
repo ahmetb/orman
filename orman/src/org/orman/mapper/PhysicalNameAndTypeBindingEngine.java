@@ -1,7 +1,5 @@
 package org.orman.mapper;
 
-import java.lang.annotation.Annotation;
-
 import org.orman.datasource.DataTypeMapper;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
@@ -15,7 +13,8 @@ import org.orman.mapper.annotation.OneToOne;
  * 
  */
 public class PhysicalNameAndTypeBindingEngine {
-	private static final String INDEX_POSTFIX = "_index";
+	private static final String INDEX_POSTFIX = "index";
+	private static final String INDEX_FORMAT = "%s_%s_%s";
 
 	public static void makeBinding(Entity entity,
 			PhysicalNamingPolicy namingPolicy) {
@@ -34,11 +33,12 @@ public class PhysicalNameAndTypeBindingEngine {
 	 * makes default name bindings to unnamed {@link Index}es (or {@link Id} fields
 	 * since it covers {@link Index})
 	 * 
+	 * @param entity used to generate index name if not specified.
 	 * @param field
 	 * @param namingPolicy
 	 * @param dataTypeMapper
 	 */
-	public static void makeBinding(Field field,
+	public static void makeBinding(Entity entity, Field field,
 			PhysicalNamingPolicy namingPolicy, DataTypeMapper dataTypeMapper) {
 		/* NAME BINDING */
 		if (field.getCustomName() != null) {
@@ -78,7 +78,9 @@ public class PhysicalNameAndTypeBindingEngine {
 					|| "".equals(field.getIndex().name())) {
 				// missing index name, create using field name followed by
 				// _index policy.
-				field.getIndex().name(field.getGeneratedName() + INDEX_POSTFIX);
+				field.getIndex().name(
+						String.format(INDEX_FORMAT, entity.getGeneratedName(),
+								field.getGeneratedName(), INDEX_POSTFIX));
 			}
 		}
 	}

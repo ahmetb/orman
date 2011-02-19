@@ -36,8 +36,5 @@ public class User extends Model<User> {
 		u.insert();
 		u.delete();
 		
-		Query q = ModelQuery.select().from(User.class).where(
-				C.eq(User.class, "bookOfUser", n) // extract id of entity  
-				).getQuery();
 	}
 }

@@ -152,12 +152,10 @@ public class MappingSession {
 		// BIND NAMES AND TYPES FOR FIELDS
 		for(Entity e: scheme.getEntities()){
 			scheme.checkIdBinding(e);
-	
 			for (Field f : e.getFields()) {
-				PhysicalNameAndTypeBindingEngine.makeBinding(f, configuration
+				PhysicalNameAndTypeBindingEngine.makeBinding(e, f, configuration
 						.getColumnNamePolicy(), typeMapper);
 			}
-	
 			scheme.checkConflictingFields(e);
 		}
 		
@@ -177,14 +175,22 @@ public class MappingSession {
 
 		if (configuration.getCreationPolicy() == SchemeCreationPolicy.CREATE) {
 			for (Entity e : scheme.getEntities()) {
+				// DROP TABLE
 				Query dT = DDLQueryGenerator.dropTableQuery(e);
 				constructionQueries.offer(dT);
 
+				// CREATE TABLE
 				Query cT = DDLQueryGenerator.createTableQuery(e);
 				constructionQueries.offer(cT);
 
+				// CREATE INDEXES
 				for (Field f : e.getFields()) {
 					if (f.getIndex() != null) {
+						// DROP INDEX 
+						Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
+						constructionQueries.offer(dI);
+						
+						// CREATE INDEX
 						Query cI = DDLQueryGenerator.createIndexQuery(e, f);
 						constructionQueries.offer(cI);
 					}
@@ -192,7 +198,7 @@ public class MappingSession {
 			}
 			
 			for(Query q : constructionQueries)
-				System.out.println("  "+q.toString()); // TODO instead, execute.
+				getExecuter().executeOnly(q);
 			System.out.println();
 		}
 	}

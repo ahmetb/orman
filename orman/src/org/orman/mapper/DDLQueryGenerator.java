@@ -64,4 +64,18 @@ public class DDLQueryGenerator {
 				.setIndex(on.getGeneratedName(), on.getIndex().name())
 				.getQuery();
 	}
+	
+	/**
+	 * Creates DROP INDEX {@link Query} for given {@link Entity} on given
+	 * {@link Field}. Uniqueness of the index can be set on {@link Field} method
+	 * <code>getIndex().unique(boolean)</code>.
+	 */
+	public static Query dropIndexQuery(Entity e, Field on) {
+		if (on.getIndex() == null) 
+			throw new IndexNotFoundException(on.getOriginalName());
+		
+		return QueryBuilder.getBuilder(QueryType.DROP_INDEX_IF_EXISTS).from(e.getGeneratedName())
+		.setIndex(on.getGeneratedName(), on.getIndex().name())
+		.getQuery();
+	}
 }

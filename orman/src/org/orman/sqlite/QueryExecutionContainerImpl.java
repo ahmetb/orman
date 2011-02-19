@@ -3,13 +3,16 @@ package org.orman.sqlite;
 
 import java.io.File;
 
+import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
+import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
 
 import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteException;
+import com.almworks.sqlite4java.SQLiteStatement;
 
-// TODO close()
+// TODO dispose() time.
 public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
 	private SQLiteSettingsImpl settings;
@@ -30,12 +33,10 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		} catch (SQLiteException e) {
 			throwError(e);
 		}
-		
-		// TODO create db if not exist.
 	}
 	
 	private void throwError(SQLiteException e){
-		throw new RuntimeException("SQLite error:" + e.toString());
+		throw new QueryExecutionException("SQLite error:" + e.toString());
 	}
 
 	@Override
@@ -49,9 +50,18 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		return null;
 	}
 
+	/**
+	 * Only executes the query without obtaining any results.
+	 * throws {@link QueryExecutionException} if error occurs.
+	 */
 	@Override
 	public void executeOnly(Query q) {
-		
+		System.out.println("Executing: " + q); // TODO log.
+		try {
+			db.exec(q.getExecutableSql());
+		} catch (SQLiteException e) {
+			throwError(e);
+		}
 	}
 
 	@Override
