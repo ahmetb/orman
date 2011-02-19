@@ -109,6 +109,13 @@ public class Query extends DataSource implements Aliasable {
 	public String toString(){
 		return QueryBuilder.getBuilder(this).prepareSql();
 	}
+	
+	/**
+	 * Get executable query (preceeded by semicolon)
+	 */
+	public String getExecutableSql(){
+		return new StringBuffer(this.toString()).append(';').toString();
+	}
 
 	public void setIndexName(String indexName) {
 		this.indexName = indexName;

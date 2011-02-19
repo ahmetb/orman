@@ -9,7 +9,7 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
-import org.orman.sqlite.Sqlite;
+import org.orman.sqlite.SQLite;
 
 @Entity(table="user")
 public class User extends Model<User> {
@@ -22,7 +22,7 @@ public class User extends Model<User> {
 	}
 
 	public static void main(String[] args) {
-		Database db = new Sqlite("lite.db");
+		Database db = new SQLite("lite.db");
 		
 		MappingSession.registerEntity(User.class);
 		MappingSession.registerEntity(Notebook.class);

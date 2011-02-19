@@ -43,7 +43,7 @@ public class DDLQueryGenerator {
 	 * Creates DROP TABLE {@link Query} for given {@link Entity}
 	 */
 	public static Query dropTableQuery(Entity e) {
-		return QueryBuilder.getBuilder(QueryType.DROP_TABLE).from(
+		return QueryBuilder.getBuilder(QueryType.DROP_TABLE_IF_EXISTS).from(
 				e.getGeneratedName()).getQuery();
 	}
 

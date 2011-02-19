@@ -3,18 +3,23 @@ package org.orman.sqlite;
 import org.orman.datasource.DataTypeMapper;
 import org.orman.util.DoubleAssociativeMap;
 
+/**
+ * {@link http://www.sqlite.org/datatype3.html}
+ * @author alp
+ *
+ */
 public class DataTypeMapperImpl implements DataTypeMapper {
 
 	private static DoubleAssociativeMap<Class<?>, String> typeMap = new DoubleAssociativeMap<Class<?>, String>();
 	static {
-		typeMap.put(String.class, "LONGTEXT");
-		typeMap.put(Character.TYPE, "CHAR");
-		typeMap.put(Short.TYPE, "MEDIUMINT(9)");
-		typeMap.put(Integer.TYPE, "INT(11)");
-		typeMap.put(Long.TYPE, "BIGINT(20)");
-		typeMap.put(Boolean.TYPE, "TINYINT(1)");
-		typeMap.put(Double.TYPE, "DOUBLE");
-		typeMap.put(Float.TYPE, "FLOAT");
+		typeMap.put(String.class, "TEXT");
+		typeMap.put(Character.TYPE, "TEXT");
+		typeMap.put(Short.TYPE, "INTEGER");
+		typeMap.put(Integer.TYPE, "INTEGER");
+		typeMap.put(Long.TYPE, "INTEGER");
+		typeMap.put(Boolean.TYPE, "INTEGER");
+		typeMap.put(Double.TYPE, "REAL");
+		typeMap.put(Float.TYPE, "REAL");
 	}
 
 	@Override
