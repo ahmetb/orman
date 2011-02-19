@@ -7,15 +7,16 @@ import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
+import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
 import org.orman.sqlite.SQLite;
 
 @Entity(table="user")
 public class User extends Model<User> {
-	@Id public String id;
+	@Id public int id;
 	
-	@OneToOne
+	@OneToOne @NotNull
 	public Notebook bookOfUser; 
 
 	public User(){

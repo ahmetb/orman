@@ -28,5 +28,11 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public <T> T getLastInsertId(Class<T> type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

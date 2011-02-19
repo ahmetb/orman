@@ -11,7 +11,7 @@ public class MappingConfiguration {
 	private PhysicalNamingPolicy tableNamePolicy  = new PhysicalNamingPolicy().uppercase(false).pluralize(true).underscore(true);
 
 	private SchemeCreationPolicy creationPolicy = SchemeCreationPolicy.CREATE;
-	private IdGenerationPolicy idGenerationPolicy = IdGenerationPolicy.ORMAN_ID_GENERATOR;
+	private IdGenerationPolicy idGenerationPolicy = IdGenerationPolicy.DEFER_TO_DBMS;
 
 	public IdGenerationPolicy getIdGenerationPolicy() {
 		return idGenerationPolicy;

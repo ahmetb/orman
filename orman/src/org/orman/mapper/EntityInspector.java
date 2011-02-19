@@ -1,3 +1,4 @@
+
 package org.orman.mapper;
 
 import java.lang.reflect.Method;
@@ -22,7 +23,7 @@ import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
 public class EntityInspector {
 	
 	private static final Class<?>[] ID_SUPPORTED_TYPES = { Integer.class,
-			Integer.TYPE, Long.class, Long.TYPE, String.class };
+			Integer.TYPE, Long.class, Long.TYPE}; // REMOVED String because of SQLite.
 	private Class<?> clazz;
 	private List<Field> fields;
 	
@@ -71,6 +72,7 @@ public class EntityInspector {
 				if(f.isAnnotationPresent(Index.class)){
 					Index ann = f.getAnnotation(Index.class);
 					newF.setIndex(new FieldIndexHolder(ann.name(), ann.unique()));
+					newF.setNullable(false);
 				}
 				
 				// Recognize @NotNull annotation.
@@ -83,7 +85,7 @@ public class EntityInspector {
 					newF.makeId(true);
 					
 					if (!isSupportedForIdField(f.getType())){
-						throw new UnsupportedIdFieldTypeException(f.getType().getName());
+						throw new UnsupportedIdFieldTypeException(f.getType().getName(), clazz.getName());
 					}
 					
 					// if no custom @Index defined create a default

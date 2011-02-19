@@ -19,4 +19,6 @@ public interface QueryExecutionContainer {
 	public Object executeForSingleValue();
 	
 	public Object getLastInsertId();
+	
+	public <T> Object getLastInsertId(Class<T> ofType);
 }

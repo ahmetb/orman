@@ -25,7 +25,8 @@ public class Field {
 	private String customType;
 	private FieldIndexHolder index;
 	private boolean isId = false;
-	private boolean nullable = true;
+	private boolean isNullable = true;
+	private boolean isAutoIncrement = true;
 
 	// Reflection fields
 	private Method setterMethod;
@@ -132,7 +133,7 @@ public class Field {
 	}
 
 	public void setNullable(boolean nullable) {
-		this.nullable = nullable;
+		this.isNullable = nullable;
 	}
 
 	/**
@@ -140,7 +141,7 @@ public class Field {
 	 *         default case.
 	 */
 	public boolean isNullable() {
-		return nullable;
+		return isNullable;
 	}
 
 	public void setRawField(java.lang.reflect.Field rawField) {
@@ -157,5 +158,13 @@ public class Field {
 	
 	public <A extends Annotation> A getAnnotation(Class<A> annClass){
 		return rawField.getAnnotation(annClass);
+	}
+
+	public void setAutoIncrement(boolean isAutoIncrement) {
+		this.isAutoIncrement = isAutoIncrement;
+	}
+
+	public boolean isAutoIncrement() {
+		return isAutoIncrement;
 	}
 }

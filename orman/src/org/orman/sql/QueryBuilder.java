@@ -118,9 +118,11 @@ public class QueryBuilder {
 	 * Uses column list storage of the query, be cautious
 	 * while using this except CREATE TABLE queries.
 	 */
-	public QueryBuilder createColumn(String column, String dataType, boolean isNullable){
+	public QueryBuilder createColumn(String column, String dataType, boolean isNullable, boolean isAutoIncrement){
 		if(!isNullable)
-			dataType += " NOT NULL"; // append NOT NULL if not nullable
+			dataType += " NOT NULL"; // append NOT NULL if "not"-nullable
+		if(!isAutoIncrement)
+			dataType += " AUTO INCREMENT"; // append AUTO INCREMENT
 		
 		return this.selectAs(column, dataType);
 	}

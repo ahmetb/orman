@@ -33,7 +33,7 @@ public class DDLQueryGenerator {
 				throw new UnmappedFieldException(f.getOriginalName() + " ("
 						+ e.getOriginalName() + ")");
 			}
-			qb.createColumn(f.getGeneratedName(), f.getType(), f.isNullable());
+			qb.createColumn(f.getGeneratedName(), f.getType(), f.isNullable(), f.isAutoIncrement());
 		}
 
 		return qb.getQuery();

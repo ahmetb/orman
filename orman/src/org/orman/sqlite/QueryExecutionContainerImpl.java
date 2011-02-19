@@ -67,10 +67,24 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public Object getLastInsertId() {
 		try {
-			return db.getLastInsertId(); // TODO returns long. test for int and String behavior. 
+			return new Long(db.getLastInsertId()); // TODO returns long. test for int and String behavior. 
 		} catch (SQLiteException e) {
 			throwError(e);
 			return null;
 		}
+	}
+
+	@Override
+	public <T> Object getLastInsertId(Class<T> ofType) {
+		Object val = getLastInsertId();
+		
+		if(ofType.equals(String.class)){
+			return new String(val.toString());
+		} else if(ofType.equals(Integer.class) || ofType.equals(Integer.TYPE)){
+			return new Integer(val.toString());
+		} else if(ofType.equals(Long.class) || ofType.equals(Long.TYPE)){
+			return new Integer(val.toString());
+		}   
+		return val;
 	}
 }

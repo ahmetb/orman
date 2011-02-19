@@ -48,7 +48,7 @@ public class NativeIdGenerator {
 		 * method, which is very unlikely if the access violations have not
 		 * occurred.
 		 */
-		throw new UnsupportedIdFieldTypeException(idType.getName());
+		throw new UnsupportedIdFieldTypeException(idType.getName(), instance.getType().toString());
 	}
 
 	private static String generateString(Model<?> instance) {

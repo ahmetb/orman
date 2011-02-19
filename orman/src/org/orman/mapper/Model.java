@@ -53,12 +53,16 @@ public class Model<E> {
 		// TODO discuss: persistency check?
 		
 		Query q = prepareInsertQuery();
-		System.out.println(q.toString()); // TODO execute instead.
 
-		/*
-		 * TODO if DEFER_TO_DBMS, get last_insert_id and attach to the instance
-		 * here!
-		 */
+		MappingSession.getExecuter().executeOnly(q);
+		
+		// Bind last insert id if IdGenerationPolicy is DEFER_TO_DBMS
+		if (MappingSession.getConfiguration().getIdGenerationPolicy().equals(
+				IdGenerationPolicy.DEFER_TO_DBMS)) {
+			Field idField = getEntity().getIdField();
+			setEntityField(idField, getEntity(), this, MappingSession
+					.getExecuter().getLastInsertId(idField.getClazz()));
+		}
 
 		makePersistent();
 	}
@@ -308,5 +312,9 @@ public class Model<E> {
 		// prevent coincidently correspontransiency flag
 		return hash == DEFAULT_TRANSIENT_HASHCODE ? hash | 0x9123 : hash;
 
+	}
+	
+	public Class<?> getType(){
+		return clazz;
 	}
 }
