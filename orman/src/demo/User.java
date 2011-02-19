@@ -1,5 +1,6 @@
 package demo;
 
+import org.orman.datasource.Database;
 import org.orman.mapper.C;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
@@ -8,6 +9,7 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
+import org.orman.sqlite.Sqlite;
 
 @Entity(table="user")
 public class User extends Model<User> {
@@ -20,8 +22,11 @@ public class User extends Model<User> {
 	}
 
 	public static void main(String[] args) {
+		Database db = new Sqlite("lite.db");
+		
 		MappingSession.registerEntity(User.class);
 		MappingSession.registerEntity(Notebook.class);
+		MappingSession.registerDatabase(db);
 		MappingSession.start();
 		
 		User u =new User();
@@ -34,9 +39,5 @@ public class User extends Model<User> {
 		Query q = ModelQuery.select().from(User.class).where(
 				C.eq(User.class, "bookOfUser", n) // extract id of entity  
 				).getQuery();
-		
-//		System.out.println(q);
-		
-			
 	}
 }

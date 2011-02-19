@@ -4,10 +4,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.orman.datasource.DataTypeMapper;
+import org.orman.datasource.Database;
+import org.orman.datasource.QueryExecutionContainer;
 import org.orman.mapper.exception.MappingSessionAlreadyStartedException;
 import org.orman.mapper.exception.MappingSessionNotStartedException;
+import org.orman.mapper.exception.NoDatabaseRegisteredException;
 import org.orman.mapper.exception.UnregisteredEntityException;
-import org.orman.mysql.DataTypeMapperImpl;
 import org.orman.sql.Query;
 
 /**
@@ -23,15 +25,23 @@ import org.orman.sql.Query;
 public class MappingSession {
 	private static PersistenceSchemeMapper scheme;
 	private static MappingConfiguration configuration;
+	
+	private static Database db;
 	private static DataTypeMapper typeMapper;
+	private static QueryExecutionContainer executer;
 	
 	private static boolean sessionStarted = false;
 
 	static {
 		scheme = new PersistenceSchemeMapper();
 		configuration = new MappingConfiguration();
-		typeMapper = new DataTypeMapperImpl(); // TODO experimental, remove soon
 		// implementation, remove soon.
+	}
+	
+	public static void registerDatabase(Database database){
+		db = database;
+		typeMapper = database.getTypeMapper();
+		executer = database.getExecuter();
 	}
 
 	/**
@@ -39,9 +49,8 @@ public class MappingSession {
 	 * registers to the scheme.
 	 * 
 	 * @param entityClass
-	 * @return scheme properties-binded entity
 	 */
-	public static Entity registerEntity(Class<?> entityClass) {
+	public static void registerEntity(Class<?> entityClass) {
 		Entity e = new Entity(entityClass);
 
 		// BIND TABLE NAME 
@@ -49,8 +58,6 @@ public class MappingSession {
 				.getTableNamePolicy());
 		
 		scheme.addEntity(e);
-
-		return e;
 	}
 
 	/**
@@ -136,6 +143,10 @@ public class MappingSession {
 	public static void start() {
 		if (sessionStarted)
 			throw new MappingSessionAlreadyStartedException();
+		
+		if (db == null)
+			throw new NoDatabaseRegisteredException();
+		
 		else sessionStarted = true; // make the session started.
 		
 		// BIND NAMES AND TYPES FOR FIELDS
@@ -194,7 +205,7 @@ public class MappingSession {
 		MappingSession.configuration = configuration;
 	}
 
-	public static void setTypeMapper(DataTypeMapper typeMapper) {
-		MappingSession.typeMapper = typeMapper;
+	public static QueryExecutionContainer getExecuter() {
+		return executer;
 	}
 }
