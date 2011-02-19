@@ -16,9 +16,11 @@ public interface QueryExecutionContainer {
 	
 	public Object[][] executeForRowset(Query q);
 	
-	public Object executeForSingleValue();
+	public Object executeForSingleValue(Query q);
 	
 	public Object getLastInsertId();
 	
 	public <T> Object getLastInsertId(Class<T> ofType);
+	
+	public void close();
 }

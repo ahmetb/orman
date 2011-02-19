@@ -163,8 +163,4 @@ public class Field {
 	public void setAutoIncrement(boolean isAutoIncrement) {
 		this.isAutoIncrement = isAutoIncrement;
 	}
-
-	public boolean isAutoIncrement() {
-		return isAutoIncrement;
-	}
 }

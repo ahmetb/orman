@@ -47,6 +47,13 @@ public class ModelQuery {
 		return new ModelQuery(type);
 	}
 
+	public ModelQuery from(Entity... e) {
+		for (Entity a : e) {
+			this.qb.from(a.getGeneratedName());
+		}
+		return this;
+	}
+	
 	public ModelQuery from(Class<?>... type) {
 		for (Class<?> c : type) {
 			Entity e = MappingSession.getEntity(c);
@@ -60,6 +67,11 @@ public class ModelQuery {
 		return this;
 	}
 
+	public ModelQuery count() {
+		qb.count();
+		return this;
+	}
+	
 	public ModelQuery limit(int recordCount) {
 		return this.limit(recordCount, 0);
 	}

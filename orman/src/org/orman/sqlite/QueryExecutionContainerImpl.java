@@ -3,7 +3,6 @@ package org.orman.sqlite;
 
 import java.io.File;
 
-import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
@@ -26,7 +25,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public QueryExecutionContainerImpl(SQLiteSettingsImpl settings){
 		this.settings = settings;
 		
-		dbFile = new File(settings.getFilePath());
+		dbFile = new File(this.settings.getFilePath());
 		db = new SQLiteConnection(dbFile);
 		try {
 			db.open(true);
@@ -45,8 +44,17 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	}
 
 	@Override
-	public Object executeForSingleValue() {
-		// TODO Auto-generated method stub
+	public Object executeForSingleValue(Query q) {
+		System.out.println("Executing: " + q); // TODO log.
+		
+		try {
+			SQLiteStatement s = db.prepare(q.getExecutableSql());
+			while(s.step()){
+				return s.columnValue(0);
+			}
+		} catch (SQLiteException e) {
+			throwError(e);
+		}
 		return null;
 	}
 
@@ -83,8 +91,13 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		} else if(ofType.equals(Integer.class) || ofType.equals(Integer.TYPE)){
 			return new Integer(val.toString());
 		} else if(ofType.equals(Long.class) || ofType.equals(Long.TYPE)){
-			return new Integer(val.toString());
+			return new Long(val.toString());
 		}   
 		return val;
+	}
+
+	@Override
+	public void close() {
+		db.dispose();
 	}
 }

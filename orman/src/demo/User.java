@@ -2,9 +2,11 @@ package demo;
 
 import org.orman.datasource.Database;
 import org.orman.mapper.C;
+import org.orman.mapper.IdGenerationPolicy;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
+import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.NotNull;
@@ -28,14 +30,17 @@ public class User extends Model<User> {
 		MappingSession.registerEntity(User.class);
 		MappingSession.registerEntity(Notebook.class);
 		MappingSession.registerDatabase(db);
+		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.UPDATE);
 		MappingSession.start();
 		
-		User u =new User();
+		User u = new User();
 		Notebook n = new Notebook();
 		n.insert();
 		u.bookOfUser = n;
 		u.insert();
-		u.delete();
+		n.whoseIsThat = u;
+		n.update();
 		
+		System.out.println(u.countAll());
 	}
 }

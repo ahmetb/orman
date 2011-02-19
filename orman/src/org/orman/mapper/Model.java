@@ -7,10 +7,11 @@ import java.util.List;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.NotNullableFieldException;
 import org.orman.mapper.exception.UnableToPersistDetachedEntityException;
-import org.orman.mapper.exception.UnableToSaveDetachedInstanceException;
+import org.orman.mapper.exception.UnableToSaveDetachedInstanceAsFieldException;
 import org.orman.sql.C;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
+import org.orman.sql.QueryType;
 
 /**
  * Parent class for {@link org.orman.mapper.annotation.Entity}-annoted classes
@@ -20,7 +21,6 @@ import org.orman.sql.QueryBuilder;
  * domain class..
  * 
  * @author alp
- * 
  */
 public class Model<E> {
 	private static final int DEFAULT_TRANSIENT_HASHCODE = -1;
@@ -44,18 +44,34 @@ public class Model<E> {
 		return __mappedEntity;
 	}
 
+	/**
+	 * Can be used to find that the instance is exactly
+	 * as its state when saved in terms of persistency.
+	 * 
+	 * Detached instances are not saved at all or changed
+	 * after saving or fetching from database.
+	 * 
+	 * @return false if object is changed or not saved at all,
+	 * true if the ob
+	 */
 	public boolean isPersistent() {
 		return (this.hashCode() == __persistencyHash)
 				&& __persistencyHash != DEFAULT_TRANSIENT_HASHCODE;
 	}
 
+	/**
+	 * Inserts the instance to the database as row and then binds generated id
+	 * if IdGenerationPolicy is DEFER_TO_DBMS.
+	 * 
+	 * Postcondition: Instance is persistent.
+	 */
 	public void insert() {
 		// TODO discuss: persistency check?
-		
+
 		Query q = prepareInsertQuery();
 
 		MappingSession.getExecuter().executeOnly(q);
-		
+
 		// Bind last insert id if IdGenerationPolicy is DEFER_TO_DBMS
 		if (MappingSession.getConfiguration().getIdGenerationPolicy().equals(
 				IdGenerationPolicy.DEFER_TO_DBMS)) {
@@ -87,22 +103,24 @@ public class Model<E> {
 				if (policy == IdGenerationPolicy.DEFER_TO_DBMS)
 					useField = false;
 			}
-			
-			
+
 			if (useField) { // use field in query
 				Object fieldVal = getEntityField(f, getEntity(), this);
 
-				if (!f.isNullable() && fieldVal == null) // prevent saving null on @NotNull
+				if (!f.isNullable() && fieldVal == null) // prevent saving null
+															// on @NotNull
 					throw new NotNullableFieldException(getEntity()
 							.getOriginalFullName(), f.getOriginalName());
-				
-				if(fieldVal != null && fieldVal instanceof Model<?>){
+
+				if (fieldVal != null && fieldVal instanceof Model<?>) {
 					Model<?> instance = (Model<?>) fieldVal;
-					
+
 					fieldVal = fieldValueSerializer(fieldVal);
-					
-					if(!instance.isPersistent()){
-						throw new UnableToSaveDetachedInstanceException(f.getOriginalName(), instance.getClass().toString());
+
+					if (!instance.isPersistent()) {
+						throw new UnableToSaveDetachedInstanceAsFieldException(f
+								.getOriginalName(), instance.getClass()
+								.toString());
 					}
 				}
 
@@ -112,19 +130,21 @@ public class Model<E> {
 		return qb.getQuery();
 	}
 
+	/**
+	 * Saves the persistent instance to the database "if changes are made
+	 * on it". If no changes are made, no queries will be executed.
+	 */
 	public void update() {
-		if(!isPersistent())
-			throw new UnableToPersistDetachedEntityException(this.getEntity().getOriginalFullName());
-
+		//TODO discuss: is persistency check required? 
 		Query q = prepareUpdateQuery();
-		System.out.println(q); // TODO execute instead.
+		MappingSession.getExecuter().executeOnly(q);
 
 		makePersistent();
 	}
 
 	private Query prepareUpdateQuery() {
 		List<Field> fields = getEntity().getFields();
-		List<Field> updatedFields =  getChangedFields(fields);
+		List<Field> updatedFields = getChangedFields(fields);
 
 		if (!updatedFields.isEmpty()) {
 			QueryBuilder qb = QueryBuilder.update().from(
@@ -135,13 +155,15 @@ public class Model<E> {
 				if (!f.isNullable() && fieldVal == null)
 					throw new NotNullableFieldException(getEntity()
 							.getOriginalFullName(), f.getOriginalName());
-				
-				if(fieldVal != null && fieldVal instanceof Model<?>){
+
+				if (fieldVal != null && fieldVal instanceof Model<?>) {
 					Model<?> instance = (Model<?>) fieldVal;
 					fieldVal = fieldValueSerializer(fieldVal);
-					
-					if(!instance.isPersistent()){
-						throw new UnableToSaveDetachedInstanceException(f.getOriginalName(), instance.getClass().toString());
+
+					if (!instance.isPersistent()) {
+						throw new UnableToSaveDetachedInstanceAsFieldException(f
+								.getOriginalName(), instance.getClass()
+								.toString());
 					}
 				}
 
@@ -156,24 +178,48 @@ public class Model<E> {
 
 	private List<Field> getChangedFields(List<Field> allFields) {
 		List<Field> updatedFields = new ArrayList<Field>();
-	
+
 		for (int i = 0; i < __persistencyFieldHashes.length; i++) {
 			Object o = getEntityField(allFields.get(i), getEntity(), this);
 			if (((o == null) ? DEFAULT_TRANSIENT_HASHCODE : o.hashCode()) != __persistencyFieldHashes[i])
 				updatedFields.add(allFields.get(i));
 		}
-			
+
 		return updatedFields;
 	}
 
+	/**
+	 * Deletes current instance from the database and makes it transient.
+	 * 
+	 * Precondition: instance is persistent.
+	 * Postcondition: instance is transient (non-persistent).
+	 * 
+	 * @throws UnableToPersistDetachedEntityException if the instance which is being
+	 * attempted to be saved is not persistent (or detached).
+	 * 
+	 */
 	public void delete() {
-		if(!isPersistent())
-			throw new UnableToPersistDetachedEntityException(this.getEntity().getOriginalFullName());
-		
+		if (!isPersistent())
+			throw new UnableToPersistDetachedEntityException(this.getEntity()
+					.getOriginalFullName());
+
 		Query q = prepareDeleteQuery();
-		System.out.println(q); // TODO execute instead.
+		MappingSession.getExecuter().executeOnly(q);
 
 		makeTransient();
+	}
+
+	/**
+	 * Counts all rows of this type of entity.
+	 * 
+	 * @return row count
+	 */
+	public int countAll() {
+		ModelQuery mq = ModelQuery.type(QueryType.SELECT).from(getEntity())
+				.count();
+		Query q = mq.getQuery();
+
+		return (Integer) MappingSession.getExecuter().executeForSingleValue(q);
 	}
 
 	private Query prepareDeleteQuery() {
@@ -209,10 +255,10 @@ public class Model<E> {
 	}
 
 	/**
-	 * Breaks the persistency of the {@link Model} instance by 
-	 * changing its persistentcy id, hash and all field hashes.
-	 * Can be used after <code>delete()</code> method to detach
-	 * instance so that it can not invoke <code>update()</code>. 
+	 * Breaks the persistency of the {@link Model} instance by changing its
+	 * persistentcy id, hash and all field hashes. Can be used after
+	 * <code>delete()</code> method to detach instance so that it can not invoke
+	 * <code>update()</code>.
 	 */
 	private void makeTransient() {
 		List<Field> fields = getEntity().getFields();
@@ -224,6 +270,7 @@ public class Model<E> {
 	/**
 	 * 
 	 * Note that return value to be casted field.getClazz().
+	 * 
 	 * @return value of given {@link Field} of some {@link Model} instance.
 	 */
 	private Object getEntityField(Field field, Entity of, Model<E> instance) {
@@ -250,11 +297,11 @@ public class Model<E> {
 	}
 
 	/**
-	 * Sets the given {@link Field} of some {@link Model} instance
-	 * with given <code>value</code>.
+	 * Sets the given {@link Field} of some {@link Model} instance with given
+	 * <code>value</code>.
 	 * 
-	 * Various exceptions may thrown if unsuitable <code>value</code>
-	 * is passed or <code>field</code> does not belong to the {@link Entity}.
+	 * Various exceptions may thrown if unsuitable <code>value</code> is passed
+	 * or <code>field</code> does not belong to the {@link Entity}.
 	 */
 	private void setEntityField(Field field, Entity of, Model<E> instance,
 			Object value) {
@@ -266,46 +313,46 @@ public class Model<E> {
 						instance, value);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
-				e.printStackTrace(); //TODO log
+				e.printStackTrace(); // TODO log
 			}
 		} else { // not public field, invoke method!
 			try {
-				setter.invoke(instance, value); // no need to hold return value 
+				setter.invoke(instance, value); // no need to hold return value
 			} catch (Exception e) {
-				// TODO caution: assuming getter certainly exists and accessible.
-				e.printStackTrace(); //TODO log
+				// TODO caution: assuming getter certainly exists and
+				// accessible.
+				e.printStackTrace(); // TODO log
 			}
 		}
 	}
-	
+
 	/**
-	 * Used to return {@link Id}s of instance if <code>fieldVal</code>
-	 * is an {@link org.orman.mapper.annotation.Entity}, return
-	 * normal value otherwise.
+	 * Used to return {@link Id}s of instance if <code>fieldVal</code> is an
+	 * {@link org.orman.mapper.annotation.Entity}, return normal value
+	 * otherwise.
 	 */
 	public static Object fieldValueSerializer(Object fieldVal) {
-		if (fieldVal == null) return null;
-		if(MappingSession.entityExists(fieldVal.getClass())){
-			return ((Model<?>)fieldVal).getEntityId();
+		if (fieldVal == null)
+			return null;
+		if (MappingSession.entityExists(fieldVal.getClass())) {
+			return ((Model<?>) fieldVal).getEntityId();
 		}
 		return fieldVal;
 	}
 
-
 	/**
-	 * Hashcode implementation for persistent entitites.
-	 * Uses non-<code>transient</code> fields of the entity 
-	 * to compute some hash code. Can be used to detect
-	 * whether some field is changed.
+	 * Hashcode implementation for persistent entitites. Uses non-
+	 * <code>transient</code> fields of the entity to compute some hash code.
+	 * Can be used to detect whether some field is changed.
 	 */
 	@Override
 	public int hashCode() {
 		int hash = 1;
-		
+
 		for (Field f : getEntity().getFields()) {
 			Object o = getEntityField(f, getEntity(), this);
-			
-			if(!(o instanceof Model<?>)) // FATAL Model instances are not counted in hashcode!!!
+
+			if (!(o instanceof Model<?>)) //TODO FATAL Model instances are not counted in hashcode!!! do something!!!
 				hash += (o == null ? 1 : o.hashCode()) * 7; // magic.
 		}
 
@@ -313,8 +360,8 @@ public class Model<E> {
 		return hash == DEFAULT_TRANSIENT_HASHCODE ? hash | 0x9123 : hash;
 
 	}
-	
-	public Class<?> getType(){
+
+	public Class<?> getType() {
 		return clazz;
 	}
 }
