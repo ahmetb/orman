@@ -2,7 +2,6 @@ package demo;
 
 import org.orman.datasource.Database;
 import org.orman.mapper.C;
-import org.orman.mapper.IdGenerationPolicy;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
@@ -33,14 +32,19 @@ public class User extends Model<User> {
 		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.UPDATE);
 		MappingSession.start();
 		
-		User u = new User();
-		Notebook n = new Notebook();
-		n.insert();
-		u.bookOfUser = n;
-		u.insert();
-		n.whoseIsThat = u;
-		n.update();
+//		User u = new User();
+//		Notebook n = new Notebook();
+//		n.insert();
+//		u.bookOfUser = n;
+//		u.insert();
+//		n.whoseIsThat = u;
+//		n.update();
+//		System.out.println(u.countAll());
 		
-		System.out.println(u.countAll());
+		
+		Query custom = ModelQuery.select().from(User.class).where(C.gt(User.class, "id", 0)).getQuery();
+		Model.fetchQuery(custom, User.class);
+		
+		
 	}
 }

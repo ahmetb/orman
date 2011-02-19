@@ -1,5 +1,8 @@
 package org.orman.datasource;
 
+import java.util.List;
+
+import org.orman.mapper.Entity;
 import org.orman.sql.Query;
 
 /**
@@ -15,6 +18,8 @@ public interface QueryExecutionContainer {
 	public void executeOnly(Query q);
 	
 	public Object[][] executeForRowset(Query q);
+	
+	public <E> List<E> executeForRowset(Query q, Entity e);
 	
 	public Object executeForSingleValue(Query q);
 	

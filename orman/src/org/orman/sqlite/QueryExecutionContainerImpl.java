@@ -2,9 +2,12 @@
 package org.orman.sqlite;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.exception.QueryExecutionException;
+import org.orman.mapper.Entity;
 import org.orman.sql.Query;
 
 import com.almworks.sqlite4java.SQLiteConnection;
@@ -27,6 +30,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		
 		dbFile = new File(this.settings.getFilePath());
 		db = new SQLiteConnection(dbFile);
+		
 		try {
 			db.open(true);
 		} catch (SQLiteException e) {
@@ -40,7 +44,24 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public Object[][] executeForRowset(Query q) {
+		System.out.println("Executing: " + q); // TODO log.
 		return null;
+	}
+	
+	@Override
+	public <E> List<E> executeForRowset(Query q, Entity e) {
+		System.out.println("Executing: " + q); // TODO log.
+		List<E> resultList = new ArrayList<E>();
+		
+		try {
+			SQLiteStatement s = db.prepare(q.getExecutableSql());
+			while(s.step()){
+				// TODO continue from here.
+			}
+		} catch (SQLiteException ex) {
+			throwError(ex);
+		}	
+		return resultList;
 	}
 
 	@Override
@@ -95,9 +116,11 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		}   
 		return val;
 	}
+	
 
 	@Override
 	public void close() {
 		db.dispose();
 	}
+
 }

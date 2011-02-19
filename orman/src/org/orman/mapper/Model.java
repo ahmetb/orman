@@ -2,7 +2,9 @@ package org.orman.mapper;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.NotNullableFieldException;
@@ -358,7 +360,26 @@ public class Model<E> {
 
 		// prevent coincidently correspontransiency flag
 		return hash == DEFAULT_TRANSIENT_HASHCODE ? hash | 0x9123 : hash;
-
+	}
+	
+	/**
+	 * Executes the query and returns the rows mapped to
+	 * entities as a list.
+	 * 
+	 * CAUTION: If the query does not have SELECT * or 
+	 * have JOINs, or anything that can break the field
+	 * order as they are declared in the class.
+	 * 
+	 * @param q query generated with {@link ModelQuery}.
+	 * @return set of results. never null.
+	 */
+	public static <E extends Model> List<E> fetchQuery(Query q, Class<E> type){
+		List<E> resultList = MappingSession.getExecuter().executeForRowset(q,
+				MappingSession.getEntity(type));
+		
+		System.out.println(resultList);
+		
+		return null;
 	}
 
 	public Class<?> getType() {

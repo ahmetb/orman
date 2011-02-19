@@ -83,10 +83,10 @@ public class Entity {
 	}
 
 	public int compareTo(Entity e) {
-		return this.getGeneratedName().compareTo(e.getGeneratedName());
+		return this.getOriginalName().compareTo(e.getOriginalName());
 	}
 
 	public boolean equals(Entity e) {
-		return this.compareTo(e) == 0;
+		return this.getGeneratedName().equals(e.getGeneratedName());
 	}
 }

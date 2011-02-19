@@ -14,6 +14,7 @@ import org.orman.sql.QueryType;
  * @author alp
  * 
  */
+// TODO implement tableexists(..)? query and then schemegenerationpolicy.
 public class DDLQueryGenerator {
 
 	/**

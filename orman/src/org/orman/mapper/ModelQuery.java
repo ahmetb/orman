@@ -220,6 +220,7 @@ public class ModelQuery {
 		return e;
 	}
 
+	
 	public Query getQuery() {
 		return qb.getQuery();
 	}

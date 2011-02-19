@@ -16,7 +16,7 @@ import org.orman.mapper.annotation.Index;
  * @author alp
  * 
  */
-public class Field {
+public class Field implements Comparable<Field>{
 	private Class<?> clazz;
 	private String originalName;
 	private String customName;
@@ -84,11 +84,11 @@ public class Field {
 	 * Compares two fields using their physical name.
 	 */
 	public int compareTo(Field f) {
-		return this.getGeneratedName().compareTo(f.getGeneratedName());
+		return this.originalName.compareTo(f.getOriginalName());
 	}
 
 	public boolean equals(Field f) {
-		return this.compareTo(f) == 0;
+		return this.getGeneratedName().equals(f.getGeneratedName());
 	}
 
 	public void setIndex(FieldIndexHolder index) {
