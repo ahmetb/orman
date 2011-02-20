@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.orman.datasource.ResultList;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.NotNullableFieldException;
 import org.orman.mapper.exception.UnableToPersistDetachedEntityException;
@@ -373,11 +374,16 @@ public class Model<E> {
 	 * @param q query generated with {@link ModelQuery}.
 	 * @return set of results. never null.
 	 */
-	public static <E extends Model> List<E> fetchQuery(Query q, Class<E> type){
-		List<E> resultList = MappingSession.getExecuter().executeForRowset(q,
-				MappingSession.getEntity(type));
+	public static <E extends Model<?>> List<E> fetchQuery(Query q, Class<E> type){
+		Entity e = MappingSession.getEntity(type);
+		List<E> recordList = new ArrayList<E>();
 		
-		System.out.println(resultList);
+		ResultList resultList = MappingSession.getExecuter().executeForResultList(q);
+		
+		if(resultList != null){
+			// something is returned, do the reverse mapping and add to the
+			// list.
+		}
 		
 		return null;
 	}

@@ -24,7 +24,7 @@ public enum SchemeCreationPolicy {
 	 * 
 	 * If physical scheme is not up to date, various runtime exceptions may
 	 * thrown due to mismatches between persistency scheme and physical during
-	 * query execution.
+	 * query execution. Use CREATE the scheme changes. (Warning: loss of data)
 	 * 
 	 * It has an overhead of CREATE TABLE IF NOT EXISTS query per table. 
 	 */

@@ -16,6 +16,7 @@ import org.orman.sqlite.SQLite;
 @Entity(table="user")
 public class User extends Model<User> {
 	@Id public int id;
+	public String name;
 	
 	@OneToOne @NotNull
 	public Notebook bookOfUser; 
@@ -29,7 +30,7 @@ public class User extends Model<User> {
 		MappingSession.registerEntity(User.class);
 		MappingSession.registerEntity(Notebook.class);
 		MappingSession.registerDatabase(db);
-		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.UPDATE);
+		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.USE_EXISTING);
 		MappingSession.start();
 		
 //		User u = new User();
@@ -42,9 +43,8 @@ public class User extends Model<User> {
 //		System.out.println(u.countAll());
 		
 		
-		Query custom = ModelQuery.select().from(User.class).where(C.gt(User.class, "id", 0)).getQuery();
-		Model.fetchQuery(custom, User.class);
-		
+		Query custom = ModelQuery.select().from(Notebook.class).where(C.gt(Notebook.class, "id", 3)).getQuery();
+		Model.fetchQuery(custom, Notebook.class);
 		
 	}
 }

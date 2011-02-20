@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.orman.datasource.QueryExecutionContainer;
+import org.orman.datasource.ResultList;
 import org.orman.datasource.exception.QueryExecutionException;
-import org.orman.mapper.Entity;
 import org.orman.sql.Query;
 
 import com.almworks.sqlite4java.SQLiteConnection;
@@ -43,25 +43,43 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	}
 
 	@Override
-	public Object[][] executeForRowset(Query q) {
+	public ResultList executeForResultList(Query q) {
 		System.out.println("Executing: " + q); // TODO log.
-		return null;
-	}
-	
-	@Override
-	public <E> List<E> executeForRowset(Query q, Entity e) {
-		System.out.println("Executing: " + q); // TODO log.
-		List<E> resultList = new ArrayList<E>();
-		
 		try {
 			SQLiteStatement s = db.prepare(q.getExecutableSql());
-			while(s.step()){
-				// TODO continue from here.
+			
+			int columnCount = s.columnCount();
+			String[] colNames = new String[columnCount];
+			List<Object[]> result = new ArrayList<Object[]>();
+				
+			int rowIndex = 0;
+				
+			while(s.step()){ // for each row.
+				Object[] row = new Object[columnCount];
+				
+				for(int j = 0; j < columnCount; j++){ // for each column
+					row[j] = s.columnValue(j); 
+				}
+				result.add(row);
+				++rowIndex;
+			}
+			
+			if(result.size() > 0){
+				Object[][] resultArr = new Object[result.size()][columnCount];
+				int i = 0;
+				for(Object[] row : result)
+					resultArr[i++] = row;
+				
+				for(int j = 0; j < columnCount; j++){
+					colNames[j] = s.getColumnName(j);
+				}
+				
+				return new ResultList(colNames, resultArr);
 			}
 		} catch (SQLiteException ex) {
 			throwError(ex);
 		}	
-		return resultList;
+		return null;
 	}
 
 	@Override
@@ -122,5 +140,4 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public void close() {
 		db.dispose();
 	}
-
 }
