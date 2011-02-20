@@ -20,12 +20,12 @@ public class User extends Model<User> {
 	@Id public int id;
 	public String name;
 	
-	@OneToOne @NotNull
+	@OneToOne(targetBindingField="whose") @NotNull
 	public Notebook bookOfUser;
 	
 	@Override
 	public String toString() {
-		return id+"-"+bookOfUser;
+		return id+"'s book is [[[["+bookOfUser+"]]]]\n";
 	}
 
 	public static void main(String[] args) {

@@ -10,8 +10,11 @@ public class Notebook extends Model<Notebook>{
 	@Id public long id;
 	public String name;
 	
+	@OneToOne
+	public User whose;
+	
 	@Override
 	public String toString() {
-		return name;
+		return "Notebook with id="+id+" named="+name +" of user="+((whose == null) ? "?" : "@"+whose.id);
 	}
 }

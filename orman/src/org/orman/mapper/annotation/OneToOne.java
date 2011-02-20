@@ -18,6 +18,6 @@ import org.orman.mapper.LoadingPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OneToOne {
-	String mappedBy() default "";
+	String targetBindingField() default "";
 	LoadingPolicy load() default LoadingPolicy.EAGER;
 }

@@ -61,12 +61,14 @@ public class ReverseMapping {
 	 * @param f
 	 * @param instance
 	 * @param key
-	 * @return
+	 * @return the original key if key is already null.
 	 */
 	private static <E> Object makeCardinalityBinding(Field f,
 			E instance, Object key) {
 		// ONE TO ONE BINDING
 		// TODO implement others in the future.
+		
+		if (key == null) return key; 
 		
 		if (f.isAnnotationPresent(OneToOne.class)) {
 			OneToOne ann = f.getAnnotation(OneToOne.class);
@@ -82,6 +84,13 @@ public class ReverseMapping {
 								.getOriginalName(), key)).getQuery();
 
 				E result = (E) Model.fetchSingle(c, f.getClazz());
+				
+				// make reverse binding on the target (result) if requested
+				if (result != null && !"".equals(ann.targetBindingField())){
+					// TODO unable to implement when removing <E extends Model<?>>
+					Field on = F.f(f.getClazz(), ann.targetBindingField());
+					((Model<E>) result).setEntityField(on, intendedEntity, instance);
+				}
 				return result;
 			}
 		}
