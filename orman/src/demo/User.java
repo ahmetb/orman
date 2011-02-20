@@ -43,8 +43,7 @@ public class User extends Model<User> {
 //		System.out.println(u.countAll());
 		
 		
-		Query custom = ModelQuery.select().from(Notebook.class).where(C.gt(Notebook.class, "id", 3)).getQuery();
-		Model.fetchQuery(custom, Notebook.class);
-		
+		Query custom = ModelQuery.select().from(User.class).where(C.gt(User.class, "id", 3)).getQuery();
+		Model.fetchQuery(custom, User.class);
 	}
 }

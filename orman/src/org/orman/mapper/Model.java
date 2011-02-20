@@ -383,6 +383,10 @@ public class Model<E> {
 		if(resultList != null){
 			// something is returned, do the reverse mapping and add to the
 			// list.
+			for(int i = 0 ; i < resultList.getRowCount(); i++){
+				recordList.add(ReverseMapping.map(resultList.getResultRow(i), type, e));
+			}
+			
 		}
 		
 		return null;

@@ -31,6 +31,8 @@ public class EntityInspector {
 	public EntityInspector(Class<?> forClass){
 		this.clazz = forClass;
 		fields = new ArrayList<Field>();
+		
+		
 	}
 
 	/**
