@@ -3,6 +3,8 @@ package org.orman.mapper.annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.orman.mapper.LoadingPolicy;
+
 /**
  * Place this annotation on columns to create relationship of 1:1 cardinality
  * between entities.
@@ -17,4 +19,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OneToOne {
 	String mappedBy() default "";
+	LoadingPolicy load() default LoadingPolicy.EAGER;
 }

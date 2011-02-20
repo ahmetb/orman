@@ -1,6 +1,10 @@
 package org.orman.mapper;
 
 import org.orman.datasource.ResultList.ResultRow;
+import org.orman.mapper.annotation.OneToOne;
+import org.orman.sql.Query;
+
+import demo.Notebook;
 
 /**
  * Provides reverse mapping engine which can convert {@link ResultRow} objects
@@ -13,12 +17,13 @@ import org.orman.datasource.ResultList.ResultRow;
  */
 public class ReverseMapping {
 	@SuppressWarnings("unchecked")
-	public static <E extends Model<?>> E map(ResultRow row, Class<E> type,
+	public static <E> E map(ResultRow row, Class<E> type,
 			Entity e) {
 
 		E instance = null;
 
 		try {
+			/* instantiate and cast to intended type */
 			instance = (E) e.getDefaultConstructor().newInstance();
 		} catch (Exception e1) {
 			// TODO assuming that no invocation exceptions will occur at
@@ -33,18 +38,56 @@ public class ReverseMapping {
 
 				// TODO do needed conversions.
 				fieldValue = smartCasting(fieldValue, f.getClazz());
-				
-				// TODO make relational mapping if @*To* entities exist according to lazy loading policy.
+
+				// TODO make relational mapping if @*To* entities exist
+				// according to lazy loading policy.
+				fieldValue = makeCardinalityBinding(f, instance, fieldValue);
 
 				// set field
-				instance.setEntityField(f, e, fieldValue);
+				((Model<Notebook>) instance).setEntityField(f, e, fieldValue);
 			}
 
 		return instance;
 	}
-	
 
-	
+	/**
+	 * Returns related instance (or instances) of specified cardinality if some
+	 * @*To* annotation exists on the given field. Returns the same object if
+	 * the field does not have such relationship annotations.
+	 * 
+	 * Threats the given value as key for finding related entities. 
+	 * 
+	 * @param <E>
+	 * @param f
+	 * @param instance
+	 * @param key
+	 * @return
+	 */
+	private static <E> Object makeCardinalityBinding(Field f,
+			E instance, Object key) {
+		// ONE TO ONE BINDING
+		// TODO implement others in the future.
+		
+		if (f.isAnnotationPresent(OneToOne.class)) {
+			OneToOne ann = f.getAnnotation(OneToOne.class);
+			LoadingPolicy loading = ann.load();
+
+			if (loading.equals(LoadingPolicy.EAGER)) { // make eager loading
+														// right here.
+				// fetch the object with that key.
+				Class<?> intendedType = f.getClazz();
+				Entity intendedEntity = MappingSession.getEntity(intendedType);
+				Query c = ModelQuery.select().from(intendedType).where(
+						C.eq(intendedType, intendedEntity.getIdField()
+								.getOriginalName(), key)).getQuery();
+
+				E result = (E) Model.fetchSingle(c, f.getClazz());
+				return result;
+			}
+		}
+		return key;
+	}
+
 	/**
 	 * makes conversions String<->long<->integer<->boolean.
 	 * 
@@ -52,12 +95,13 @@ public class ReverseMapping {
 	 * @param clazz
 	 *            desired class type.
 	 * @return casted instance. it may be newly created. do not rely on
-	 *         reference. it may return the same instance if no eligible
-	 *         changes are found. null if <code>value</code> is null.
+	 *         reference. it may return the same instance if no eligible changes
+	 *         are found. null if <code>value</code> is null.
 	 */
 	private static Object smartCasting(Object value, Class<?> desired) {
-		if (value == null) return null;
-		
+		if (value == null)
+			return null;
+
 		if (Integer.class.equals(desired) || Integer.TYPE.equals(desired)) {
 			// destination: Integer.
 

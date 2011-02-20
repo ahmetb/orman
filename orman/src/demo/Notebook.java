@@ -8,6 +8,10 @@ import org.orman.mapper.annotation.OneToOne;
 @Entity
 public class Notebook extends Model<Notebook>{
 	@Id public long id;
-	@OneToOne public User whoseIsThat;
+	public String name;
 	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

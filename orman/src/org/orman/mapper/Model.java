@@ -51,7 +51,7 @@ public class Model<E> {
 	 * 
 	 * Detached instances are not saved at all or changed
 	 * after saving or fetching from database.
-	 * 
+	 * 		
 	 * @return false if object is changed or not saved at all,
 	 * true if the ob
 	 */
@@ -370,10 +370,11 @@ public class Model<E> {
 	 * order as they are declared in the class.
 	 * 
 	 * @param q query generated with {@link ModelQuery}.
+	 * @param intendedType instances will be casted to this type.
 	 * @return set of results. never null.
 	 */
-	public static <E extends Model<?>> List<E> fetchQuery(Query q, Class<E> type){
-		Entity e = MappingSession.getEntity(type);
+	public static <E> List<E> fetchQuery(Query q, Class<E> intendedType){
+		Entity e = MappingSession.getEntity(intendedType);
 		List<E> mappedRecordList = new ArrayList<E>();
 		
 		ResultList resultList = MappingSession.getExecuter().executeForResultList(q);
@@ -382,7 +383,7 @@ public class Model<E> {
 			// something is returned, do the reverse mapping and add to the
 			// list.
 			for(int i = 0 ; i < resultList.getRowCount(); i++){
-				mappedRecordList.add(ReverseMapping.map(resultList.getResultRow(i), type, e));
+				mappedRecordList.add(ReverseMapping.map(resultList.getResultRow(i), intendedType, e));
 			}
 		}
 		return mappedRecordList;
@@ -399,7 +400,7 @@ public class Model<E> {
 	 * @return null if no results are found, an instance if some
 	 * results are successfully retrieved.
 	 */
-	public static <E extends Model<?>> E fetchSingle(Query q, Class<E> type){
+	public static <E> E fetchSingle(Query q, Class<E> type){
 		List<E> l = fetchQuery(q, type);
 		
 		if(l == null || l.size()==0) return null;

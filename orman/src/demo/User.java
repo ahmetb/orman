@@ -11,6 +11,7 @@ import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.NotNull;
+import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
 import org.orman.sqlite.SQLite;
 
@@ -19,12 +20,12 @@ public class User extends Model<User> {
 	@Id public int id;
 	public String name;
 	
-	@NotNull
-	public int bookOfUser;
+	@OneToOne @NotNull
+	public Notebook bookOfUser;
 	
 	@Override
 	public String toString() {
-		return id+"-"+name;
+		return id+"-"+bookOfUser;
 	}
 
 	public static void main(String[] args) {
@@ -36,18 +37,16 @@ public class User extends Model<User> {
 		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.USE_EXISTING);
 		MappingSession.start();
 		
-//		User u = new User();
-//		Notebook n = new Notebook();
-//		n.insert();
-//		u.bookOfUser = n;
-//		u.insert();
-//		n.whoseIsThat = u;
-//		n.update();
-//		System.out.println(u.countAll());
+		User a = new User();
+		Notebook n = new Notebook();
+		n.insert();
+		a.bookOfUser = n;
+		a.insert();
+		n.name = a.id+"s book";
+		n.update();
 		
 		Query custom = ModelQuery.select().from(User.class).where(C.gt(User.class, "id", 0)).getQuery();
 		List<User> l = Model.fetchQuery(custom, User.class);
-		for(User u : l)
-			System.out.println(u);
+		System.out.println(l);
 	}
 }
