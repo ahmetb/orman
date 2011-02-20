@@ -18,14 +18,27 @@ public enum SchemeCreationPolicy {
 	CREATE,
 
 	/**
-	 * Assumes that the table is identical to the existing scheme and does not
-	 * recreate tables, it uses existing ones.
+	 * Creates the tables ONLY if they do not exist. If they exists,
+	 * it uses the existing database scheme. Does not DROP existing 
+	 * tables and their data.
 	 * 
 	 * If physical scheme is not up to date, various runtime exceptions may
 	 * thrown due to mismatches between persistency scheme and physical during
 	 * query execution.
 	 * 
-	 * Recommended to switch {@link SchemeCreationPolicy.CREATE} for once.
+	 * It has an overhead of CREATE TABLE IF NOT EXISTS query per table. 
 	 */
-	UPDATE;
+	UPDATE,
+	
+	/**
+	 * Assumes that the table is identical to the existing scheme and does NOT
+	 * create tables, it uses existing ones.
+	 * 
+	 * If physical scheme is not up to date, various runtime exceptions may
+	 * thrown due to mismatches between persistency scheme and physical during
+	 * query execution.
+	 * 
+	 * Recommended to switch {@link SchemeCreationPolicy.UPDATE} for once.
+	 */
+	USE_EXISTING;
 }

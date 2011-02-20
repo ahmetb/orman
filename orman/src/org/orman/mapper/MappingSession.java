@@ -173,25 +173,36 @@ public class MappingSession {
 	private static void constructScheme() {
 		Queue<Query> constructionQueries = new LinkedList<Query>();
 
-		if (configuration.getCreationPolicy() == SchemeCreationPolicy.CREATE) {
+		SchemeCreationPolicy policy = configuration.getCreationPolicy();
+		
+		if (policy.equals(SchemeCreationPolicy.CREATE)
+				|| policy.equals(SchemeCreationPolicy.UPDATE)) {
+			
 			for (Entity e : scheme.getEntities()) {
-				// DROP TABLE
-				Query dT = DDLQueryGenerator.dropTableQuery(e);
-				constructionQueries.offer(dT);
+				
+				if (policy.equals(SchemeCreationPolicy.CREATE)){
+					// DROP TABLE IF EXISTS
+					Query dT = DDLQueryGenerator.dropTableQuery(e);
+					constructionQueries.offer(dT);
+				}
 
 				// CREATE TABLE
-				Query cT = DDLQueryGenerator.createTableQuery(e);
+				Query cT = DDLQueryGenerator.createTableQuery(e, policy
+						.equals(SchemeCreationPolicy.UPDATE));
 				constructionQueries.offer(cT);
 
 				// CREATE INDEXES
 				for (Field f : e.getFields()) {
 					if (f.getIndex() != null) {
-						// DROP INDEX 
-						Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
-						constructionQueries.offer(dI);
+						if (policy.equals(SchemeCreationPolicy.CREATE)){
+							// DROP INDEX 
+							Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
+							constructionQueries.offer(dI);
+						}
 						
 						// CREATE INDEX
-						Query cI = DDLQueryGenerator.createIndexQuery(e, f);
+						Query cI = DDLQueryGenerator.createIndexQuery(e, f, policy
+								.equals(SchemeCreationPolicy.UPDATE));
 						constructionQueries.offer(cI);
 					}
 				}

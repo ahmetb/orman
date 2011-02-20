@@ -20,12 +20,13 @@ public class DDLQueryGenerator {
 	/**
 	 * Creates CREATE TABLE {@link Query} for given {@link Entity}.
 	 */
-	public static Query createTableQuery(Entity e) {
+	public static Query createTableQuery(Entity e, boolean ifNotExists) {
 		if (e.getGeneratedName() == null) {
 			throw new UnmappedEntityException(e.getOriginalFullName());
 		}
 
-		QueryBuilder qb = QueryBuilder.getBuilder(QueryType.CREATE_TABLE);
+		QueryType qt = (ifNotExists) ? QueryType.CREATE_TABLE_IF_NOT_EXSISTS : QueryType.CREATE_TABLE;
+		QueryBuilder qb = QueryBuilder.getBuilder(qt);
 
 		qb.from(e.getGeneratedName());
 
@@ -53,13 +54,20 @@ public class DDLQueryGenerator {
 	 * {@link Field}. Uniqueness of the index can be set on {@link Field} method
 	 * <code>getIndex().unique(boolean)</code>.
 	 */
-	public static Query createIndexQuery(Entity e, Field on) {
+	public static Query createIndexQuery(Entity e, Field on, boolean ifNotExists) {
 		if (on.getIndex() == null) {
 			throw new IndexNotFoundException(on.getOriginalName());
 		}
 
-		QueryType type = on.getIndex().unique() ? QueryType.CREATE_UNIQUE_INDEX
-				: QueryType.CREATE_INDEX;
+		QueryType type;
+		
+		if (!ifNotExists){
+			type = on.getIndex().unique() ? QueryType.CREATE_UNIQUE_INDEX
+					: QueryType.CREATE_INDEX;
+		} else {
+			type = on.getIndex().unique() ? QueryType.CREATE_UNIQUE_INDEX_IF_NOT_EXISTS
+					: QueryType.CREATE_INDEX_IF_NOT_EXISTS;
+		}
 
 		return QueryBuilder.getBuilder(type).from(e.getGeneratedName())
 				.setIndex(on.getGeneratedName(), on.getIndex().name())

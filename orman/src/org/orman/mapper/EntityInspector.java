@@ -4,6 +4,7 @@ package org.orman.mapper;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.orman.mapper.annotation.Id;
