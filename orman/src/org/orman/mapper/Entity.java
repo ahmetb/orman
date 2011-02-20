@@ -1,5 +1,6 @@
 package org.orman.mapper;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.orman.mapper.annotation.Id;
@@ -10,8 +11,8 @@ import demo.User;
 
 /**
  * Entity information holder for classes annotated with
- * {@link org.orman.mapper.annotation.Entity}. It holds original
- * class name, generated table name, {@link Field}s of the entity.
+ * {@link org.orman.mapper.annotation.Entity}. It holds original class name,
+ * generated table name, {@link Field}s of the entity.
  * 
  * @author alp
  * 
@@ -23,24 +24,37 @@ public class Entity {
 	private String originalFullName;
 	private String customName;
 	private String generatedName;
+	
+	// Reflection fields
+	private Constructor<?> defaultConstructor; 
 
+	/**
+	 * Instantiates an information holder class for
+	 * {@link org.orman.mapper.annotation.Entity} annotated classes.
+	 * 
+	 * @param clazz class type of the entity.
+	 */
 	public Entity(Class<?> clazz) {
 		if (!clazz
 				.isAnnotationPresent(org.orman.mapper.annotation.Entity.class))
-			throw new NotAnEntityException(clazz.getName());
+			throw new NotAnEntityException(clazz.getName()); // require @Entity
 
 		this.clazz = clazz;
 		this.originalName = clazz.getSimpleName();
 		this.originalFullName = clazz.getName();
-		this.fields = new EntityInspector(clazz).getFields();
+		
+		EntityInspector ei = new EntityInspector(clazz);
+		this.fields = ei.getFields();
+		this.setDefaultConstructor(ei.getDefaultConstructor());
 
+		// make custokm name binding if specified any on @Entity annotation.
 		String tmpCustomName = clazz.getAnnotation(
 				org.orman.mapper.annotation.Entity.class).table();
 		this.customName = (tmpCustomName == null || "".equals(tmpCustomName)) ? null
 				: tmpCustomName;
 	}
 
-	public Class<?> getClazz() {
+	public Class<?> getType() {
 		return clazz;
 	}
 
@@ -88,5 +102,13 @@ public class Entity {
 
 	public boolean equals(Entity e) {
 		return this.getGeneratedName().equals(e.getGeneratedName());
+	}
+
+	public void setDefaultConstructor(Constructor<?> defaultConstructor) {
+		this.defaultConstructor = defaultConstructor;
+	}
+
+	public Constructor<?> getDefaultConstructor() {
+		return defaultConstructor;
 	}
 }

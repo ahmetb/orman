@@ -10,7 +10,7 @@ public class MappingConfiguration {
 	private PhysicalNamingPolicy columnNamePolicy  = new PhysicalNamingPolicy().uppercase(false).pluralize(false).underscore(true);
 	private PhysicalNamingPolicy tableNamePolicy  = new PhysicalNamingPolicy().uppercase(false).pluralize(true).underscore(true);
 
-	private SchemeCreationPolicy creationPolicy = SchemeCreationPolicy.CREATE;
+	private SchemeCreationPolicy creationPolicy = SchemeCreationPolicy.UPDATE;
 	private IdGenerationPolicy idGenerationPolicy = IdGenerationPolicy.DEFER_TO_DBMS;
 
 	public IdGenerationPolicy getIdGenerationPolicy() {

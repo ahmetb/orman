@@ -10,6 +10,4 @@ public class Notebook extends Model<Notebook>{
 	@Id public long id;
 	@OneToOne public User whoseIsThat;
 	
-	public Notebook(){
-	}
 }

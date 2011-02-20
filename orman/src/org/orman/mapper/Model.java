@@ -2,9 +2,7 @@ package org.orman.mapper;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.orman.datasource.ResultList;
 import org.orman.mapper.annotation.Id;
@@ -79,7 +77,7 @@ public class Model<E> {
 		if (MappingSession.getConfiguration().getIdGenerationPolicy().equals(
 				IdGenerationPolicy.DEFER_TO_DBMS)) {
 			Field idField = getEntity().getIdField();
-			setEntityField(idField, getEntity(), this, MappingSession
+			setEntityField(idField, getEntity(), MappingSession
 					.getExecuter().getLastInsertId(idField.getClazz()));
 		}
 
@@ -101,7 +99,7 @@ public class Model<E> {
 
 				if (policy == IdGenerationPolicy.ORMAN_ID_GENERATOR)
 					/* bind generated id to the transient instance */
-					setEntityField(f, getEntity(), this, NativeIdGenerator
+					setEntityField(f, getEntity(), NativeIdGenerator
 							.generate(f, this));
 				if (policy == IdGenerationPolicy.DEFER_TO_DBMS)
 					useField = false;
@@ -276,12 +274,12 @@ public class Model<E> {
 	 * 
 	 * @return value of given {@link Field} of some {@link Model} instance.
 	 */
-	private Object getEntityField(Field field, Entity of, Model<E> instance) {
+	protected Object getEntityField(Field field, Entity of, Model<E> instance) {
 		Method getter = field.getGetterMethod();
 
 		if (getter == null) { // field is already public
 			try {
-				return of.getClazz().getDeclaredField(field.getOriginalName())
+				return of.getType().getDeclaredField(field.getOriginalName())
 						.get(instance);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
@@ -306,21 +304,21 @@ public class Model<E> {
 	 * Various exceptions may thrown if unsuitable <code>value</code> is passed
 	 * or <code>field</code> does not belong to the {@link Entity}.
 	 */
-	private void setEntityField(Field field, Entity of, Model<E> instance,
+	protected void setEntityField(Field field, Entity of,
 			Object value) {
 		Method setter = field.getSetterMethod();
 
 		if (setter == null) { // field is already public
 			try {
-				of.getClazz().getDeclaredField(field.getOriginalName()).set(
-						instance, value);
+				of.getType().getDeclaredField(field.getOriginalName()).set(
+						this, value);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
 				e.printStackTrace(); // TODO log
 			}
 		} else { // not public field, invoke method!
 			try {
-				setter.invoke(instance, value); // no need to hold return value
+				setter.invoke(this, value); // no need to hold return value
 			} catch (Exception e) {
 				// TODO caution: assuming getter certainly exists and
 				// accessible.
@@ -368,7 +366,7 @@ public class Model<E> {
 	 * entities as a list.
 	 * 
 	 * CAUTION: If the query does not have SELECT * or 
-	 * have JOINs, or anything that can break the field
+	 * has JOINs, or anything that can break the field
 	 * order as they are declared in the class.
 	 * 
 	 * @param q query generated with {@link ModelQuery}.
@@ -376,7 +374,7 @@ public class Model<E> {
 	 */
 	public static <E extends Model<?>> List<E> fetchQuery(Query q, Class<E> type){
 		Entity e = MappingSession.getEntity(type);
-		List<E> recordList = new ArrayList<E>();
+		List<E> mappedRecordList = new ArrayList<E>();
 		
 		ResultList resultList = MappingSession.getExecuter().executeForResultList(q);
 		
@@ -384,12 +382,28 @@ public class Model<E> {
 			// something is returned, do the reverse mapping and add to the
 			// list.
 			for(int i = 0 ; i < resultList.getRowCount(); i++){
-				recordList.add(ReverseMapping.map(resultList.getResultRow(i), type, e));
+				mappedRecordList.add(ReverseMapping.map(resultList.getResultRow(i), type, e));
 			}
-			
 		}
+		return mappedRecordList;
+	}
+	/**
+	 * Executes the query and returns the "first" result
+	 * mapped to the entity instance.
+	 * 
+	 * CAUTION: If the query does not have SELECT * or 
+	 * has JOINs, or anything that can break the field
+	 * order as they are declared in the class.
+	 * 
+	 * @param q query generated with {@link ModelQuery}.
+	 * @return null if no results are found, an instance if some
+	 * results are successfully retrieved.
+	 */
+	public static <E extends Model<?>> E fetchSingle(Query q, Class<E> type){
+		List<E> l = fetchQuery(q, type);
 		
-		return null;
+		if(l == null || l.size()==0) return null;
+		return l.get(0);
 	}
 
 	public Class<?> getType() {

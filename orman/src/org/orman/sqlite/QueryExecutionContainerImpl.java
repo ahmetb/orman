@@ -128,9 +128,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		if(ofType.equals(String.class)){
 			return new String(val.toString());
 		} else if(ofType.equals(Integer.class) || ofType.equals(Integer.TYPE)){
-			return new Integer(val.toString());
+			return new Integer(val.toString()); // TODO inefficient?
 		} else if(ofType.equals(Long.class) || ofType.equals(Long.TYPE)){
-			return new Long(val.toString());
+			return new Long(val.toString()); // TODO inefficient? 
 		}   
 		return val;
 	}

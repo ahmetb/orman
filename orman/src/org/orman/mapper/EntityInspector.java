@@ -1,16 +1,17 @@
 
 package org.orman.mapper;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.annotation.OneToOne;
+import org.orman.mapper.exception.NotDeclaredDefaultConstructorException;
 import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
@@ -27,12 +28,11 @@ public class EntityInspector {
 			Integer.TYPE, Long.class, Long.TYPE}; // REMOVED String because of SQLite.
 	private Class<?> clazz;
 	private List<Field> fields;
+	private Constructor<?> defaultConstructor;
 	
 	public EntityInspector(Class<?> forClass){
 		this.clazz = forClass;
 		fields = new ArrayList<Field>();
-		
-		
 	}
 
 	/**
@@ -216,5 +216,35 @@ public class EntityInspector {
 	public List<Field> getFields(){
 		if(this.fields.isEmpty()) return extractFields();
 		else return this.fields;
+	}
+	
+	/**
+	 * Returns default constructor of this entity. If there are no
+	 * default constructors are declared, throws exception. 
+	 * 
+	 * @throws NotDeclaredDefaultConstructorException if no defaults
+	 * @return
+	 */
+	public Constructor<?> getDefaultConstructor(){
+		if(this.defaultConstructor == null) return extractDefaultConstructor();
+		return this.defaultConstructor;
+	}
+
+	private Constructor<?> extractDefaultConstructor() {
+		Constructor<?>[] cs = this.clazz.getDeclaredConstructors();
+		
+		if (cs == null) // if no constructors are defined.
+			throw new NotDeclaredDefaultConstructorException(this.clazz.getName());
+		
+		for(Constructor<?> c : cs){
+			if (Modifier.isPublic(c.getModifiers())){
+				Class<?>[] params = c.getParameterTypes();
+				if (params == null || params.length == 0)
+					return c;
+			}
+		}
+		
+		// if not found 
+		throw new NotDeclaredDefaultConstructorException(this.clazz.getName());
 	}
 }
