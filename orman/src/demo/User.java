@@ -37,15 +37,16 @@ public class User extends Model<User> {
 		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.USE_EXISTING);
 		MappingSession.start();
 		
-		User a = new User();
-		Notebook n = new Notebook();
-		n.insert();
-		a.bookOfUser = n;
-		a.insert();
-		n.name = a.id+"s book";
-		n.update();
-		
-		Query custom = ModelQuery.select().from(User.class).where(C.gt(User.class, "id", 0)).getQuery();
+//		User a = new User();
+//		Notebook n = new Notebook();
+//		n.whose=a;
+//		n.insert();
+//		a.bookOfUser = n;
+//		a.insert();
+//		n.name = a.id+"s book";
+//		n.update();
+
+		Query custom = ModelQuery.select().from(User.class).getQuery();
 		List<User> l = Model.fetchQuery(custom, User.class);
 		System.out.println(l);
 	}
