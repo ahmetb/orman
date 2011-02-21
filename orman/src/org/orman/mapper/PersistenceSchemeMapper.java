@@ -117,7 +117,7 @@ public class PersistenceSchemeMapper {
 
 			// unbinded column data type on a non-entity field or list of a non-entity field.
 			if (f.getType() == null && !MappingSession.entityExists(f.getClazz())
-					&& f.getType().equals(List.class)
+					//&& f.getType().equals(List.class) //TODO seems unnecessary
 			) {
 				throw new UnmappedDataTypeException(f.getOriginalName(), f
 						.getClazz().getName());

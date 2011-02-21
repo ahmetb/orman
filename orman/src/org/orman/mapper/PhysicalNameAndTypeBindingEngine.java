@@ -61,7 +61,10 @@ public class PhysicalNameAndTypeBindingEngine {
 			
 			if (field.isAnnotationPresent(OneToOne.class)){
 				//  there exists 1:1 set type as matched field's Id type.
-				OneToOne rel = field.getAnnotation(OneToOne.class);
+				Class<?> idType = getIdTypeForClass(field.getClazz());
+				fieldType = idType;
+			} else if(MappingSession.entityExists(field.getClazz())){
+				// infer entity @Id type if @*to* annotations does not exist 
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
 			} else {

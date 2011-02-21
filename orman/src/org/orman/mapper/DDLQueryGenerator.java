@@ -31,11 +31,13 @@ public class DDLQueryGenerator {
 		qb.from(e.getGeneratedName());
 
 		for (Field f : e.getFields()) {
-			if (f.getGeneratedName() == null || f.getType() == null) {
+			if (!f.isList() && (f.getGeneratedName() == null || f.getType() == null)) {
 				throw new UnmappedFieldException(f.getOriginalName() + " ("
 						+ e.getOriginalName() + ")");
 			}
-			qb.createColumn(f.getGeneratedName(), f.getType(), f.isNullable(), f.isId());
+			
+			if (!f.isList()) // list columns are not saved.
+				qb.createColumn(f.getGeneratedName(), f.getType(), f.isNullable(), f.isId());
 		}
 
 		return qb.getQuery();

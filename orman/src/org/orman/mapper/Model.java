@@ -38,7 +38,7 @@ public class Model<E> {
 		this.clazz = (Class<E>) this.getClass();
 	}
 
-	private Entity getEntity() {
+	protected Entity getEntity() {
 		if (__mappedEntity == null) {
 			__mappedEntity = MappingSession.getEntity(this.clazz);
 		}
@@ -104,9 +104,11 @@ public class Model<E> {
 				if (policy == IdGenerationPolicy.DEFER_TO_DBMS)
 					useField = false;
 			}
+			
+			useField = useField && !f.isList(); // list fields are not physically created.
 
 			if (useField) { // use field in query
-				Object fieldVal = getEntityField(f, getEntity(), this);
+				Object fieldVal = getEntityField(f);
 
 				if (!f.isNullable() && fieldVal == null) // prevent saving null
 															// on @NotNull
@@ -140,6 +142,7 @@ public class Model<E> {
 		Query q = prepareUpdateQuery();
 		MappingSession.getExecuter().executeOnly(q);
 
+		//TODO discuss: what should be done if list fields are updated.
 		makePersistent();
 	}
 
@@ -151,7 +154,7 @@ public class Model<E> {
 			QueryBuilder qb = QueryBuilder.update().from(
 					getEntity().getGeneratedName());
 			for (Field f : updatedFields) {
-				Object fieldVal = getEntityField(f, getEntity(), this);
+				Object fieldVal = getEntityField(f);
 
 				if (!f.isNullable() && fieldVal == null)
 					throw new NotNullableFieldException(getEntity()
@@ -181,7 +184,7 @@ public class Model<E> {
 		List<Field> updatedFields = new ArrayList<Field>();
 
 		for (int i = 0; i < __persistencyFieldHashes.length; i++) {
-			Object o = getEntityField(allFields.get(i), getEntity(), this);
+			Object o = getEntityField(allFields.get(i));
 			if (((o == null) ? DEFAULT_TRANSIENT_HASHCODE : o.hashCode()) != __persistencyFieldHashes[i])
 				updatedFields.add(allFields.get(i));
 		}
@@ -235,7 +238,7 @@ public class Model<E> {
 	 */
 	private Object getEntityId() {
 		Field idField = getEntity().getIdField();
-		return getEntityField(idField, getEntity(), this);
+		return getEntityField(idField);
 	}
 
 	/**
@@ -247,8 +250,9 @@ public class Model<E> {
 		__persistencyFieldHashes = new int[fields.size()];
 
 		for (int i = 0; i < __persistencyFieldHashes.length; i++) {
-			Object o = getEntityField(fields.get(i), getEntity(), this);
-			__persistencyFieldHashes[i] = (o == null) ? DEFAULT_TRANSIENT_HASHCODE
+			Field f = fields.get(i);
+			Object o = getEntityField(f);
+			__persistencyFieldHashes[i] = (o == null || f.isList()) ? DEFAULT_TRANSIENT_HASHCODE
 					: o.hashCode();
 		}
 		__persistencyId = getEntityId();
@@ -274,20 +278,20 @@ public class Model<E> {
 	 * 
 	 * @return value of given {@link Field} of some {@link Model} instance.
 	 */
-	protected Object getEntityField(Field field, Entity of, Model<E> instance) {
+	protected Object getEntityField(Field field) {
 		Method getter = field.getGetterMethod();
 
 		if (getter == null) { // field is already public
 			try {
-				return of.getType().getDeclaredField(field.getOriginalName())
-						.get(instance);
+				return getEntity().getType().getDeclaredField(field.getOriginalName())
+						.get(this);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
 				e.printStackTrace(); // TODO LOG
 			}
 		} else { // not public field, invoke method!
 			try {
-				return getter.invoke(instance);
+				return getter.invoke(this);
 			} catch (Exception e) {
 				// TODO caution: assuming getter certainly exists and
 				// accessible.
@@ -351,7 +355,8 @@ public class Model<E> {
 		int hash = 1;
 
 		for (Field f : getEntity().getFields()) {
-			Object o = getEntityField(f, getEntity(), this);
+			if (f.isList()) continue; // TODO list fields are not counted.
+			Object o = getEntityField(f);
 
 			if (!(o instanceof Model<?>)) //TODO FATAL Model instances are not counted in hashcode!!! do something!!!
 				hash += (o == null ? 1 : o.hashCode()) * 7; // magic.

@@ -6,19 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import org.orman.mapper.LoadingPolicy;
 
 /**
- * Place this annotation on columns to create relationship of 1:* cardinality
+ * TODO protote this entity
+ * TODO make sure that this entity is used when manytoone occurs, before starting session.
+ * Place this annotation on columns to create relationship of *:1 cardinality
  * between entities.
  * 
- * These fields are not physically created on the database but populated at the
- * runtime.
- * 
  * @author alp
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OneToMany {
-	Class<?> toType();
-	String on();
+public @interface ManyToOne {
 	String targetBindingField() default "";
 	LoadingPolicy load() default LoadingPolicy.EAGER;
 }

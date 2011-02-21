@@ -1,6 +1,8 @@
 package org.orman.mapper;
 
 import org.orman.datasource.ResultList.ResultRow;
+import org.orman.mapper.annotation.ManyToOne;
+import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
 
@@ -33,20 +35,31 @@ public class ReverseMapping {
 
 		if (instance != null)
 			for (Field f : e.getFields()) {
-				// read field
-				Object fieldValue = row.getColumn(f.getGeneratedName());
-
-				// TODO do needed conversions.
-				fieldValue = smartCasting(fieldValue, f.getClazz());
-
-				// TODO make relational mapping if @*To* entities exist
-				// according to lazy loading policy.
-				fieldValue = makeCardinalityBinding(f, instance, fieldValue);
-
-				// set field
-				((Model<Notebook>) instance).setEntityField(f, e, fieldValue);
+					if (!f.isList()){
+						/* Use direct value from database */
+						// do not fill field if it is already filled somehow.
+						
+						// read field value
+						Object fieldValue = row.getColumn(f.getGeneratedName());
+		
+						// TODO do needed conversions. (McCabe cyclomatic complexity)
+						fieldValue = smartCasting(fieldValue, f.getClazz());
+		
+						// TODO make relational mapping if @*To* entities exist
+						// according to lazy loading policy.
+						fieldValue = makeCardinalityBinding(f, instance, fieldValue);
+		
+						// set field
+						if (fieldValue != null) ((Model<Notebook>) instance).setEntityField(f, e, fieldValue);
+					} else {
+						Object fieldValue = makeCardinalityBinding(f, instance,
+							((Model<?>) instance)
+									.getEntityField(((Model<?>) instance)
+											.getEntity().getIdField()));
+						
+						if (fieldValue != null) ((Model<Notebook>) instance).setEntityField(f, e, fieldValue);
+					}
 			}
-
 		return instance;
 	}
 
@@ -74,17 +87,21 @@ public class ReverseMapping {
 			Class<?> intendedType = f.getClazz();
 			Entity intendedEntity = MappingSession.getEntity(intendedType);
 			
+			if (((Model<?>) instance).getEntityField(f) != null)
+				return null; // field is already filled somehow.
+			
 			if (!f.isList()){
 				/* we have a 1:1 mapping without checking the annotation */
 				if ((f.isAnnotationPresent(OneToOne.class) && f.getAnnotation(
 						OneToOne.class).load().equals(LoadingPolicy.EAGER))
-						|| !f.isAnnotationPresent(OneToOne.class)) {
+						|| (!f.isAnnotationPresent(OneToOne.class) && !f
+								.isAnnotationPresent(ManyToOne.class))) {
 					
-					Query c = ModelQuery.select().from(intendedType).where(
+					Query c = ModelQuery.select().from(intendedEntity).where(
 							C.eq(intendedType, intendedEntity.getIdField()
 									.getOriginalName(), key)).getQuery();
 					
-					E result = (E) Model.fetchSingle(c, f.getClazz());
+					E result = (E) Model.fetchSingle(c, intendedType);
 	
 					// make reverse binding on the target (result) if requested
 					if (f.isAnnotationPresent(OneToOne.class)){
@@ -101,8 +118,16 @@ public class ReverseMapping {
 				return null;
 			} else {
 				/* we have a 1:* or *:* mapping */
-				
-				System.out.println("could not fill list yet");
+				if (f.isAnnotationPresent(OneToMany.class)){
+					OneToMany config = f.getAnnotation(OneToMany.class);
+					Query q = ModelQuery.select().from(intendedEntity)
+					.where(
+							C.eq(intendedType, config.on(), key)
+					)
+					.getQuery();
+					
+					return ((Model<?>) instance).fetchQuery(q, intendedType);
+				}					
 				return null;
 			}
 		}

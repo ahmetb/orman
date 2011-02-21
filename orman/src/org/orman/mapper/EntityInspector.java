@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
+import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
@@ -66,19 +67,20 @@ public class EntityInspector {
 					 */
 					
 					if (f.isAnnotationPresent(OneToMany.class)){
-						fieldType = f.getAnnotation(OneToMany.class).on();
+						fieldType = f.getAnnotation(OneToMany.class).toType();
 					} else {
 						// TODO add ManyToMany.
 						throw new UnannotatedCollectionFieldException(f.getName(), this.clazz.getName());
 					}
 					isList = true;
 				} 
+				
 				Field newF = new Field(fieldType, f.getName());
 				if (isList) newF.setList(true);
 					
 				// Find getters and setters for non-public field.
 				int accessibility = f.getModifiers();
-				if (! (Modifier.isPublic(accessibility))){
+				if (!(Modifier.isPublic(accessibility))){
 					// if setter does not exist, throw exception.
 					Method setter = this.findSetterFor(this.clazz, f.getName());
 					if(setter == null)
@@ -124,6 +126,13 @@ public class EntityInspector {
 					// if no custom @Index defined create a default.
 					if(newF.getIndex() == null)
 						newF.setIndex(new FieldIndexHolder(null, true));
+				}
+				
+				// ManyToOne
+				if(f.isAnnotationPresent(ManyToOne.class)){ // TODO add other cardinality annotations, too
+					// if no custom @Index defined create a default.
+					if(newF.getIndex() == null)
+						newF.setIndex(new FieldIndexHolder(null, false));
 				}
 				
 				// if one to many, or many to many, make setList(true).
