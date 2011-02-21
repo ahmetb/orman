@@ -2,6 +2,7 @@ package org.orman.mapper;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -114,8 +115,10 @@ public class PersistenceSchemeMapper {
 			if (f.getGeneratedName() == null || "".equals(f.getGeneratedName()))
 				throw new UnmappedFieldException(f.getOriginalName());
 
-			// unbinded column data type
-			if (f.getType() == null) {
+			// unbinded column data type on a non-entity field or list of a non-entity field.
+			if (f.getType() == null && !MappingSession.entityExists(f.getClazz())
+					&& f.getType().equals(List.class)
+			) {
 				throw new UnmappedDataTypeException(f.getOriginalName(), f
 						.getClazz().getName());
 			}

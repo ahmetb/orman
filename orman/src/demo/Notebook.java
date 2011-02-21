@@ -11,11 +11,11 @@ public class Notebook extends Model<Notebook>{
 	@Id public long id;
 	public String name;
 	
-	@OneToOne(load=LoadingPolicy.LAZY)
+	@OneToOne(load=LoadingPolicy.LAZY, targetBindingField="bookOfUser")
 	public User whose;
 	
 	@Override
 	public String toString() {
-		return "Notebook with id="+id+" named="+name +" of user="+((whose == null) ? "?" : "@"+whose.id);
+		return "NB id=`"+id+"` named=`"+name +"` user="+((whose == null) ? "?" : "@"+whose.id);
 	}
 }

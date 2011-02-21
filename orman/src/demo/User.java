@@ -11,6 +11,7 @@ import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.NotNull;
+import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
 import org.orman.sqlite.SQLite;
@@ -20,12 +21,12 @@ public class User extends Model<User> {
 	@Id public int id;
 	public String name;
 	
-	@OneToOne(targetBindingField="whose") @NotNull
+	@OneToOne(targetBindingField="whose")
 	public Notebook bookOfUser;
 	
 	@Override
 	public String toString() {
-		return id+"'s book is [[[["+bookOfUser+"]]]]\n";
+		return id+"'s book is {"+bookOfUser+"}\n";
 	}
 
 	public static void main(String[] args) {
@@ -49,5 +50,9 @@ public class User extends Model<User> {
 		Query custom = ModelQuery.select().from(User.class).getQuery();
 		List<User> l = Model.fetchQuery(custom, User.class);
 		System.out.println(l);
+		
+		custom = ModelQuery.select().from(Notebook.class).getQuery();
+		List<Notebook> m = Model.fetchQuery(custom, Notebook.class);
+		System.out.println(m);
 	}
 }

@@ -26,7 +26,7 @@ public class Field implements Comparable<Field>{
 	private FieldIndexHolder index;
 	private boolean isId = false;
 	private boolean isNullable = true;
-	private boolean isAutoIncrement = true;
+	private boolean isList = false;
 
 	// Reflection fields
 	private Method setterMethod;
@@ -160,7 +160,11 @@ public class Field implements Comparable<Field>{
 		return rawField.getAnnotation(annClass);
 	}
 
-	public void setAutoIncrement(boolean isAutoIncrement) {
-		this.isAutoIncrement = isAutoIncrement;
+	public void setList(boolean isList) {
+		this.isList = isList;
+	}
+
+	public boolean isList() {
+		return isList;
 	}
 }

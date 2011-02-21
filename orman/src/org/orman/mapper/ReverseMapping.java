@@ -59,7 +59,7 @@ public class ReverseMapping {
 	 * 
 	 * @param <E>
 	 * @param f
-	 * @param instance
+	 * @param instance to make bidirectional mapping.
 	 * @param key
 	 * @return the original key if key is already null.
 	 */
@@ -67,34 +67,45 @@ public class ReverseMapping {
 			E instance, Object key) {
 		if (key == null) return key;
 		
-		// ONE TO ONE BINDING
-		// TODO implement others in the future.
-		
-		if (f.isAnnotationPresent(OneToOne.class)) {
-			OneToOne ann = f.getAnnotation(OneToOne.class);
-			LoadingPolicy loading = ann.load();
-
-			if (loading.equals(LoadingPolicy.EAGER)) { // make eager loading
-														// right here.
-				// fetch the object with that key.
-				Class<?> intendedType = f.getClazz();
-				Entity intendedEntity = MappingSession.getEntity(intendedType);
-				Query c = ModelQuery.select().from(intendedType).where(
-						C.eq(intendedType, intendedEntity.getIdField()
-								.getOriginalName(), key)).getQuery();
-				
-				E result = (E) Model.fetchSingle(c, f.getClazz());
-				
-				// make reverse binding on the target (result) if requested
-				if (result != null && !"".equals(ann.targetBindingField())){
-					// TODO unable to implement when removing <E extends Model<?>>
-					Field on = F.f(f.getClazz(), ann.targetBindingField());
-					((Model<E>) result).setEntityField(on, intendedEntity, instance);
+		if (!MappingSession.entityExists(f.getClazz())){
+			/* our entity is not mappable! */
+			return key; // return the same
+		} else {
+			Class<?> intendedType = f.getClazz();
+			Entity intendedEntity = MappingSession.getEntity(intendedType);
+			
+			if (!f.isList()){
+				/* we have a 1:1 mapping without checking the annotation */
+				if ((f.isAnnotationPresent(OneToOne.class) && f.getAnnotation(
+						OneToOne.class).load().equals(LoadingPolicy.EAGER))
+						|| !f.isAnnotationPresent(OneToOne.class)) {
+					
+					Query c = ModelQuery.select().from(intendedType).where(
+							C.eq(intendedType, intendedEntity.getIdField()
+									.getOriginalName(), key)).getQuery();
+					
+					E result = (E) Model.fetchSingle(c, f.getClazz());
+	
+					// make reverse binding on the target (result) if requested
+					if (f.isAnnotationPresent(OneToOne.class)){
+						OneToOne ann = f.getAnnotation(OneToOne.class);
+						if (result != null && !"".equals(ann.targetBindingField())){
+							Field on = F.f(f.getClazz(), ann.targetBindingField());
+							((Model<E>) result).setEntityField(on, intendedEntity, instance);
+						}
+					}
+					
+					return result;
 				}
-				return result;
+				
+				return null;
+			} else {
+				/* we have a 1:* or *:* mapping */
+				
+				System.out.println("could not fill list yet");
+				return null;
 			}
 		}
-		return key;
 	}
 
 	/**

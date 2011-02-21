@@ -5,15 +5,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.NotNull;
+import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.mapper.exception.NotDeclaredDefaultConstructorException;
 import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
+import org.orman.mapper.exception.UnannotatedCollectionFieldException;
 import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
 
 /**
@@ -51,8 +54,28 @@ public class EntityInspector {
 		for(java.lang.reflect.Field f : this.clazz.getDeclaredFields()){
 			// Only non-`transient` (threatened as persistent) fields
 			if(!Modifier.isTransient(f.getModifiers())){
-				Field newF = new Field(f.getType(), f.getName());
-				
+				Class<?> fieldType = f.getType();
+
+				boolean isList = false;
+				// if the field is collection of something, store its generic. 
+				if (fieldType.equals(List.class)
+						|| fieldType.equals(ArrayList.class)
+						|| fieldType.equals(LinkedList.class)){
+					/*
+					 * we have a 1:* or *:* mapping
+					 */
+					
+					if (f.isAnnotationPresent(OneToMany.class)){
+						fieldType = f.getAnnotation(OneToMany.class).on();
+					} else {
+						// TODO add ManyToMany.
+						throw new UnannotatedCollectionFieldException(f.getName(), this.clazz.getName());
+					}
+					isList = true;
+				} 
+				Field newF = new Field(fieldType, f.getName());
+				if (isList) newF.setList(true);
+					
 				// Find getters and setters for non-public field.
 				int accessibility = f.getModifiers();
 				if (! (Modifier.isPublic(accessibility))){
@@ -102,6 +125,8 @@ public class EntityInspector {
 					if(newF.getIndex() == null)
 						newF.setIndex(new FieldIndexHolder(null, true));
 				}
+				
+				// if one to many, or many to many, make setList(true).
 				
 				// Save raw field data for future usage
 				newF.setRawField(f);
