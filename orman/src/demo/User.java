@@ -3,6 +3,7 @@ package demo;
 import java.util.List;
 
 import org.orman.datasource.Database;
+import org.orman.mapper.LoadingPolicy;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
@@ -20,11 +21,11 @@ public class User extends Model<User> {
 	public String name;
 	
 	@OneToMany(on = "whose", toType = Notebook.class)
-	public List<Notebook> books;
+	public Notebook books;
 	
 	@Override
 	public String toString() {
-		return id+"'s books are {"+books+"}";
+		return "User "+id+"'s books are {"+books+"}";
 	}
 
 	public static void main(String[] args) {
@@ -33,7 +34,7 @@ public class User extends Model<User> {
 		MappingSession.registerDatabase(db);
 		MappingSession.registerEntity(User.class);
 		MappingSession.registerEntity(Notebook.class);
-//		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.CREATE);
+		MappingSession.getConfiguration().setCreationPolicy(SchemeCreationPolicy.CREATE);
 		MappingSession.start();
 		
 		User a = new User();
@@ -46,20 +47,22 @@ public class User extends Model<User> {
 		n.name = a.id+"s book";
 		n.update();
 		
-//		a.update();
+		a.books=n;
+		a.update();
 		
-		Notebook m = new Notebook();
-		m.whose = a;
-		m.insert();
-		m.name = a.id+"s second book";
-		m.update();
-
+//		Notebook m = new Notebook();
+//		m.whose = a;
+//		m.insert();
+//		m.name = a.id+"s second book";
+//		m.update();
+		
 		Query custom = ModelQuery.select().from(User.class).getQuery();
 		List<User> l = Model.fetchQuery(custom, User.class);
 		System.out.println(l);
 		
-//		custom = ModelQuery.select().from(Notebook.class).getQuery();
-//		List<Notebook> z = Model.fetchQuery(custom, Notebook.class);
-//		System.out.println(z);
+		Query custom2 = ModelQuery.select().from(Notebook.class).getQuery();
+		List<Notebook> z = Model.fetchQuery(custom2, Notebook.class);
+		for(Notebook nb: z)
+			System.out.println(nb.id+"+"+nb.whose);
 	}
 }

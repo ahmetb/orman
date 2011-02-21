@@ -12,7 +12,7 @@ public class Notebook extends Model<Notebook>{
 	@Id public long id;
 	public String name;
 	
-	@ManyToOne(load=LoadingPolicy.LAZY)
+	@OneToOne(load=LoadingPolicy.LAZY)
 	public User whose;
 	
 	@Override

@@ -8,13 +8,17 @@ import org.orman.mapper.LoadingPolicy;
 /**
  * TODO protote this entity
  * TODO make sure that this entity is used when manytoone occurs, before starting session.
+ * TODO discuss: should target binding be supported?
+ * 
  * Place this annotation on columns to create relationship of *:1 cardinality
  * between entities.
+ * 
+ * This creates a non-unique index on this field. If you want to override its name,
+ * use {@link Index} annotaation after that.
  * 
  * @author alp
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ManyToOne {
-	String targetBindingField() default "";
 	LoadingPolicy load() default LoadingPolicy.EAGER;
 }

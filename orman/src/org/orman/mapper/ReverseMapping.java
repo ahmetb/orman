@@ -80,22 +80,31 @@ public class ReverseMapping {
 			E instance, Object key) {
 		if (key == null) return key;
 		
-		if (!MappingSession.entityExists(f.getClazz())){
+		Class<?> intendedType = f.getClazz();
+		
+		if (!MappingSession.entityExists(intendedType)){
 			/* our entity is not mappable! */
 			return key; // return the same
 		} else {
-			Class<?> intendedType = f.getClazz();
-			Entity intendedEntity = MappingSession.getEntity(intendedType);
-			
 			if (((Model<?>) instance).getEntityField(f) != null)
 				return null; // field is already filled somehow.
 			
+			Entity intendedEntity = MappingSession.getEntity(intendedType);
+			
 			if (!f.isList()){
 				/* we have a 1:1 mapping without checking the annotation */
-				if ((f.isAnnotationPresent(OneToOne.class) && f.getAnnotation(
-						OneToOne.class).load().equals(LoadingPolicy.EAGER))
-						|| (!f.isAnnotationPresent(OneToOne.class) && !f
-								.isAnnotationPresent(ManyToOne.class))) {
+				boolean doLoading = false;
+				
+				doLoading |= f.isAnnotationPresent(OneToOne.class) && f.getAnnotation(
+						OneToOne.class).load().equals(LoadingPolicy.EAGER);
+				
+				doLoading |= f.isAnnotationPresent(ManyToOne.class) && f.getAnnotation(
+						ManyToOne.class).load().equals(LoadingPolicy.EAGER);
+				
+				// if no annotations present on field do loading
+				doLoading |= !f.isAnnotationPresent(OneToOne.class) && !f.isAnnotationPresent(ManyToOne.class);
+				
+				if (doLoading) {
 					
 					Query c = ModelQuery.select().from(intendedEntity).where(
 							C.eq(intendedType, intendedEntity.getIdField()
@@ -118,7 +127,12 @@ public class ReverseMapping {
 				return null;
 			} else {
 				/* we have a 1:* or *:* mapping */
-				if (f.isAnnotationPresent(OneToMany.class)){
+				boolean doLoading = false;
+				
+				doLoading = doLoading | (f.isAnnotationPresent(OneToMany.class) && f.getAnnotation(
+						OneToMany.class).load().equals(LoadingPolicy.EAGER));
+				
+				if (doLoading){
 					OneToMany config = f.getAnnotation(OneToMany.class);
 					Query q = ModelQuery.select().from(intendedEntity)
 					.where(
@@ -126,7 +140,7 @@ public class ReverseMapping {
 					)
 					.getQuery();
 					
-					return ((Model<?>) instance).fetchQuery(q, intendedType);
+					return Model.fetchQuery(q, intendedType);
 				}					
 				return null;
 			}
