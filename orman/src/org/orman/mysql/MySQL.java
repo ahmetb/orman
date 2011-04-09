@@ -41,5 +41,6 @@ public class MySQL implements Database{
 	@Override
 	public void closeConnection() {
 		executer.close();
+		System.out.println("Connection terminated successfully."); //TODO log.
 	}
 }

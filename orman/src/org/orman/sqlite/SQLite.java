@@ -50,6 +50,7 @@ public class SQLite implements Database {
 	@Override
 	public void closeConnection() {
 		executer.close();
+		System.out.println("Connection terminated successfully."); //TODO log.
 	}
 	
 }
