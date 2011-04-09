@@ -6,6 +6,8 @@ import org.orman.mapper.exception.UnmappedFieldException;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
 import org.orman.sql.QueryType;
+import org.orman.sql.TableConstraint;
+import org.orman.sql.TableConstraintType;
 
 /**
  * Generates DDL (data description language) {@link Query} for given entity
@@ -38,6 +40,11 @@ public class DDLQueryGenerator {
 			
 			if (!f.isList()) // list columns are not saved.
 				qb.createColumn(f.getGeneratedName(), f.getType(), f.isNullable(), f.isId());
+			
+			if (f.isForeignKey()){
+				Entity mappedTo = MappingSession.getEntity(f.getClazz());
+				qb.addConstraint(new TableConstraint(TableConstraintType.FOREIGN_KEY, f.getGeneratedName(), mappedTo.getGeneratedName(), mappedTo.getIdField().getGeneratedName()));
+			}
 		}
 
 		return qb.getQuery();

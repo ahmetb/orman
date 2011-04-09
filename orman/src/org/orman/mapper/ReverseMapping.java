@@ -76,6 +76,7 @@ public class ReverseMapping {
 	 * @param key
 	 * @return the original key if key is already null.
 	 */
+	@SuppressWarnings("unchecked")
 	private static <E> Object makeCardinalityBinding(Field f,
 			E instance, Object key) {
 		if (key == null) return key;

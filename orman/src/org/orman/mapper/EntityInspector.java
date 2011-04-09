@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.ManyToOne;
@@ -124,6 +123,8 @@ public class EntityInspector {
 				
 				// Recognize @OnyToOne, @OneToMany, @ManyToMany annotations (covers @Index) 
 				if(f.isAnnotationPresent(OneToOne.class)){ // TODO add other cardinality annotations, too
+					newF.setForeignKey(true); // make field a foreign key.
+					
 					// if no custom @Index defined create a default.
 					if(newF.getIndex() == null)
 						newF.setIndex(new FieldIndexHolder(null, true));
@@ -131,6 +132,8 @@ public class EntityInspector {
 				
 				// ManyToOne
 				if(f.isAnnotationPresent(ManyToOne.class)){ // TODO add other cardinality annotations, too
+					newF.setForeignKey(true); // make field a foreign key.
+					
 					// if no custom @Index defined create a default.
 					if(newF.getIndex() == null)
 						newF.setIndex(new FieldIndexHolder(null, false));

@@ -110,7 +110,6 @@ public class QueryBuilder {
 	public QueryBuilder selectAs(String column, String as) {
 		DataField df = new DataField(column, as);
 		query.addField(df);
-
 		return this;
 	}
 	
@@ -409,10 +408,13 @@ public class QueryBuilder {
 		
 		StringBuffer sb = new StringBuffer();
 		for(int i = 0; i < fl.size(); i++){
-			sb.append(fl.get(i).getFieldName());
-			sb.append(' ');
-			sb.append(fl.get(i).getAlias());
+			IQueryField f = fl.get(i);
+			sb.append(f.getFieldName());
 			
+			if (fl.get(i).getAlias() != null){
+				sb.append(' ');
+				sb.append(f.getAlias()); // alias carries TYPE here.
+			}
 			if(i != fl.size()-1) sb.append(", ");
 		}
 		
@@ -426,7 +428,7 @@ public class QueryBuilder {
 	private String getTemplateFieldValue(String tplField) throws QueryBuilderException {
 		if ("SELECT_COLUMN_LIST".equals(tplField))
 			return prepareSelectFieldList();
-		if ("COLUMN_DESCRIPTION_LIST".equals(tplField))
+		if ("COLUMN_OR_CONSTRAINT_DESCRIPTION_LIST".equals(tplField))
 			return prepareFieldDescriptionList();
 		if ("TABLE_LIST".equals(tplField))
 			return prepareTableList();
@@ -475,6 +477,10 @@ public class QueryBuilder {
 		template = fillTemplate(template, modelMap);
 		
 		return template;
+	}
+
+	public void addConstraint(TableConstraint tableConstraint) {
+		this.select(tableConstraint.toString());
 	}
 	
 	/*

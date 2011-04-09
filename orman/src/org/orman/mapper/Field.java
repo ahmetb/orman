@@ -27,6 +27,8 @@ public class Field implements Comparable<Field>{
 	private boolean isId = false;
 	private boolean isNullable = true;
 	private boolean isList = false;
+	private boolean isForeignKey = false;
+	
 
 	// Reflection fields
 	private Method setterMethod;
@@ -49,6 +51,7 @@ public class Field implements Comparable<Field>{
 					.equals(tmpCustomType)) ? null : tmpCustomType;
 		}
 	}
+	
 
 	public String getCustomName() {
 		return customName;
@@ -168,5 +171,13 @@ public class Field implements Comparable<Field>{
 
 	public boolean isList() {
 		return isList;
+	}
+
+	public void setForeignKey(boolean isForeignKey) {
+		this.isForeignKey = isForeignKey;
+	}
+
+	public boolean isForeignKey() {
+		return isForeignKey;
 	}
 }
