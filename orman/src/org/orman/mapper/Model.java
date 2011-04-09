@@ -140,7 +140,7 @@ public class Model<E> {
 	public void update() {
 		//TODO discuss: is persistency check required? 
 		Query q = prepareUpdateQuery();
-		MappingSession.getExecuter().executeOnly(q);
+		if (q != null) MappingSession.getExecuter().executeOnly(q);
 
 		//TODO discuss: what should be done if list fields are updated.
 		makePersistent();

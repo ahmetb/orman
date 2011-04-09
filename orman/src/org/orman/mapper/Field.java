@@ -33,13 +33,15 @@ public class Field implements Comparable<Field>{
 	private Method getterMethod;
 	private java.lang.reflect.Field rawField;
 
-	public Field(Class<?> clazz, String name) {
+	public Field(Class<?> clazz, java.lang.reflect.Field fieldInstance) {
 		this.clazz = clazz;
-		this.originalName = name;
+		this.originalName = fieldInstance.getName();
 
-		if (clazz.isAnnotationPresent(Column.class)) {
-			String tmpCustomName = clazz.getAnnotation(Column.class).name();
-			String tmpCustomType = clazz.getAnnotation(Column.class).type();
+		// if @Column annotation exists, set custom name and type
+		if (fieldInstance.isAnnotationPresent(Column.class)) {
+			Column col = fieldInstance.getAnnotation(Column.class);
+			String tmpCustomName = col.name();
+			String tmpCustomType = col.type();
 
 			this.customName = (tmpCustomName == null || ""
 					.equals(tmpCustomName)) ? null : tmpCustomName;

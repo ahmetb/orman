@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.ManyToOne;
@@ -55,6 +56,7 @@ public class EntityInspector {
 		for(java.lang.reflect.Field f : this.clazz.getDeclaredFields()){
 			// Only non-`transient` (threatened as persistent) fields
 			if(!Modifier.isTransient(f.getModifiers())){
+				
 				Class<?> fieldType = f.getType();
 
 				boolean isList = false;
@@ -65,7 +67,6 @@ public class EntityInspector {
 					/*
 					 * we have a 1:* or *:* mapping
 					 */
-					
 					if (f.isAnnotationPresent(OneToMany.class)){
 						fieldType = f.getAnnotation(OneToMany.class).toType();
 					} else {
@@ -75,7 +76,7 @@ public class EntityInspector {
 					isList = true;
 				} 
 				
-				Field newF = new Field(fieldType, f.getName());
+				Field newF = new Field(fieldType, f); 
 				if (isList) newF.setList(true);
 					
 				// Find getters and setters for non-public field.
