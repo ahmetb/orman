@@ -1,5 +1,7 @@
 package org.orman.mysql;
 
+import java.sql.Date;
+
 import org.orman.datasource.DataTypeMapper;
 import org.orman.util.DoubleAssociativeMap;
 
@@ -15,6 +17,8 @@ public class DataTypeMapperImpl implements DataTypeMapper {
 		typeMap.put(Boolean.TYPE, "TINYINT(1)");
 		typeMap.put(Double.TYPE, "DOUBLE");
 		typeMap.put(Float.TYPE, "FLOAT");
+		typeMap.put(Date.class, "DATETIME");
+		typeMap.put(java.util.Date.class, "DATETIME");
 	}
 
 	@Override

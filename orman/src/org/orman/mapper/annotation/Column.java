@@ -19,5 +19,5 @@ public @interface Column{
 	 * Column data type (depending on database software),
 	 * remove annotation to make it automatically.
 	 */
-	String type();
+	String type() default "";
 }

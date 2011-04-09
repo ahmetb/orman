@@ -8,6 +8,7 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 	private String username = "";
 	private String password = "";
 	private String database = "";
+	private boolean autoCommit = false;
 	
 	public MySQLSettingsImpl(String username, String password, String db){
 		this(username, password, db, null, (short) -1);
@@ -39,5 +40,13 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 
 	public String getDatabase() {
 		return database;
+	}
+
+	public void setAutoCommit(boolean autoCommit) {
+		this.autoCommit = autoCommit;
+	}
+
+	public boolean isAutoCommit() {
+		return autoCommit;
 	}
 }
