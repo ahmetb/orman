@@ -8,7 +8,7 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 	private String username = "";
 	private String password = "";
 	private String database = "";
-	private boolean autoCommit = false;
+	private boolean autoCommit = true;
 	
 	public MySQLSettingsImpl(String username, String password, String db){
 		this(username, password, db, null, (short) -1);
