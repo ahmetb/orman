@@ -111,4 +111,11 @@ public class Entity {
 	public Constructor<?> getDefaultConstructor() {
 		return defaultConstructor;
 	}
+	
+	public int getForeignKeyCount(){
+		int c = 0;
+		for(Field f : fields)
+			if (f.isForeignKey()) c++;
+		return c;
+	}
 }

@@ -46,5 +46,10 @@ public class SQLite implements Database {
 	public DataTypeMapper getTypeMapper() {
 		return typeMapper;
 	}
+
+	@Override
+	public void closeConnection() {
+		executer.close();
+	}
 	
 }

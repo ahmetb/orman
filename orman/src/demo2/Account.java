@@ -16,7 +16,7 @@ public class Account extends Model<Account> {
 	@Column(type = "VARCHAR(50)")
 	private String branch;
 	
-	private Float balance;
+	private float balance;
 	
 	private Date openDate;
 
@@ -40,7 +40,7 @@ public class Account extends Model<Account> {
 		this.balance = balance;
 	}
 
-	public Float getBalance() {
+	public float getBalance() {
 		return balance;
 	}
 

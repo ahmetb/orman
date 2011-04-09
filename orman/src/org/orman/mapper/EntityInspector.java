@@ -29,7 +29,7 @@ import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
 public class EntityInspector {
 	
 	private static final Class<?>[] ID_SUPPORTED_TYPES = { Integer.class,
-			Integer.TYPE, Long.class, Long.TYPE}; // REMOVED String because of SQLite.
+			Integer.TYPE, Long.class, Long.TYPE, String.class}; // TODO CRITICAL: String does not work in SQLite.
 	private Class<?> clazz;
 	private List<Field> fields;
 	private Constructor<?> defaultConstructor;

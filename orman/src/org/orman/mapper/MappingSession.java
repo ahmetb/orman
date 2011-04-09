@@ -1,5 +1,7 @@
 package org.orman.mapper;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -151,11 +153,16 @@ public class MappingSession {
 		
 		// BIND NAMES AND TYPES FOR FIELDS
 		for(Entity e: scheme.getEntities()){
-			scheme.checkIdBinding(e);
+			//scheme.checkIdBinding(e);
+			//TODO CRITICAL: Enable asap.
+			
+			// make generated name and type bindings to fields.
 			for (Field f : e.getFields()) {
 				PhysicalNameAndTypeBindingEngine.makeBinding(e, f, configuration
 						.getColumnNamePolicy(), typeMapper);
 			}
+			
+			// check conflicting fields after bindings.
 			scheme.checkConflictingFields(e);
 		}
 		
@@ -178,13 +185,32 @@ public class MappingSession {
 		if (policy.equals(SchemeCreationPolicy.CREATE)
 				|| policy.equals(SchemeCreationPolicy.UPDATE)) {
 			
-			for (Entity e : scheme.getEntities()) {
-				
+			
+			// Drop tables first
+			// TODO Discuss: Order of drop of existing tables. Current policy, tbls with most FK first.
+			Collections.sort(scheme.getEntities(), new Comparator<Entity>() {
+				@Override
+				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count DESC
+					return new Integer(o2.getForeignKeyCount()).compareTo(o1.getForeignKeyCount());
+				}
+			});
+			for (Entity e : scheme.getEntities()){
 				if (policy.equals(SchemeCreationPolicy.CREATE)){
 					// DROP TABLE IF EXISTS
 					Query dT = DDLQueryGenerator.dropTableQuery(e);
 					constructionQueries.offer(dT);
 				}
+			}
+			
+			//TODO Discuss: Order of creation of tables. Current policy, entities with lesser FK first.
+			Collections.sort(scheme.getEntities(), new Comparator<Entity>() {
+				@Override
+				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count ASC
+					return new Integer(o1.getForeignKeyCount()).compareTo(o2.getForeignKeyCount());
+				}
+			});
+			
+			for (Entity e : scheme.getEntities()) {
 
 				// CREATE TABLE
 				Query cT = DDLQueryGenerator.createTableQuery(e, policy
@@ -192,6 +218,8 @@ public class MappingSession {
 				constructionQueries.offer(cT);
 
 				// CREATE INDEXES
+				// TODO CRITICAL: enable ASAP.
+				/*
 				for (Field f : e.getFields()) {
 					if (f.getIndex() != null) {
 						if (policy.equals(SchemeCreationPolicy.CREATE)){
@@ -206,11 +234,11 @@ public class MappingSession {
 						constructionQueries.offer(cI);
 					}
 				}
+				*/
 			}
 			
 			for(Query q : constructionQueries)
 				getExecuter().executeOnly(q);
-			System.out.println();
 		}
 	}
 

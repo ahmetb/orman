@@ -1,9 +1,9 @@
 package org.orman.mapper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.DuplicateColumnNamesException;
@@ -21,14 +21,14 @@ import org.orman.mapper.exception.UnmappedFieldException;
  *
  */
 public class PersistenceSchemeMapper {
-	private Set<Entity> entities;
+	private List<Entity> entities;
 	private Map<String, Entity> tableNames; // no need for DoubleAssociativeMap
 
 	/**
 	 * Initializes an empty ORM scheme.
 	 */
 	public PersistenceSchemeMapper() {
-		this.entities = new HashSet<Entity>();
+		this.entities = new ArrayList<Entity>();
 		this.tableNames = new HashMap<String, Entity>();
 	}
 
@@ -91,7 +91,7 @@ public class PersistenceSchemeMapper {
 	/**
 	 * @return all {@link Entity}s in scheme.
 	 */
-	public Set<Entity> getEntities() {
+	public List<Entity> getEntities() {
 		return this.entities;
 	}
 
@@ -142,6 +142,7 @@ public class PersistenceSchemeMapper {
 	 *             if does not exist any.
 	 * @param e
 	 */
+	//TODO CRITICAL: Decide: Is @Id annotation necessary? Can't there exist multiple PKs?
 	public void checkIdBinding(Entity e) {
 		int idOccurrenceCount = 0;
 
@@ -149,7 +150,7 @@ public class PersistenceSchemeMapper {
 			if (f.isId())
 				idOccurrenceCount++;
 		}
-
+		
 		if (idOccurrenceCount < 1)
 			throw new NotDeclaredIdException(e.getOriginalFullName());
 		else if (idOccurrenceCount > 1)

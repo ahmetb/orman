@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.gjt.mm.mysql.Driver;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
 import org.orman.datasource.exception.QueryExecutionException;
@@ -29,14 +30,15 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		this.settings = settings;
 		
 		Properties props = new Properties();
-		props.put("username", this.settings.getUsername());
+		props.put("user", this.settings.getUsername());
 		props.put("password", this.settings.getPassword());
 		
 		// Establish DB connection.
 		try {
+			DriverManager.registerDriver(new Driver());
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://" + this.settings.getServer() + ":"
-							+ this.settings.getPort() + "/", props);
+							+ this.settings.getPort() + "/" + this.settings.getDatabase(), props);
 			conn.setAutoCommit(this.settings.isAutoCommit());
 			
 		} catch (SQLException e) {

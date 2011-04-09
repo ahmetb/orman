@@ -37,4 +37,9 @@ public class MySQL implements Database{
 	public DataTypeMapper getTypeMapper() {
 		return typeMapper;
 	}
+
+	@Override
+	public void closeConnection() {
+		executer.close();
+	}
 }

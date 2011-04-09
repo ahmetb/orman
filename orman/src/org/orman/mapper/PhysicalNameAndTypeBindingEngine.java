@@ -1,6 +1,7 @@
 package org.orman.mapper;
 
 import org.orman.datasource.DataTypeMapper;
+import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.OneToOne;
@@ -58,21 +59,28 @@ public class PhysicalNameAndTypeBindingEngine {
 			Class<?> fieldType = null;
 			// use Class<?> type of the field.
 			
+			String customizedBindingType = null;
 			
 			if (field.isAnnotationPresent(OneToOne.class)){
 				//  there exists 1:1 set type as matched field's Id type.
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
+				// assign whether a customized field type exists with @Column.
+				customizedBindingType = getCustomizedBinding(field.getClazz());
 			} else if(MappingSession.entityExists(field.getClazz())){
 				// infer entity @Id type if @*to* annotations does not exist 
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
+				// assign whether a customized field type exists with @Column.
 			} else {
 				// usual conditions
 				fieldType = field.getClazz();
 			}
 			
-			field.setType(dataTypeMapper.getTypeFor(fieldType));
+			if (customizedBindingType != null) // there exists a binding with @Column(name=..)
+				field.setType(customizedBindingType); 
+			else
+				field.setType(dataTypeMapper.getTypeFor(fieldType));
 		}
 
 		/* INDEX SETTINGS BINDING */
@@ -87,11 +95,24 @@ public class PhysicalNameAndTypeBindingEngine {
 			}
 		}
 	}
+	
+	private static String getCustomizedBinding(Class<?> clazz) {
+		java.lang.reflect.Field idField = getIdFieldForClass(clazz);
+		if (idField.isAnnotationPresent(Column.class)){
+			return idField.getAnnotation(Column.class).type();
+		}
+		return null;
+	}
 
-	private static Class<?> getIdTypeForClass(Class<?> clazz) {
+	private static java.lang.reflect.Field getIdFieldForClass(Class<?> clazz) {
 		for(java.lang.reflect.Field f : clazz.getDeclaredFields())
 			if(f.isAnnotationPresent(Id.class))
-				return f.getType();
+				return f;
+		return null;
+	}
+
+	private static Class<?> getIdTypeForClass(Class<?> clazz) {
+		getIdFieldForClass(clazz).getType();
 		return null;
 	}
 }

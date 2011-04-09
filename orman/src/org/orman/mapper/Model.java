@@ -174,7 +174,7 @@ public class Model<E> {
 				qb.set(f.getGeneratedName(), fieldVal);
 			}
 			qb.where(C.eq(getEntity().getIdField().getGeneratedName(),
-					__persistencyId));
+					__persistencyId)); //TODO discuss: what about entities without @Id? (__persistencyId)
 			return qb.getQuery();
 		} else
 			return null;
@@ -242,6 +242,18 @@ public class Model<E> {
 	}
 
 	/**
+	 * @return whether entity has a {@link Id} marked field.
+	 */
+	private boolean hasEntityId() {
+		try {
+			getEntity().getIdField();
+			return true;
+		} catch (Exception e) {
+		} 
+		return false;
+	}
+
+	/**
 	 * Set the {@link Model} flags and hashes using the persistent fields of the
 	 * entity to detect that object is changed later.
 	 */
@@ -255,7 +267,9 @@ public class Model<E> {
 			__persistencyFieldHashes[i] = (o == null || f.isList()) ? DEFAULT_TRANSIENT_HASHCODE
 					: o.hashCode();
 		}
-		__persistencyId = getEntityId();
+		if (hasEntityId())
+			__persistencyId = getEntityId();
+		
 		__persistencyHash = this.hashCode();
 	}
 

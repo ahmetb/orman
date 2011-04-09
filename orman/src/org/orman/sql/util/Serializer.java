@@ -1,5 +1,6 @@
 package org.orman.sql.util;
 
+import java.util.Date;
 import java.util.List;
 
 import org.orman.sql.Query;
@@ -18,6 +19,14 @@ public class Serializer {
 		
 		if (o instanceof String){
 			return new StringLiteral(o).toString();
+		}
+		
+		if (o instanceof Date){
+			return new StringLiteral(new java.sql.Date(((Date) o).getTime()).toString()).toString();
+		}
+		
+		if (o instanceof java.sql.Date){
+			return new StringLiteral(((java.sql.Date) o).toString()).toString();
 		}
 		
 		if (o instanceof String[]){
