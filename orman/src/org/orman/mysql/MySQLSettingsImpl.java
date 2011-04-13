@@ -4,7 +4,7 @@ import org.orman.datasource.DatabaseSettings;
 
 public class MySQLSettingsImpl implements DatabaseSettings {
 	private short port = 3306;
-	private String server = "localhost";
+	private String host = "localhost";
 	private String username = "";
 	private String password = "";
 	private String database = "";
@@ -14,11 +14,15 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 		this(username, password, db, null, (short) -1);
 	}
 	
-	public MySQLSettingsImpl(String username, String password, String db, String server, short port){
+	public MySQLSettingsImpl(String username, String password, String db, String host){
+		this(username, password, db, host, (short) -1);
+	}
+	
+	public MySQLSettingsImpl(String username, String password, String db, String host, short port){
 		if (username != null) this.username = username;
 		if (password != null) this.password = password;
 		if (db != null) this.database = db;
-		if (server != null) this.server = server;
+		if (host != null) this.host = host;
 		if (port >= 0) this.port = port;
 	}
 
@@ -26,8 +30,8 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 		return port;
 	}
 
-	public String getServer() {
-		return server;
+	public String getHost() {
+		return host;
 	}
 
 	public String getUsername() {
@@ -48,5 +52,25 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 
 	public boolean isAutoCommit() {
 		return autoCommit;
+	}
+
+	public void setPort(short port) {
+		this.port = port<0 || port>0xffff? -1 : port;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
 	}
 }

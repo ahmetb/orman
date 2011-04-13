@@ -37,7 +37,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		try {
 			DriverManager.registerDriver(new Driver());
 			conn = DriverManager.getConnection(
-					"jdbc:mysql://" + this.settings.getServer() + ":"
+					"jdbc:mysql://" + this.settings.getHost() + ":"
 							+ this.settings.getPort() + "/" + this.settings.getDatabase(), props);
 			conn.setAutoCommit(this.settings.isAutoCommit());
 			
