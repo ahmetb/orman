@@ -13,6 +13,7 @@ import org.orman.mapper.exception.MappingSessionNotStartedException;
 import org.orman.mapper.exception.NoDatabaseRegisteredException;
 import org.orman.mapper.exception.UnregisteredEntityException;
 import org.orman.sql.Query;
+import org.orman.util.Log;
 
 /**
  * Mapping session for static system-wide scope. It is statically initialized
@@ -53,9 +54,16 @@ public class MappingSession {
 	 * @param entityClass
 	 */
 	public static void registerEntity(Class<?> entityClass) {
+		if (sessionStarted){
+			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
+			Log.error(ex);
+			throw ex;
+		}
+		
 		Entity e = new Entity(entityClass);
 
-		// BIND TABLE NAME 
+		// BIND TABLE NAME
+		Log.info("Registering entity %s.", e.getOriginalName());
 		PhysicalNameAndTypeBindingEngine.makeBinding(e, configuration
 				.getTableNamePolicy());
 		
@@ -143,15 +151,22 @@ public class MappingSession {
 	 * 
 	 */
 	public static void start() {
-		if (sessionStarted)
-			throw new MappingSessionAlreadyStartedException();
+		if (sessionStarted){
+			MappingSessionAlreadyStartedException e = new MappingSessionAlreadyStartedException();
+			Log.error(e);
+			throw e;
+		} else sessionStarted = true; // make the session started.
 		
-		if (db == null)
-			throw new NoDatabaseRegisteredException();
+		Log.info("Mapping session started.");
 		
-		else sessionStarted = true; // make the session started.
+		if (db == null){
+			NoDatabaseRegisteredException e = new NoDatabaseRegisteredException();
+			Log.error(e);
+			throw e;
+		}
 		
 		// BIND NAMES AND TYPES FOR FIELDS
+		Log.info("Preparing to make physical bindings for entities.");
 		for(Entity e: scheme.getEntities()){
 			//scheme.checkIdBinding(e);
 			//TODO CRITICAL: Enable asap.
@@ -164,6 +179,7 @@ public class MappingSession {
 			
 			// check conflicting fields after bindings.
 			scheme.checkConflictingFields(e);
+			Log.info("No conflicting field names found on entity %s.", e.getOriginalName());
 		}
 		
 		// CONSTRUCT DDL SCHEME FINALLY
@@ -182,11 +198,11 @@ public class MappingSession {
 
 		SchemeCreationPolicy policy = configuration.getCreationPolicy();
 		
+		Log.info("Scheme creation policy is %s.", policy.toString());
+		
 		if (policy.equals(SchemeCreationPolicy.CREATE)
 				|| policy.equals(SchemeCreationPolicy.UPDATE)) {
 			
-			
-			// Drop tables first
 			// TODO Discuss: Order of drop of existing tables. Current policy, tbls with most FK first.
 			Collections.sort(scheme.getEntities(), new Comparator<Entity>() {
 				@Override
@@ -194,6 +210,8 @@ public class MappingSession {
 					return new Integer(o2.getForeignKeyCount()).compareTo(o1.getForeignKeyCount());
 				}
 			});
+			
+			
 			for (Entity e : scheme.getEntities()){
 				if (policy.equals(SchemeCreationPolicy.CREATE)){
 					// DROP TABLE IF EXISTS
@@ -211,7 +229,6 @@ public class MappingSession {
 			});
 			
 			for (Entity e : scheme.getEntities()) {
-
 				// CREATE TABLE
 				Query cT = DDLQueryGenerator.createTableQuery(e, policy
 						.equals(SchemeCreationPolicy.UPDATE));
@@ -237,8 +254,11 @@ public class MappingSession {
 				*/
 			}
 			
-			for(Query q : constructionQueries)
+			Log.info("Executing DDL construction queries.");
+			for(Query q : constructionQueries){
 				getExecuter().executeOnly(q);
+			}
+			Log.info("DDL constructed successfully.");
 		}
 	}
 

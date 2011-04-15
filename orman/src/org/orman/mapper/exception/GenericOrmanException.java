@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class GenericOrmanException extends RuntimeException {
 	private String s;

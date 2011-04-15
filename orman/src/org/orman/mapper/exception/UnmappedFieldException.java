@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class UnmappedFieldException extends RuntimeException {
 	private static String message = "No column name or data type has been generated for the following field: %s";

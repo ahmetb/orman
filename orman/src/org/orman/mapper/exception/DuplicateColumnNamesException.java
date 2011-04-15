@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class DuplicateColumnNamesException extends RuntimeException {
 	private static String message = "Unable to map more than one fields to the same column name: %s, %s.";

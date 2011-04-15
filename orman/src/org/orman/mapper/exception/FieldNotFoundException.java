@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class FieldNotFoundException extends RuntimeException {
 	private static String message = "Could not find property (field) `%s` in %s.";

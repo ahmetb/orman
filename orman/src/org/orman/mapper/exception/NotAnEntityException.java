@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class NotAnEntityException extends RuntimeException {
 	private static final String message = "The following class is not eligible to be an entity. Use @Entity annotation.: %s";

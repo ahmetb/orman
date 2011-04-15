@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class UnparametrizedCollectionFieldException extends RuntimeException {
 	private static String message = "Unparametrized collection types (List, ArrayList, LinkedList) are not allowed as persistent field `%s` in %s. Parametrize them with classes of entity types.";

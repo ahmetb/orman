@@ -13,6 +13,7 @@ import org.orman.mapper.exception.TooManyIdException;
 import org.orman.mapper.exception.UnmappedDataTypeException;
 import org.orman.mapper.exception.UnmappedEntityException;
 import org.orman.mapper.exception.UnmappedFieldException;
+import org.orman.util.Log;
 
 /**
  * Holds object mapping scheme and their physical table names.  
@@ -118,15 +119,19 @@ public class PersistenceSchemeMapper {
 			if (f.getType() == null && !MappingSession.entityExists(f.getClazz())
 					//&& f.getType().equals(List.class) //TODO seems unnecessary
 			) {
-				throw new UnmappedDataTypeException(f.getOriginalName(), f
+				UnmappedDataTypeException ex =  new UnmappedDataTypeException(f.getOriginalName(), f
 						.getClazz().getName());
+				Log.error(ex);
+				throw ex;
 			}
 
 			// conflicting column name bindings
 			for (Field g : e.getFields()) {
 				if (f != g && f.equals(g)) {
-					throw new DuplicateColumnNamesException(
+					DuplicateColumnNamesException ex = new DuplicateColumnNamesException(
 							f.getOriginalName(), g.getOriginalName());
+					Log.error(ex);
+					throw ex;
 				}
 			}
 		}

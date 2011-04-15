@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class UnannotatedCollectionFieldException extends RuntimeException {
 	private static String message = "Unannotated non-transient collection field `%s` on %s. Annotate it with @OneToMany or @ManyToMany.";

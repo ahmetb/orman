@@ -14,8 +14,11 @@ import java.util.Properties;
 import org.gjt.mm.mysql.Driver;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
+import org.orman.datasource.exception.DatasourceConnectionException;
+import org.orman.datasource.exception.OrmanException;
 import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
+import org.orman.util.Log;
 
 public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
@@ -35,26 +38,37 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		
 		// Establish DB connection.
 		try {
+			Log.info("Trying to establish MySQL connection to %s at %s.", this.settings.getHost(), this.settings.getPort());
+			
 			DriverManager.registerDriver(new Driver());
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://" + this.settings.getHost() + ":"
 							+ this.settings.getPort() + "/" + this.settings.getDatabase(), props);
+			
 			conn.setAutoCommit(this.settings.isAutoCommit());
 			
 		} catch (SQLException e) {
-			throwError(e);
+			Log.error("Unable to establish a connection: %s", e.getMessage());
+			throwError(new DatasourceConnectionException(e.getMessage())); 
 		}
+		
 		if (conn == null)
-			throwError(new SQLException("Could not establish connection to database."));
+			throwError(new DatasourceConnectionException("Could not establish connection to database."));
+		Log.info("Connection established to the database.");
+	}
+	
+	private void throwError(OrmanException e){
+		throw new OrmanException("MySQL error:" + e.getMessage());
 	}
 	
 	private void throwError(SQLException e){
-		throw new QueryExecutionException("MySQL error:" + e.toString());
+		throw new QueryExecutionException("MySQL error:" + e.getMessage());
 	}
 
 	@Override
 	public ResultList executeForResultList(Query q) {
-		System.out.println("Executing: " + q); // TODO log.
+		Log.trace(q.getExecutableSql()); 
+		
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeQuery(q.getExecutableSql());
@@ -87,6 +101,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 					columnNames[j] = rsMeta.getColumnName(j+1); // starts from 1.
 				}
 				
+				Log.trace("  Query returned %d rows.", result.size());
 				return new ResultList(columnNames, resultArr);
 			}
 		} catch (SQLException ex) {
@@ -97,7 +112,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public Object executeForSingleValue(Query q) {
-		System.out.println("Executing: " + q); // TODO log.
+		Log.trace(q.getExecutableSql()); 
 		
 		Statement stmt;
 		try {
@@ -119,7 +134,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	 */
 	@Override
 	public void executeOnly(Query q) {
-		System.out.println("Executing: " + q); // TODO log.
+		Log.trace(q.getExecutableSql()); 
 		
 		try {
 			Statement stmt = conn.createStatement();
@@ -133,7 +148,8 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public Object getLastInsertId() {
 		String lastIdQuery = "SELECT LAST_INSERT_ID();";
 		
-		System.out.println("Executing: " + lastIdQuery); // TODO log.
+		Log.trace(lastIdQuery);
+		
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(lastIdQuery);
@@ -164,6 +180,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public void close() {
 		try {
 			conn.close();
+			Log.info("Connection to the database is now closed."); 
 		} catch (SQLException e) {
 			throwError(e);
 		}

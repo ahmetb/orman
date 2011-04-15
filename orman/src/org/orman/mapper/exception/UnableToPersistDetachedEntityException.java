@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class UnableToPersistDetachedEntityException extends RuntimeException {
 	private static final String message = "Unable to persist detached (non-persistent) entity `%s`. Save the entity with insert() or update() before using it on other queries.";

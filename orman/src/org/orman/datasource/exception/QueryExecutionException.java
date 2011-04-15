@@ -1,6 +1,6 @@
 package org.orman.datasource.exception;
 
-public class QueryExecutionException extends RuntimeException {
+public class QueryExecutionException extends OrmanException {
 
 	private static final String format = "Query execution error: %s"; 
 	

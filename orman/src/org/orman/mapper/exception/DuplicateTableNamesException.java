@@ -1,5 +1,6 @@
 package org.orman.mapper.exception;
 
+
 @SuppressWarnings("serial")
 public class DuplicateTableNamesException extends RuntimeException {
 	private static String message = "Unable to map more than one entities to the same table name: %s, %s.";

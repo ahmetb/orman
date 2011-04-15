@@ -5,6 +5,7 @@ import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.OneToOne;
+import org.orman.util.Log;
 
 /**
  * Provides methods to make physical name and column type bindings to fields and
@@ -21,6 +22,7 @@ public class PhysicalNameAndTypeBindingEngine {
 			PhysicalNamingPolicy namingPolicy) {
 		if (entity.getCustomName() != null) {
 			// use custom name.
+			Log.info("Using custom name %s for entity %s.", entity.getCustomName(), entity.getOriginalName());
 			entity.setGeneratedName(entity.getCustomName());
 		} else {
 			// format name accordingly naming policy
@@ -44,6 +46,7 @@ public class PhysicalNameAndTypeBindingEngine {
 		/* NAME BINDING */
 		if (field.getCustomName() != null) {
 			// use custom name.
+			Log.trace("Using custom field name on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
 			field.setGeneratedName(field.getCustomName());
 		} else {
 			// format name accordingly naming policy.
@@ -54,6 +57,7 @@ public class PhysicalNameAndTypeBindingEngine {
 		/* DATA TYPE BINDING */
 		if (field.getCustomType() != null) {
 			// use manual field type.
+			Log.trace("Using custom type on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
 			field.setType(field.getCustomType());
 		} else {
 			Class<?> fieldType = null;
@@ -65,12 +69,17 @@ public class PhysicalNameAndTypeBindingEngine {
 				//  there exists 1:1 set type as matched field's Id type.
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
+				
 				// assign whether a customized field type exists with @Column.
 				customizedBindingType = getCustomizedBinding(field.getClazz());
+				
+				Log.trace("OneToOne mapping detected on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
 			} else if(MappingSession.entityExists(field.getClazz())){
 				// infer entity @Id type if @*to* annotations does not exist 
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
+				
+				Log.trace("Direct entity mapping inferred on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
 				// assign whether a customized field type exists with @Column.
 			} else {
 				// usual conditions
@@ -81,6 +90,8 @@ public class PhysicalNameAndTypeBindingEngine {
 				field.setType(customizedBindingType); 
 			else
 				field.setType(dataTypeMapper.getTypeFor(fieldType));
+			
+			Log.info("Field '%s'(%s) mapped to '%s'(%s).", field.getOriginalName(), field.getClazz().getName(), field.getGeneratedName(), field.getType());
 		}
 
 		/* INDEX SETTINGS BINDING */
@@ -89,9 +100,10 @@ public class PhysicalNameAndTypeBindingEngine {
 					|| "".equals(field.getIndex().name())) {
 				// missing index name, create using field name followed by
 				// _index policy.
-				field.getIndex().name(
-						String.format(INDEX_FORMAT, entity.getGeneratedName(),
-								field.getGeneratedName(), INDEX_POSTFIX));
+				String indexName = String.format(INDEX_FORMAT, entity.getGeneratedName(),
+						field.getGeneratedName(), INDEX_POSTFIX);
+				Log.info("Field '%s' index name binded as '%s'", field.getOriginalName(), indexName);
+				field.getIndex().name(indexName);
 			}
 		}
 	}

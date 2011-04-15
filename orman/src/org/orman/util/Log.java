@@ -1,14 +1,17 @@
 package org.orman.util;
 
-import java.text.MessageFormat;
-
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class Log {
 	private static Logger logger = Logger.getLogger("orman");
 	static {
 		BasicConfigurator.configure();
+	}
+
+	public static void setLevel(Level level){
+		logger.setLevel(level);
 	}
 	
 	public static Logger getLogger() {
@@ -18,8 +21,6 @@ public class Log {
 	public static void setLogger(Logger log) {
 		logger = log;
 	}
-	
-	
 	
 	public static void trace(Object message){
 		getLogger().trace(message);
