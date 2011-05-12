@@ -11,4 +11,6 @@ local.properties
 .loadpath
 
 lite.db
-src/demo*
+
+# disable playground -- later.
+# src/demo*
