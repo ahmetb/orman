@@ -47,7 +47,7 @@ public class ModelQuery {
 		return new ModelQuery(type);
 	}
 
-	public ModelQuery from(Entity... e) {
+	protected ModelQuery from(Entity... e) {
 		for (Entity a : e) {
 			this.qb.from(a.getGeneratedName());
 		}

@@ -1,5 +1,7 @@
 package org.orman.datasource;
 
+import org.orman.sql.SQLGrammarProvider;
+
 /**
  * Generic database interface that databases
  * should implement.
@@ -8,6 +10,7 @@ package org.orman.datasource;
  */
 public interface Database {
 	public DataTypeMapper getTypeMapper();
+	public SQLGrammarProvider getSQLGrammar();
 	public QueryExecutionContainer getExecuter();
 	public void closeConnection();
 }

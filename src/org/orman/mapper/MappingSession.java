@@ -13,6 +13,8 @@ import org.orman.mapper.exception.MappingSessionNotStartedException;
 import org.orman.mapper.exception.NoDatabaseRegisteredException;
 import org.orman.mapper.exception.UnregisteredEntityException;
 import org.orman.sql.Query;
+import org.orman.sql.QueryType;
+import org.orman.sql.SQLGrammarProvider;
 import org.orman.util.Log;
 
 /**
@@ -157,12 +159,20 @@ public class MappingSession {
 			throw e;
 		} else sessionStarted = true; // make the session started.
 		
-		Log.info("Mapping session started.");
+		Log.info("Mapping session starting...");
 		
 		if (db == null){
 			NoDatabaseRegisteredException e = new NoDatabaseRegisteredException();
 			Log.error(e);
 			throw e;
+		}
+		
+		
+		// set custom SQL grammar provider
+		SQLGrammarProvider p = db.getSQLGrammar();
+		if (p != null){
+			Log.info("Custom SQL grammar found: " + p.getClass().getName());
+			QueryType.setProvider(p);
 		}
 		
 		// BIND NAMES AND TYPES FOR FIELDS

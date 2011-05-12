@@ -2,12 +2,12 @@ package org.orman.sql;
 
 /**
  * Includes templates for SQL statements of various query types.
- * This is compatible with only the SQL standart. To handle different
- * understandings of SQL by database management systems, set a 
- * <code>SQLGrammarProvider</code> for this at runtime.
+ * <b>This is compatible with only the SQL standards.</b> To handle different
+ * grammars of different database management systems, set a 
+ * <code>SQLGrammarProvider</code> to this class at runtime.
  * 
- * <p>Caution: Any query type added here should be added to
- * <code>SQLGrammarProvider</code> implementations of various DBMSes.  
+ * <p>Caution: Any query type added/removed from here should be also updated on
+ * <code>SQLGrammarProvider</code> implementations of various DBMSes. 
  * </p>
  * 
  * @author alp
@@ -41,7 +41,7 @@ public enum QueryType {
 	ROLLBACK_TRANSACTION("ROLLBACK"); // highly depends on DBMS
 	
 	private String template;
-	private SQLGrammarProvider provider;
+	private static SQLGrammarProvider provider;
 
 	private QueryType(String tpl) {
 		this.template = tpl;
@@ -54,7 +54,7 @@ public enum QueryType {
 			return this.template;
 	}
 
-	public void setProvider(SQLGrammarProvider provider) {
-		this.provider = provider;
+	public static void setProvider(SQLGrammarProvider p) {
+		provider = p;
 	}
 }

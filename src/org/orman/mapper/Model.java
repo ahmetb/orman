@@ -47,13 +47,13 @@ public class Model<E> {
 
 	/**
 	 * Can be used to find that the instance is exactly
-	 * as its state when saved in terms of persistency.
+	 * as its state when saved in terms of persistence.
 	 * 
 	 * Detached instances are not saved at all or changed
 	 * after saving or fetching from database.
 	 * 		
 	 * @return false if object is changed or not saved at all,
-	 * true if the ob
+	 * true if the object is saved.
 	 */
 	public boolean isPersistent() {
 		return (this.hashCode() == __persistencyHash)
@@ -67,8 +67,8 @@ public class Model<E> {
 	 * Postcondition: Instance is persistent.
 	 */
 	public void insert() {
-		// TODO discuss: persistency check?
-
+		// TODO discuss: persistence check?
+		
 		Query q = prepareInsertQuery();
 
 		MappingSession.getExecuter().executeOnly(q);
@@ -424,6 +424,16 @@ public class Model<E> {
 		
 		if(l == null || l.size()==0) return null;
 		return l.get(0);
+	}
+	
+	/**
+	 * Executes given query for no result, i.e. it can be used for
+	 * <code>DELETE</code>, <code>UPDATE</code> queries. 
+	 * 
+	 * @param q query generated with {@link ModelQuery}.
+	 */
+	public static void execute(Query q){
+		MappingSession.getExecuter().executeOnly(q);
 	}
 
 	public Class<?> getType() {

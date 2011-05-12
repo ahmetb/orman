@@ -3,6 +3,7 @@ package org.orman.sqlite;
 import org.orman.datasource.DataTypeMapper;
 import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
+import org.orman.sql.SQLGrammarProvider;
 
 /**
  * SQLite implementation with sqlite4java library
@@ -22,11 +23,13 @@ public class SQLite implements Database {
 	private SQLiteSettingsImpl settings;
 	private DataTypeMapper typeMapper;
 	private QueryExecutionContainerImpl executer;
+	private SQLiteGrammar grammar;
 	
 	public SQLite(String file){
 		setSettings(new SQLiteSettingsImpl(file));
 		typeMapper = new DataTypeMapperImpl();
 		executer = new QueryExecutionContainerImpl(getSettings());
+		grammar = new SQLiteGrammar();
 	}
 
 	private void setSettings(SQLiteSettingsImpl settings) {
@@ -51,6 +54,11 @@ public class SQLite implements Database {
 	public void closeConnection() {
 		executer.close();
 		System.out.println("Connection terminated successfully."); //TODO log.
+	}
+
+	@Override
+	public SQLGrammarProvider getSQLGrammar() {
+		return grammar;
 	}
 	
 }

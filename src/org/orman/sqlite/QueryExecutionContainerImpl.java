@@ -9,6 +9,7 @@ import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
 import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
+import org.orman.util.Log;
 
 import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteException;
@@ -44,7 +45,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public ResultList executeForResultList(Query q) {
-		System.out.println("Executing: " + q); // TODO log.
+		Log.trace("Executing: " + q); // TODO log.
 		try {
 			SQLiteStatement s = db.prepare(q.getExecutableSql());
 			
@@ -84,7 +85,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public Object executeForSingleValue(Query q) {
-		System.out.println("Executing: " + q); // TODO log.
+		Log.trace("Executing: " + q); // TODO log.
 		
 		try {
 			SQLiteStatement s = db.prepare(q.getExecutableSql());
@@ -103,7 +104,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	 */
 	@Override
 	public void executeOnly(Query q) {
-		System.out.println("Executing: " + q); // TODO log.
+		Log.trace("Executing: " + q); // TODO log.
 		try {
 			db.exec(q.getExecutableSql());
 		} catch (SQLiteException e) {
