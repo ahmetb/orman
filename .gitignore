@@ -1,3 +1,14 @@
-bin/
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
 lite.db
 src/demo*
