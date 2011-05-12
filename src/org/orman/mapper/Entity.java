@@ -7,8 +7,6 @@ import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.NotAnEntityException;
 import org.orman.mapper.exception.NotDeclaredIdException;
 
-import demo.User;
-
 /**
  * Entity information holder for classes annotated with
  * {@link org.orman.mapper.annotation.Entity}. It holds original class name,
@@ -86,10 +84,6 @@ public class Entity {
 
 	public void setGeneratedName(String generatedName) {
 		this.generatedName = generatedName;
-	}
-
-	public static void main(String[] args) {
-		new Entity(User.class);
 	}
 
 	public String getCustomName() {
