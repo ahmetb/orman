@@ -45,10 +45,6 @@ public class SQLiteGrammar implements SQLGrammarProvider {
 	}};
 	
 	
-	protected SQLiteGrammar() {
-	
-	}
-	
 	@Override
 	public String getTemplate(QueryType type) {
 		String tpl = grammar.get(type);

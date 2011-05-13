@@ -1,9 +1,9 @@
 
-package org.orman.sqlite;
+package org.orman.sqlite.android;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
@@ -11,58 +11,72 @@ import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
 import org.orman.util.Log;
 
-import com.almworks.sqlite4java.SQLiteConnection;
-import com.almworks.sqlite4java.SQLiteException;
-import com.almworks.sqlite4java.SQLiteStatement;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 // TODO dispose() time.
 public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
-	private SQLiteSettingsImpl settings;
-	private File dbFile;
-	private SQLiteConnection db;
+	private SQLiteDatabase db;
 	
 	/**
 	 * Initialize database, create db file if not exists.
 	 * @param settings
 	 */
-	public QueryExecutionContainerImpl(SQLiteSettingsImpl settings){
-		this.settings = settings;
+	public QueryExecutionContainerImpl(SQLiteDatabase db){
+		this.db = db;
+	}
+	
+	private void throwError(SQLiteException e){
+		throw new QueryExecutionException("SQLiteAndroid error:" + e.toString());
+	}
+	
+	/**
+	 * Only executes the query without obtaining any results.
+	 * throws {@link QueryExecutionException} if error occurs.
+	 */
+	@Override
+	public void executeOnly(Query q) {
 		
-		dbFile = new File(this.settings.getFilePath());
-		db = new SQLiteConnection(dbFile);
+		android.util.Log.d("DEMO", "db = " + db);
+		android.util.Log.d("DEMO", "q = " + q.toString());
 		
+		Log.trace("Executing: " + q);
 		try {
-			db.open(true);
+			db.execSQL(q.getExecutableSql());
 		} catch (SQLiteException e) {
 			throwError(e);
 		}
 	}
-	
-	private void throwError(SQLiteException e){
-		throw new QueryExecutionException("SQLite error:" + e.toString());
-	}
 
 	@Override
 	public ResultList executeForResultList(Query q) {
-		Log.trace("Executing: " + q); 
+		Log.trace("Executing: " + q);
+		
+		
 		try {
-			SQLiteStatement s = db.prepare(q.getExecutableSql());
+			Cursor cur = db.rawQuery(q.getExecutableSql(), null);
 			
-			int columnCount = s.columnCount();
-			String[] colNames = new String[columnCount];
+			int columnCount = cur.getColumnCount();
+			String[] colNames = cur.getColumnNames();
+			
 			List<Object[]> result = new ArrayList<Object[]>();
 				
 			int rowIndex = 0;
-				
-			while(s.step()){ // for each row.
+			
+			boolean hasRecord = cur.moveToFirst();
+			
+			while(hasRecord){
 				Object[] row = new Object[columnCount];
 				
 				for(int j = 0; j < columnCount; j++){ // for each column
-					row[j] = s.columnValue(j); 
+					row[j] = cur.getString(j); 
 				}
 				result.add(row);
 				++rowIndex;
+				
+				hasRecord = cur.moveToNext();
 			}
 			
 			if(result.size() > 0){
@@ -71,51 +85,42 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 				for(Object[] row : result)
 					resultArr[i++] = row;
 				
-				for(int j = 0; j < columnCount; j++){
-					colNames[j] = s.getColumnName(j);
-				}
-				
 				return new ResultList(colNames, resultArr);
 			}
 		} catch (SQLiteException ex) {
 			throwError(ex);
-		}	
-		return null;
+		}
+		return null;	
 	}
 
+	
 	@Override
 	public Object executeForSingleValue(Query q) {
-		Log.trace("Executing: " + q); 
+		Log.trace("Executing: " + q); // TODO log.
 		
 		try {
-			SQLiteStatement s = db.prepare(q.getExecutableSql());
-			while(s.step()){
-				return s.columnValue(0);
+			Cursor cur = db.rawQuery(q.getExecutableSql(), null);
+			if (!cur.moveToNext()){
+				return null;
+			} else {
+				return cur.getString(0);
 			}
 		} catch (SQLiteException e) {
 			throwError(e);
 		}
 		return null;
-	}
-
-	/**
-	 * Only executes the query without obtaining any results.
-	 * throws {@link QueryExecutionException} if error occurs.
-	 */
-	@Override
-	public void executeOnly(Query q) {
-		Log.trace("Executing: " + q); // TODO log.
-		try {
-			db.exec(q.getExecutableSql());
-		} catch (SQLiteException e) {
-			throwError(e);
-		}
 	}
 
 	@Override
 	public Object getLastInsertId() {
 		try {
-			return new Long(db.getLastInsertId()); // TODO returns long. test for int and String behavior. 
+			Cursor cur = db.rawQuery("SELECT last_insert_rowid();", null);
+			cur.moveToFirst();
+			if (!cur.moveToNext()){
+				return null;
+			} else {
+				return cur.getLong(0); // TODO returns long. test for int and String behavior.
+			}
 		} catch (SQLiteException e) {
 			throwError(e);
 			return null;
@@ -136,9 +141,18 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		return val;
 	}
 	
-
 	@Override
 	public void close() {
-		db.dispose();
+		db.close();
 	}
+	
+	/**
+	 * To bind {@link SQLiteDatabase} onCreate.
+	 * 
+	 * @param db
+	 */
+	public void setDatabase(SQLiteDatabase db) {
+		this.db = db;
+	}
+
 }

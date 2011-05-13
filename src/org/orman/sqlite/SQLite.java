@@ -4,6 +4,7 @@ import org.orman.datasource.DataTypeMapper;
 import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.sql.SQLGrammarProvider;
+import org.orman.util.Log;
 
 /**
  * SQLite implementation with sqlite4java library
@@ -53,7 +54,7 @@ public class SQLite implements Database {
 	@Override
 	public void closeConnection() {
 		executer.close();
-		System.out.println("Connection terminated successfully."); //TODO log.
+		Log.info("Connection terminated successfully."); 
 	}
 
 	@Override
