@@ -3,7 +3,6 @@ package org.orman.sqlite.android;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
@@ -37,11 +36,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	 * throws {@link QueryExecutionException} if error occurs.
 	 */
 	@Override
-	public void executeOnly(Query q) {
-		
-		android.util.Log.d("DEMO", "db = " + db);
-		android.util.Log.d("DEMO", "q = " + q.toString());
-		
+	public void executeOnly(Query q) {		
 		Log.trace("Executing: " + q);
 		try {
 			db.execSQL(q.getExecutableSql());
@@ -96,7 +91,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
 	@Override
 	public Object executeForSingleValue(Query q) {
-		Log.trace("Executing: " + q); // TODO log.
+		Log.trace("Executing: " + q); 
 		
 		try {
 			Cursor cur = db.rawQuery(q.getExecutableSql(), null);

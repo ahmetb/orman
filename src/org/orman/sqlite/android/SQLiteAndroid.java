@@ -61,8 +61,11 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		executer.setDatabase(this.getWritableDatabase()); // no need for readable db.
+		Log.info("SQLite database onCreate invoked. Database path %s.", db.getPath());
+		//TODO currently defers creation of database to SchemeCreationPolicy.
+		// and does not create database here.
 		
+		executer.setDatabase(db); // no need for readable db.
 		// drop scheme first
 		// construct scheme
 	}
@@ -70,10 +73,12 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO not implemented. have a destroySchemeQueries function in MappingSession.
+		Log.info(
+				"SQLite database onUpdate invoked. Database path %s. Old %d, new %d.",
+				db.getPath(), oldVersion, newVersion);
 		executer.setDatabase(this.getWritableDatabase());
 		
 		// drop scheme 
-		
 		// construct scheme
 	}
 
