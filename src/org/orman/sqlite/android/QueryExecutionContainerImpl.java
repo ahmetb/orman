@@ -14,7 +14,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
-// TODO dispose() time.
 public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
 	private SQLiteDatabase db;
@@ -38,6 +37,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public void executeOnly(Query q) {		
 		Log.trace("Executing: " + q);
+		
 		try {
 			db.execSQL(q.getExecutableSql());
 		} catch (SQLiteException e) {
@@ -48,7 +48,6 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public ResultList executeForResultList(Query q) {
 		Log.trace("Executing: " + q);
-		
 		
 		try {
 			Cursor cur = db.rawQuery(q.getExecutableSql(), null);
@@ -110,8 +109,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public Object getLastInsertId() {
 		try {
 			Cursor cur = db.rawQuery("SELECT last_insert_rowid()", null);
-			cur.moveToFirst();
-			if (!cur.moveToNext()){
+			
+			boolean status = cur.moveToFirst();
+			if (!status){
 				return null;
 			} else {
 				return cur.getLong(0); // TODO returns long. test for int and String behavior.
@@ -127,7 +127,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		Object val = getLastInsertId();
 		
 		if (val == null) {
-			Log.warn("last_insert_rowid() returned null from query. Propagating upwards null.");
+			Log.warn("last_insert_rowid() returned null from query. Propagating upwards as null, may cause anomalies.");
 			return null;
 		}
 		
