@@ -13,13 +13,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * SQLite wrapper for Android SDK 3 <code>database.sqlite
- * </code> package.
+ * SQLite wrapper for Android SDK <code>android.database.sqlite
+ * </code> package. Uses Android SDK 3 as a reference, for high
+ * compatibility.
  * 
  * Shares same grammar and data type mapper with <code>org.orman.sqlite</code>
  * package.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>
  */
 public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	private static final int SQLITE_VERSION = 33; //TODO read from somewhere else ASAP
@@ -28,14 +29,34 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	private SQLiteGrammar grammar;
 	
 	private String databaseName;
-
-	public SQLiteAndroid(Context context, String databaseName) {
-		super(context, databaseName, null, SQLITE_VERSION);
-
-		this.databaseName = databaseName;
+	private SQLiteDatabase db;
+	
+	public SQLiteAndroid(Context context, String dbFilename) {
+		super(context, dbFilename, null, SQLITE_VERSION);
+		SQLiteDatabase db = getWritableDatabase();
+		this.db = db;
+		
+		this.databaseName = dbFilename;
 		typeMapper = new DataTypeMapperImpl();
-		executer = new QueryExecutionContainerImpl(null); //bind database onCreate.
+		executer = new QueryExecutionContainerImpl(this.db); //bind database onCreate.
 		grammar = new SQLiteGrammar();
+		
+		Log.trace("Orman: DB initialized at %s", this.db.getPath());
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		//TODO currently defers creation of database to SchemeCreationPolicy.
+		// and does not create database here.
+		Log.warn("Orman: SQLite database onCreate invoked. Database path %s.", db.getPath());
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		Log.warn("onUpgrade");
+		Log.info(
+				"Orman: SQLite database onUpgrade invoked. Database path %s. Old %d, new %d.",
+				db.getPath(), oldVersion, newVersion);
 	}
 
 	@Override
@@ -59,30 +80,9 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 		return grammar;
 	}
 
-	@Override
-	public void onCreate(SQLiteDatabase db) {
-		Log.info("SQLite database onCreate invoked. Database path %s.", db.getPath());
-		//TODO currently defers creation of database to SchemeCreationPolicy.
-		// and does not create database here.
-		
-		executer.setDatabase(db); // no need for readable db.
-		// drop scheme first
-		// construct scheme
-	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO not implemented. have a destroySchemeQueries function in MappingSession.
-		Log.info(
-				"SQLite database onUpdate invoked. Database path %s. Old %d, new %d.",
-				db.getPath(), oldVersion, newVersion);
-		executer.setDatabase(this.getWritableDatabase());
-		
-		// drop scheme 
-		// construct scheme
-	}
-
+	
 	public String getDatabaseName() {
 		return databaseName;
 	}
+
 }

@@ -109,7 +109,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public Object getLastInsertId() {
 		try {
-			Cursor cur = db.rawQuery("SELECT last_insert_rowid();", null);
+			Cursor cur = db.rawQuery("SELECT last_insert_rowid()", null);
 			cur.moveToFirst();
 			if (!cur.moveToNext()){
 				return null;
@@ -126,6 +126,11 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public <T> Object getLastInsertId(Class<T> ofType) {
 		Object val = getLastInsertId();
 		
+		if (val == null) {
+			Log.warn("last_insert_rowid() returned null from query. Propagating upwards null.");
+			return null;
+		}
+		
 		if(ofType.equals(String.class)){
 			return new String(val.toString());
 		} else if(ofType.equals(Integer.class) || ofType.equals(Integer.TYPE)){
@@ -139,15 +144,6 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public void close() {
 		db.close();
-	}
-	
-	/**
-	 * To bind {@link SQLiteDatabase} onCreate.
-	 * 
-	 * @param db
-	 */
-	public void setDatabase(SQLiteDatabase db) {
-		this.db = db;
 	}
 
 }
