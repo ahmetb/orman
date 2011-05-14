@@ -15,7 +15,7 @@ import org.orman.mapper.exception.UnregisteredEntityException;
 import org.orman.sql.Query;
 import org.orman.sql.QueryType;
 import org.orman.sql.SQLGrammarProvider;
-import org.orman.util.Log;
+import org.orman.util.logging.Log;
 
 /**
  * Mapping session for static system-wide scope. It is statically initialized

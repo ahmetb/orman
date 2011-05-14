@@ -5,7 +5,7 @@ import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.OneToOne;
-import org.orman.util.Log;
+import org.orman.util.logging.Log;
 
 /**
  * Provides methods to make physical name and column type bindings to fields and

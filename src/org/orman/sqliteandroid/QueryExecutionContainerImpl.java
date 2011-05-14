@@ -8,7 +8,7 @@ import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
 import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
-import org.orman.util.Log;
+import org.orman.util.logging.Log;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

@@ -18,7 +18,7 @@ import org.orman.datasource.exception.DatasourceConnectionException;
 import org.orman.datasource.exception.OrmanException;
 import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
-import org.orman.util.Log;
+import org.orman.util.logging.Log;
 
 public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	

@@ -2,7 +2,6 @@ package demo;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.orman.datasource.Database;
 import org.orman.mapper.C;
 import org.orman.mapper.MappingSession;
@@ -11,10 +10,10 @@ import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
-import org.orman.mapper.annotation.OneToMany;
 import org.orman.sql.Query;
 import org.orman.sqlite.SQLite;
-import org.orman.util.Log;
+import org.orman.util.logging.Log;
+import org.orman.util.logging.LoggingLevel;
 
 @Entity
 public class User extends Model<User> {
@@ -28,7 +27,7 @@ public class User extends Model<User> {
 	}
 	
 	public static void main(String[] args) {
-		Log.setLevel(Level.TRACE);
+		Log.setLevel(LoggingLevel.TRACE);
 		
 		Database db = new SQLite("lite.db");
 		MappingSession.registerDatabase(db);
