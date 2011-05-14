@@ -4,6 +4,8 @@ import org.orman.datasource.DataTypeMapper;
 import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.sql.SQLGrammarProvider;
+import org.orman.sqlite.generic.DataTypeMapperImpl;
+import org.orman.sqlite.generic.SQLiteGrammar;
 import org.orman.util.Log;
 
 /**

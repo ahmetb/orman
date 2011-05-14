@@ -1,4 +1,4 @@
-package org.orman.sqlite;
+package org.orman.sqliteandroid;
 
 import org.orman.datasource.DataTypeMapper;
 import org.orman.util.DoubleAssociativeMap;
@@ -6,7 +6,7 @@ import org.orman.util.DoubleAssociativeMap;
 /**
  * {@link http://www.sqlite.org/datatype3.html}
  * 
- * Also update {@link org.orman.sqliteandroid.DataTypeMapperImpl}.
+ * Also update {@link org.orman.sqlite.DataTypeMapperImpl}.
  * 
  * @author alp
  *

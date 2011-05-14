@@ -1,4 +1,4 @@
-package org.orman.sqlite;
+package org.orman.sqliteandroid;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -10,9 +10,10 @@ import org.orman.sql.exception.QueryTypeNotImplementedException;
 /**
  * MySQL grammar for SQL language. Update accordingly {@link SQLGrammarProvider}
  *
- * Also update {@link org.orman.sqliteandroid.SQLiteGrammar}.
+ * Also update {@link org.orman.sqlite.SQLiteGrammar}.
  *
  * @see SQLGrammarProvider
+ * 
  * @author Ahmet Alp Balkan <ahmetalpbalkan at gmail.com>
  *
  */
