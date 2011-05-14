@@ -17,6 +17,5 @@ Project Aims
 Contact
 =======
 Maintainers:
-[Ahmet Alp Balkan](https://github.com/ahmetalpbalkan)
-[Berker Peksag](https://github.com/berkerpeksag)
+[Ahmet Alp Balkan](https://github.com/ahmetalpbalkan), [Berker Peksag](https://github.com/berkerpeksag)
 
