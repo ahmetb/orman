@@ -65,16 +65,8 @@ public class PhysicalNameAndTypeBindingEngine {
 			
 			String customizedBindingType = null;
 			
-			if(MappingSession.entityExists(field.getClazz())){
-				// infer entity @Id type if @*to* annotations does not exist 
-				Class<?> idType = getIdTypeForClass(field.getClazz());
-				fieldType = idType;
-				
-				// assign whether a customized field type exists with @Column.
-				customizedBindingType = getCustomizedBinding(field.getClazz());
-				
-				Log.trace("Direct entity mapping inferred on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
-			} else if (field.isAnnotationPresent(OneToOne.class)){
+			//TODO add OneToMany and ManyToOne and ManyToMany when eligible.
+			if (field.isAnnotationPresent(OneToOne.class)){
 				//  there exists 1:1 set type as matched field's Id type.
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
@@ -83,6 +75,15 @@ public class PhysicalNameAndTypeBindingEngine {
 				customizedBindingType = getCustomizedBinding(field.getClazz());
 				
 				Log.trace("OneToOne mapping detected on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
+			} else if(MappingSession.entityExists(field.getClazz())){
+				// infer entity @Id type if @*to* annotations does not exist 
+				Class<?> idType = getIdTypeForClass(field.getClazz());
+				fieldType = idType;
+				
+				// assign whether a customized field type exists with @Column.
+				customizedBindingType = getCustomizedBinding(field.getClazz());
+				
+				Log.trace("Direct entity mapping inferred on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
 			} else {
 				// usual conditions
 				fieldType = field.getClazz();
