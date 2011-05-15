@@ -22,7 +22,7 @@ public class PhysicalNameAndTypeBindingEngine {
 			PhysicalNamingPolicy namingPolicy) {
 		if (entity.getCustomName() != null) {
 			// use custom name.
-			Log.info("Using custom name %s for entity %s.", entity.getCustomName(), entity.getOriginalName());
+			Log.trace("Using custom name %s for entity %s.", entity.getCustomName(), entity.getOriginalName());
 			entity.setGeneratedName(entity.getCustomName());
 		} else {
 			// format name accordingly naming policy
@@ -70,8 +70,6 @@ public class PhysicalNameAndTypeBindingEngine {
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
 				
-				Log.error(fieldType);
-				
 				// assign whether a customized field type exists with @Column.
 				customizedBindingType = getCustomizedBinding(field.getClazz());
 				
@@ -95,7 +93,7 @@ public class PhysicalNameAndTypeBindingEngine {
 			else
 				field.setType(dataTypeMapper.getTypeFor(fieldType));
 			
-			Log.info("Field '%s'(%s) mapped to '%s'(%s) using %s.", field.getOriginalName(), field.getClazz().getName(), field.getGeneratedName(), field.getType(), customizedBindingType != null ? "@Column annotation":"type of @Id field");
+			Log.debug("Field '%s'(%s) mapped to '%s'(%s) using %s.", field.getOriginalName(), field.getClazz().getName(), field.getGeneratedName(), field.getType(), customizedBindingType != null ? "@Column annotation":"type of @Id field");
 		}
 
 		/* INDEX SETTINGS BINDING */
@@ -106,7 +104,7 @@ public class PhysicalNameAndTypeBindingEngine {
 				// _index policy.
 				String indexName = String.format(INDEX_FORMAT, entity.getGeneratedName(),
 						field.getGeneratedName(), INDEX_POSTFIX);
-				Log.info("Field '%s' index name binded as '%s'", field.getOriginalName(), indexName);
+				Log.trace("Field '%s' index name binded as '%s'", field.getOriginalName(), indexName);
 				field.getIndex().name(indexName);
 			}
 		}

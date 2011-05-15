@@ -11,12 +11,11 @@ public class Ticket extends Model<Ticket>{
 	public long id;
 	
 	public String seat;
-	
-	@OneToOne(targetBindingField="tx_id")
+
 	public Payment payment;
 	
 	@Override
 	public String toString() {
-		return  seat;
+		return  id + " " + seat + " " + ((payment == null) ? null : payment.amount);
 	}
 }
