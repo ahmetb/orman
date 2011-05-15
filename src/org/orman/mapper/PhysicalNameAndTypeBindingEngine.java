@@ -65,7 +65,18 @@ public class PhysicalNameAndTypeBindingEngine {
 			
 			String customizedBindingType = null;
 			
-			if (field.isAnnotationPresent(OneToOne.class)){
+			if(MappingSession.entityExists(field.getClazz())){
+				// infer entity @Id type if @*to* annotations does not exist 
+				Class<?> idType = getIdTypeForClass(field.getClazz());
+				fieldType = idType;
+				
+				Log.error(fieldType);
+				
+				// assign whether a customized field type exists with @Column.
+				customizedBindingType = getCustomizedBinding(field.getClazz());
+				
+				Log.trace("Direct entity mapping inferred on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
+			} else if (field.isAnnotationPresent(OneToOne.class)){
 				//  there exists 1:1 set type as matched field's Id type.
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
@@ -74,13 +85,6 @@ public class PhysicalNameAndTypeBindingEngine {
 				customizedBindingType = getCustomizedBinding(field.getClazz());
 				
 				Log.trace("OneToOne mapping detected on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
-			} else if(MappingSession.entityExists(field.getClazz())){
-				// infer entity @Id type if @*to* annotations does not exist 
-				Class<?> idType = getIdTypeForClass(field.getClazz());
-				fieldType = idType;
-				
-				Log.trace("Direct entity mapping inferred on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
-				// assign whether a customized field type exists with @Column.
 			} else {
 				// usual conditions
 				fieldType = field.getClazz();
@@ -91,7 +95,7 @@ public class PhysicalNameAndTypeBindingEngine {
 			else
 				field.setType(dataTypeMapper.getTypeFor(fieldType));
 			
-			Log.info("Field '%s'(%s) mapped to '%s'(%s).", field.getOriginalName(), field.getClazz().getName(), field.getGeneratedName(), field.getType());
+			Log.info("Field '%s'(%s) mapped to '%s'(%s) using %s.", field.getOriginalName(), field.getClazz().getName(), field.getGeneratedName(), field.getType(), customizedBindingType != null ? "@Column annotation":"type of @Id field");
 		}
 
 		/* INDEX SETTINGS BINDING */
@@ -117,14 +121,15 @@ public class PhysicalNameAndTypeBindingEngine {
 	}
 
 	private static java.lang.reflect.Field getIdFieldForClass(Class<?> clazz) {
-		for(java.lang.reflect.Field f : clazz.getDeclaredFields())
-			if(f.isAnnotationPresent(Id.class))
+		for(java.lang.reflect.Field f : clazz.getDeclaredFields()){
+			if(f.isAnnotationPresent(Id.class)){
 				return f;
+			}
+		}
 		return null;
 	}
 
 	private static Class<?> getIdTypeForClass(Class<?> clazz) {
-		getIdFieldForClass(clazz).getType();
-		return null;
+		return getIdFieldForClass(clazz).getType();
 	}
 }
