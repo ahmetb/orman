@@ -6,8 +6,6 @@ import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
 
-import demo.Notebook;
-
 /**
  * Provides reverse mapping engine which can convert {@link ResultRow} objects
  * into instances whose their class definitions extend {@link Model}. (which
@@ -50,14 +48,14 @@ public class ReverseMapping {
 						fieldValue = makeCardinalityBinding(f, instance, fieldValue);
 		
 						// set field
-						if (fieldValue != null) ((Model<Notebook>) instance).setEntityField(f, e, fieldValue);
+						if (fieldValue != null) ((Model<?>) instance).setEntityField(f, e, fieldValue);
 					} else {
 						Object fieldValue = makeCardinalityBinding(f, instance,
 							((Model<?>) instance)
 									.getEntityField(((Model<?>) instance)
 											.getEntity().getIdField()));
 						
-						if (fieldValue != null) ((Model<Notebook>) instance).setEntityField(f, e, fieldValue);
+						if (fieldValue != null) ((Model<?>) instance).setEntityField(f, e, fieldValue);
 					}
 			}
 		return instance;

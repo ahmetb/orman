@@ -151,13 +151,29 @@ public class MappingSession {
 	 * {@link MappingConfiguration}, it may drop and reconstruct all the tables
 	 * from scratch.
 	 * 
+	 * <p>If the session is already started {@link MappingSessionAlreadyStartedException}
+	 * will be thrown.</p>
+	 * 
 	 */
 	public static void start() {
 		if (sessionStarted){
 			MappingSessionAlreadyStartedException e = new MappingSessionAlreadyStartedException();
 			Log.error(e);
 			throw e;
-		} else sessionStarted = true; // make the session started.
+		}
+		startNoCheck();
+	}
+	
+	/**
+	 * <p>Does not throw {@link MappingSessionAlreadyStartedException} if the
+	 * session already started. If used instead of <code>start()</code>,
+	 * does not check whether session is already started or not and triggers
+	 * physical bindings and execution of scheme generator DDL queries.</p>
+	 * 
+	 * See <code>start()</code> for a healthy bootstrap.
+	 */
+	public static void startNoCheck(){
+		sessionStarted = true; // mark the session as started.
 		
 		Log.info("Mapping session starting...");
 		

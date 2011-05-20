@@ -7,16 +7,16 @@ import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.ManyToOne;
 
 @Entity
-public class Notebook extends Model<Notebook>{
+public class Student extends Model<Student>{
 	@Id public long id;
 	
 	public String name;
 	
 	@ManyToOne(load=LoadingPolicy.LAZY)
-	public User whose;
+	public ClassRoom classroom;
 	
 	@Override
 	public String toString() {
-		return "NB id=`"+id+"` named=`"+name +"` user="+((whose == null) ? "?" : "@"+whose.id);
+		return "STD id=`"+id+"` named=`"+name +"` class="+((classroom == null) ? "?  " : "@"+classroom.id);
 	}
 }

@@ -10,20 +10,25 @@ import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
+import org.orman.mapper.annotation.OneToMany;
 import org.orman.sql.Query;
 import org.orman.sqlite.SQLite;
 import org.orman.util.logging.Log;
 import org.orman.util.logging.LoggingLevel;
 
 @Entity
-public class User extends Model<User> {
+public class ClassRoom extends Model<ClassRoom> {
 	@Id
 	public int id;
+	
 	public String name;
+	
+	@OneToMany(on = "classroom", toType = Student.class)
+	public List<Student> students;
 	
 	@Override
 	public String toString() {
-		return id+" "+name;
+		return "-CLASSROOM  " + id+" "+name;
 	}
 	
 	public static void main(String[] args) {
@@ -31,20 +36,33 @@ public class User extends Model<User> {
 		
 		Database db = new SQLite("lite.db");
 		MappingSession.registerDatabase(db);
-		MappingSession.registerEntity(User.class);
+		MappingSession.registerEntity(ClassRoom.class);
+		MappingSession.registerEntity(Student.class);
 		MappingSession.getConfiguration().setCreationPolicy(
-				SchemeCreationPolicy.USE_EXISTING);
+				SchemeCreationPolicy.CREATE);
 		MappingSession.start();
-	
-		User a = new User();
-		a.name = "Alp";
-		a.insert();
 		
-		Query del = ModelQuery.delete().from(User.class).where(C.eq(User.class, "id", 1)).getQuery();
-		Model.execute(del);
+		ClassRoom c = new ClassRoom();
+		c.name = "1a";
+		
 
-		Query custom = ModelQuery.select().from(User.class).getQuery();
-		List<User> l = Model.fetchQuery(custom, User.class);
-		System.out.println(l);
+		c.insert();
+		
+		Student s1 = new Student();
+		s1.name = "abc";
+		s1.classroom = c;
+		
+		Student s2 = new Student();
+		s2.name = "def";
+		s2.classroom = c;
+		
+		Student s3 = new Student();
+		s3.name = "ghi";
+		s3.classroom = c;
+		
+		s1.insert();
+		s2.insert();
+		s3.insert();
+		
 	}
 }
