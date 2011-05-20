@@ -2,10 +2,13 @@ package demo3;
 
 import java.util.List;
 
+import org.orman.datasource.Database;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
+import org.orman.mysql.MySQL;
+import org.orman.mysql.MySQLSettingsImpl;
 import org.orman.sqlite.SQLite;
 import org.orman.util.logging.ILogger;
 import org.orman.util.logging.Log;
@@ -15,10 +18,10 @@ import org.orman.util.logging.LoggingLevel;
 public class UsualProgram {
 	public static void main(String[] args) {
 		SQLite db = new SQLite("lite.db");
-
+		
 		ILogger log = new Log4jAdapter();
 		Log.setLogger(log);
-		Log.setLevel(LoggingLevel.WARN);
+		Log.setLevel(LoggingLevel.TRACE);
 		MappingSession.registerEntity(Payment.class);
 		MappingSession.registerEntity(Ticket.class);
 

@@ -1,12 +1,14 @@
 package demo3;
 
 import org.orman.mapper.Model;
+import org.orman.mapper.annotation.AutoIncrement;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 
 @Entity
 public class Payment extends Model<Payment>{
 	@Id
+	@AutoIncrement
 	public long tx_id;
 	
 	public float amount;

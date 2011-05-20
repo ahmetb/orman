@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.orman.mapper.annotation.AutoIncrement;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.ManyToOne;
@@ -96,6 +97,29 @@ public class EntityInspector {
 						newF.setGetterMethod(getter); // bind getter.
 				}
 				
+				// Recognize @AutoIncrement annotation
+				// TODO deprecate @Id as soon as possible.
+				if(f.isAnnotationPresent(AutoIncrement.class)){
+					newF.setAutoIncrement(true);
+					// Auto increment should be also a primary key.
+				}
+				
+				// Recognize @Id annotation (covers @Index) or @AutoIncrement
+				// Auto increment should be also a primary key.
+				if (f.isAnnotationPresent(Id.class)
+						|| f.isAnnotationPresent(AutoIncrement.class)) {
+					newF.makeId(true);
+					
+					if (!isSupportedForIdField(f.getType())){
+						throw new UnsupportedIdFieldTypeException(f.getType().getName(), clazz.getName());
+					}
+					
+					// if no custom @Index defined create a default
+					if(newF.getIndex() == null){
+						newF.setIndex(new FieldIndexHolder(null, true));
+					}
+				}
+				
 				// Recognize @Index annotation.
 				if(f.isAnnotationPresent(Index.class)){
 					Index ann = f.getAnnotation(Index.class);
@@ -106,19 +130,6 @@ public class EntityInspector {
 				// Recognize @NotNull annotation.
 				if(f.isAnnotationPresent(NotNull.class)){
 					newF.setNullable(false);
-				}
-				
-				// Recognize @Id annotation (covers @Index)
-				if(f.isAnnotationPresent(Id.class)){
-					newF.makeId(true);
-					
-					if (!isSupportedForIdField(f.getType())){
-						throw new UnsupportedIdFieldTypeException(f.getType().getName(), clazz.getName());
-					}
-					
-					// if no custom @Index defined create a default
-					if(newF.getIndex() == null)
-						newF.setIndex(new FieldIndexHolder(null, true));
 				}
 				
 				// Recognize @OnyToOne, @OneToMany, @ManyToMany annotations (covers @Index) 

@@ -117,11 +117,14 @@ public class QueryBuilder {
 	 * Uses column list storage of the query, be cautious
 	 * while using this except CREATE TABLE queries.
 	 */
-	public QueryBuilder createColumn(String column, String dataType, boolean isNullable, boolean isPrimaryKey){
+	public QueryBuilder createColumn(String column, String dataType, boolean isNullable, boolean isPrimaryKey, boolean isAutoIncrement){
+		//TODO hard-coded keywords can be specific to DBMS, generalize.
 		if(!isNullable)
 			dataType += " NOT NULL"; // append NOT NULL if "not"-nullable
 		if(isPrimaryKey)
-			dataType += " PRIMARY KEY"; // append AUTO INCREMENT
+			dataType += " PRIMARY KEY"; // append PRIMARY KEY
+		if(isAutoIncrement)
+			dataType += " AUTO_INCREMENT"; // append AUTO INCREMENT (which is also PRIMARY KEY)
 		
 		return this.selectAs(column, dataType);
 	}

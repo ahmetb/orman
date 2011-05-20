@@ -38,8 +38,10 @@ public class DDLQueryGenerator {
 						+ e.getOriginalName() + ")");
 			}
 			
-			if (!f.isList()) // list columns are not saved.
-				qb.createColumn(f.getGeneratedName(), f.getType(), f.isNullable(), f.isId());
+			if (!f.isList()){ // list columns are not visible on DDL.
+				qb.createColumn(f.getGeneratedName(), f.getType(),
+						f.isNullable(), f.isId(), f.isAutoIncrement());
+			}
 			
 			if (f.isForeignKey()){
 				Entity mappedTo = MappingSession.getEntity(f.getClazz());

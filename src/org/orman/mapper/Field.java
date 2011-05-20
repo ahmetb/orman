@@ -16,7 +16,7 @@ import org.orman.mapper.annotation.Index;
  * @author alp
  * 
  */
-public class Field implements Comparable<Field>{
+public class Field implements Comparable<Field> {
 	private Class<?> clazz;
 	private String originalName;
 	private String customName;
@@ -28,7 +28,7 @@ public class Field implements Comparable<Field>{
 	private boolean isNullable = true;
 	private boolean isList = false;
 	private boolean isForeignKey = false;
-	
+	private boolean isAutoIncrement = false;
 
 	// Reflection fields
 	private Method setterMethod;
@@ -39,7 +39,11 @@ public class Field implements Comparable<Field>{
 		this.clazz = clazz;
 		this.originalName = fieldInstance.getName();
 
-		// if @Column annotation exists, set custom name and type
+		/*
+		 * if @Column annotation exists, set custom name and type that overrides
+		 * physical binding engine.
+		 */
+
 		if (fieldInstance.isAnnotationPresent(Column.class)) {
 			Column col = fieldInstance.getAnnotation(Column.class);
 			String tmpCustomName = col.name();
@@ -51,7 +55,6 @@ public class Field implements Comparable<Field>{
 					.equals(tmpCustomType)) ? null : tmpCustomType;
 		}
 	}
-	
 
 	public String getCustomName() {
 		return customName;
@@ -156,12 +159,12 @@ public class Field implements Comparable<Field>{
 	public java.lang.reflect.Field getRawField() {
 		return rawField;
 	}
-	
-	public boolean isAnnotationPresent(Class<? extends Annotation> ann){
+
+	public boolean isAnnotationPresent(Class<? extends Annotation> ann) {
 		return rawField.isAnnotationPresent(ann);
 	}
-	
-	public <A extends Annotation> A getAnnotation(Class<A> annClass){
+
+	public <A extends Annotation> A getAnnotation(Class<A> annClass) {
 		return rawField.getAnnotation(annClass);
 	}
 
@@ -179,5 +182,13 @@ public class Field implements Comparable<Field>{
 
 	public boolean isForeignKey() {
 		return isForeignKey;
+	}
+
+	public void setAutoIncrement(boolean isAutoIncrement) {
+		this.isAutoIncrement = isAutoIncrement;
+	}
+
+	public boolean isAutoIncrement() {
+		return isAutoIncrement;
 	}
 }
