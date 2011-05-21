@@ -58,7 +58,7 @@ public class MappingSession {
 	public static void registerEntity(Class<?> entityClass) {
 		if (sessionStarted){
 			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
-			Log.error(ex);
+			Log.error(ex.getMessage());
 			throw ex;
 		}
 		
@@ -158,7 +158,7 @@ public class MappingSession {
 	public static void start() {
 		if (sessionStarted){
 			MappingSessionAlreadyStartedException e = new MappingSessionAlreadyStartedException();
-			Log.error(e);
+			Log.error(e.getMessage());
 			throw e;
 		}
 		startNoCheck();
@@ -179,7 +179,7 @@ public class MappingSession {
 		
 		if (db == null){
 			NoDatabaseRegisteredException e = new NoDatabaseRegisteredException();
-			Log.error(e);
+			Log.error(e.getMessage());
 			throw e;
 		}
 		

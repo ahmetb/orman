@@ -121,7 +121,7 @@ public class PersistenceSchemeMapper {
 			) {
 				UnmappedDataTypeException ex =  new UnmappedDataTypeException(f.getOriginalName(), f
 						.getClazz().getName());
-				Log.error(ex);
+				Log.error(ex.getMessage());
 				throw ex;
 			}
 
@@ -130,7 +130,7 @@ public class PersistenceSchemeMapper {
 				if (f != g && f.equals(g)) {
 					DuplicateColumnNamesException ex = new DuplicateColumnNamesException(
 							f.getOriginalName(), g.getOriginalName());
-					Log.error(ex);
+					Log.error(ex.getMessage());
 					throw ex;
 				}
 			}

@@ -6,7 +6,18 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+/**
+ * Adapter for log4j logging library of Apache Software Foundation.
+ * Default logging level is inherited from default {@link Logger}.
+ * 
+ * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>
+ *
+ */
 public class Log4jAdapter implements ILogger {
+	
+	private static final String FRAMEWORK_LOGGER_NAME = "orman";
+
+	// Logging level mappings.
 	@SuppressWarnings("serial")
 	private static EnumMap<LoggingLevel, Level> correspondingLevel = new EnumMap<LoggingLevel, Level>(
 			LoggingLevel.class) {
@@ -20,10 +31,11 @@ public class Log4jAdapter implements ILogger {
 		}
 	};
 
-	private Logger logger = Logger.getLogger("orman");
+	private Logger logger;
 
 	public Log4jAdapter() {
 		BasicConfigurator.configure();
+		Logger.getLogger(FRAMEWORK_LOGGER_NAME);
 	}
 
 	public void setLogger(Logger log) {
@@ -44,49 +56,24 @@ public class Log4jAdapter implements ILogger {
 	}
 
 	/* Log4j methods */
-
-	public void trace(Object message) {
-		getLogger().trace(message);
-	}
-
 	public void trace(String message, Object... params) {
 		getLogger().debug(String.format(message, params));
-	}
-
-	public void debug(Object message) {
-		getLogger().debug(message);
 	}
 
 	public void debug(String message, Object... params) {
 		getLogger().debug(String.format(message, params));
 	}
 
-	public void info(Object message) {
-		getLogger().info(message);
-	}
-
 	public void info(String message, Object... params) {
 		getLogger().info(String.format(message, params));
-	}
-
-	public void warn(Object message) {
-		getLogger().warn(message);
 	}
 
 	public void warn(String message, Object... params) {
 		getLogger().warn(String.format(message, params));
 	}
 
-	public void error(Object message) {
-		getLogger().error(message);
-	}
-
 	public void error(String message, Object... params) {
 		getLogger().error(String.format(message, params));
-	}
-
-	public void fatal(Object message) {
-		getLogger().fatal(message);
 	}
 
 	public void fatal(String message, Object... params) {

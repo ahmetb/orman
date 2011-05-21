@@ -2,67 +2,71 @@ package org.orman.util.logging;
 
 import java.util.Date;
 
+/**
+ * Just an usual logging tool outputs given log to <code>stdout</code> or
+ * <code>stderr</code> if given log has at least threshold logging level.
+ * Will not log values under given threshold level (default: WARN).
+ * 
+ * <p>
+ * Default logging adapter for the framework.
+ * </p>
+ * 
+ * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>
+ * 
+ */
 public class StandardLogger implements ILogger {
+	LoggingLevel level = LoggingLevel.WARN;
 
-	public void trace(Object message){
-		log("TRACE", message);
-	}
-	
-	public void trace(String message, Object... params){
-		log("TRACE", String.format(message, params));
-	}
-	
-	public void debug(Object message){
-		log("DEBUG", message);
-	}
-	
-	public void debug(String message, Object... params){
-		log("DEBUG", String.format(message, params));
-	}
-	
-	public void info(Object message){
-		log("INFO", message);
-	}
-	
-	public void info(String message, Object... params){
-		log("INFO", String.format(message, params));
-	}
-	
-	public void warn(Object message){
-		log("WARN", message);
-	}
-	
-	public void warn(String message, Object... params){
-		log("WARN", String.format(message, params));
-	}
-	
-	public void error(Object message){
-		logErr("ERROR", message);
-	}
-	
-	public void error(String message, Object... params){
-		logErr("ERROR", String.format(message, params));
-	}
-	
-	public void fatal(Object message){
-		logErr("FATAL", message);
-	}
-	
-	public void fatal(String message, Object... params){
-		logErr("FATAL", String.format(message, params));
-	}
-	
-	
-	private void log(String level, Object message){
-		System.out.println(new Date().toString() + " [" + level + "] " + message);
-	}
-	
-	private void logErr(String level, Object message){
-		System.err.println(new Date().toString() + " [" + level + "] " + message);
+	public void trace(String message, Object... params) {
+		if (isLoggable(LoggingLevel.TRACE))
+			log("TRACE", String.format(message, params));
 	}
 
+	public void debug(String message, Object... params) {
+		if (isLoggable(LoggingLevel.DEBUG))
+			log("DEBUG", String.format(message, params));
+	}
+
+	public void info(String message, Object... params) {
+		if (isLoggable(LoggingLevel.INFO))
+			log("INFO", String.format(message, params));
+	}
+
+	public void warn(String message, Object... params) {
+		if (isLoggable(LoggingLevel.WARN))
+			log("WARN", String.format(message, params));
+	}
+
+	public void error(String message, Object... params) {
+		if (isLoggable(LoggingLevel.ERROR))
+			logErr("ERROR", String.format(message, params));
+	}
+
+	public void fatal(String message, Object... params) {
+		if (isLoggable(LoggingLevel.FATAL))
+			logErr("FATAL", String.format(message, params));
+	}
+
+
+	private boolean isLoggable(LoggingLevel logLevel){
+		return (this.level.getValue() <= logLevel.getValue());
+	}
+	
 	@Override
 	public void setLevel(LoggingLevel level) {
-		// TODO currently ignore all levels. level filtering needed.
+		this.level = level == null ? LoggingLevel.WARN : level;
 	}
+	
+	/* logger methods */
+
+	private void log(String level, Object message) {
+		System.out.println(new Date().toString() + " [" + level + "] "
+				+ message);
+	}
+	
+	private void logErr(String level, Object message) {
+		System.err.println(new Date().toString() + " [" + level + "] "
+				+ message);
+	}
+	
 }
