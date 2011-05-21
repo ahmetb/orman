@@ -28,6 +28,7 @@ public class Log4jAdapter implements ILogger {
 			put(LoggingLevel.WARN, Level.WARN);
 			put(LoggingLevel.ERROR, Level.ERROR);
 			put(LoggingLevel.FATAL, Level.FATAL);
+			put(LoggingLevel.QUIET, Level.FATAL); // has no matching level, set highest.
 		}
 	};
 
