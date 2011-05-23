@@ -36,7 +36,7 @@ public class Log4jAdapter implements ILogger {
 
 	public Log4jAdapter() {
 		BasicConfigurator.configure();
-		Logger.getLogger(FRAMEWORK_LOGGER_NAME);
+		logger = Logger.getLogger(FRAMEWORK_LOGGER_NAME);
 	}
 
 	public void setLogger(Logger log) {
