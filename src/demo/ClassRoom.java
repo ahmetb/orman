@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.orman.datasource.Database;
 import org.orman.mapper.C;
+import org.orman.mapper.EntityPackageRegistration;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
@@ -36,8 +37,9 @@ public class ClassRoom extends Model<ClassRoom> {
 		
 		Database db = new SQLite("lite.db");
 		MappingSession.registerDatabase(db);
-		MappingSession.registerEntity(ClassRoom.class);
-		MappingSession.registerEntity(Student.class);
+		
+		EntityPackageRegistration.registerAllEntityClassesInPackage("demo");
+		
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);
 		MappingSession.start();
