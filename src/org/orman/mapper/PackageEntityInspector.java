@@ -15,10 +15,10 @@ import org.orman.util.logging.Log;
  * Auto registration system for annotated entity classes
  * @author 0ffffffffh
  */
-public class EntityPackageRegistration {
+public class PackageEntityInspector {
 	
 	@SuppressWarnings("rawtypes")
-	private static Class getClassFor(File classFile, String packageName) {
+	private static Class<?> getClassFor(File classFile, String packageName) {
 		String fileName = classFile.getName();
 		Class classObj = null;
 		
@@ -32,9 +32,8 @@ public class EntityPackageRegistration {
 		return classObj;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	private static List<Class> populateClasses(File objectDir, String packageName) {
-		List<Class> classes = new ArrayList<Class>();
+	private static List<Class<?>> populateClasses(File objectDir, String packageName) {
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		File[] classFiles = objectDir.listFiles();
 		
 		for (File classFile : classFiles) {
@@ -48,22 +47,23 @@ public class EntityPackageRegistration {
 	}
 	
 	/**
-	 * Registers all annotated classes from given package.
+	 * Populates available annotated classes from given package.
 	 * @param packageName Entity container package
+	 * @return List of all annotated classes
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static int registerAllEntityClassesInPackage(String packageName) {
-		int registeredEntities=0;
+	public static List<Class<?>> registerAllEntityClassesInPackage(String packageName) {
 		String packageUrl,fileName;
 		URL element;
 		Enumeration<URL> classResources;
 		
-		List<Class> classObjects;
+		List<Class<?>> classObjects;
+		List<Class<?>> annotatedClasses=null;
 		
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		
 		if (classLoader == null)
-			return -1;
+			return null;
 		
 		packageUrl = packageName.replace('.', '/');
 		
@@ -71,10 +71,10 @@ public class EntityPackageRegistration {
 			classResources = classLoader.getResources(packageUrl);
 		} catch (IOException e) {
 			Log.error(e.getMessage());
-			return -1;
+			return null;
 		}
 		
-		classObjects = new ArrayList<Class>();
+		classObjects = new ArrayList<Class<?>>();
 		
 		while (classResources.hasMoreElements()) {
 			element = classResources.nextElement();
@@ -88,19 +88,17 @@ public class EntityPackageRegistration {
 					fileName = element.getFile().replace("%20", " ");
 				}
 			}
-		
 			
-			classObjects = populateClasses(new File(fileName),packageName);
+			annotatedClasses = populateClasses(new File(fileName),packageName);
 			
-			for (Class currentClass : classObjects) {
+			for (Class currentClass : annotatedClasses) {
 				if (currentClass.isAnnotationPresent(org.orman.mapper.annotation.Entity.class)) {
-					MappingSession.registerEntity(currentClass);
-					registeredEntities++;
+					classObjects.add(currentClass);
 				}
 			}
 			
 		}
 		
-		return registeredEntities;
+		return classObjects.size() == 0 ? null : classObjects;
 	}
 }

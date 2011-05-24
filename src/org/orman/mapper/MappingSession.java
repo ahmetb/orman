@@ -3,11 +3,13 @@ package org.orman.mapper;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 import org.orman.datasource.DataTypeMapper;
 import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
+import org.orman.mapper.exception.AnnotatedClassNotFoundInPackageException;
 import org.orman.mapper.exception.MappingSessionAlreadyStartedException;
 import org.orman.mapper.exception.MappingSessionNotStartedException;
 import org.orman.mapper.exception.NoDatabaseRegisteredException;
@@ -48,7 +50,49 @@ public class MappingSession {
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
 	}
+	
+	/**
+	 * Makes physical name and data type bindings to all entities and their fields 
+	 * from specified package then registers to the scheme.
+	 * @param packageName Entity container package
+	 */
+	public static void registerPackage(String packageName) {
+		List<Class<?>> annotatedClasses = null;
+		PhysicalNamingPolicy policy;
+		
+		if (sessionStarted) {
+			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
+			Log.error(ex.getMessage());
+			throw ex;
+		}
+		
+		annotatedClasses = PackageEntityInspector.registerAllEntityClassesInPackage(packageName);
+		
+		if (annotatedClasses == null) {
+			AnnotatedClassNotFoundInPackageException ex = 
+					new AnnotatedClassNotFoundInPackageException(packageName);
+			Log.error(ex.getMessage());
+			throw ex;
+		}
+		
+		policy = configuration.getTableNamePolicy();
+		Entity entity;
+		
+		Log.info("Found %d annotated class(es) in %s", annotatedClasses.size(), packageName);
+		
+		for (Class<?> currentClass : annotatedClasses) {
+			//create an entity object without annotation check. 
+			//because entity is already valid "@Entity" class
+			entity = new Entity(currentClass,false);
+			Log.info("Registering entity %s.", entity.getOriginalName());
+			PhysicalNameAndTypeBindingEngine.makeBinding(entity, policy);
+			
+			scheme.addEntity(entity);
+		}
+	}
 
+	
+	
 	/**
 	 * Makes physical name and data type bindings to entity and its fields then
 	 * registers to the scheme.

@@ -2,7 +2,6 @@ package demo3;
 
 import java.util.List;
 
-import org.orman.mapper.EntityPackageRegistration;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
@@ -20,7 +19,7 @@ public class UsualProgram {
 		ILogger log = new Log4jAdapter();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.TRACE);
-		EntityPackageRegistration.registerAllEntityClassesInPackage("demo3");
+		MappingSession.registerPackage("demo3");
 		
 
 		MappingSession.getConfiguration().setCreationPolicy(

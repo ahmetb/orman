@@ -3,16 +3,12 @@ package demo;
 import java.util.List;
 
 import org.orman.datasource.Database;
-import org.orman.mapper.C;
-import org.orman.mapper.EntityPackageRegistration;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
-import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.OneToMany;
-import org.orman.sql.Query;
 import org.orman.sqlite.SQLite;
 import org.orman.util.logging.Log;
 import org.orman.util.logging.LoggingLevel;
@@ -38,7 +34,7 @@ public class ClassRoom extends Model<ClassRoom> {
 		Database db = new SQLite("lite.db");
 		MappingSession.registerDatabase(db);
 		
-		EntityPackageRegistration.registerAllEntityClassesInPackage("demo");
+		MappingSession.registerPackage("demo");
 		
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);
