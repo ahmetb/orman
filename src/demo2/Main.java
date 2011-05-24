@@ -16,9 +16,9 @@ public class Main {
 		Database db = new MySQL(settings);
 		
 		MappingSession.registerDatabase(db);
-		MappingSession.registerEntity(Account.class);
-		MappingSession.registerEntity(Customer.class);
-		MappingSession.registerEntity(Owns.class);
+		
+		MappingSession.registerPackage("demo2");
+		
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);
 		MappingSession.getConfiguration().setIdGenerationPolicy(
