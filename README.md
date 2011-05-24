@@ -14,8 +14,10 @@ Project Aims
 * Support for SQLite on Android devices with existing libraries.
 * Provide transaction manager and query execution container.
 
-Contact
-=======
-Maintainers:
-[Ahmet Alp Balkan](https://github.com/ahmetalpbalkan), [Berker Peksag](https://github.com/berkerpeksag)
+Contributors
+============
+
+* [Ahmet Alp Balkan](https://github.com/ahmetalpbalkan)
+* [Oguz Kartal](https://github.com/0ffffffffh)
+* [Berker Peksag](https://github.com/berkerpeksag)
 

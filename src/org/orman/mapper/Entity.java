@@ -26,29 +26,6 @@ public class Entity {
 	// Reflection fields
 	private Constructor<?> defaultConstructor; 
 	
-	public Entity(Class<?> clazz, boolean annotationCheck) {
-		
-		if (annotationCheck) {
-			if (!clazz
-					.isAnnotationPresent(org.orman.mapper.annotation.Entity.class))
-				throw new NotAnEntityException(clazz.getName()); // require @Entity
-		}
-
-		this.clazz = clazz;
-		this.originalName = clazz.getSimpleName();
-		this.originalFullName = clazz.getName();
-		
-		EntityInspector ei = new EntityInspector(clazz);
-		this.fields = ei.getFields();
-		this.setDefaultConstructor(ei.getDefaultConstructor());
-
-		// make custokm name binding if specified any on @Entity annotation.
-		String tmpCustomName = clazz.getAnnotation(
-				org.orman.mapper.annotation.Entity.class).table();
-		this.customName = (tmpCustomName == null || "".equals(tmpCustomName)) ? null
-				: tmpCustomName;
-	}
-	
 	/**
 	 * Instantiates an information holder class for
 	 * {@link org.orman.mapper.annotation.Entity} annotated classes.
@@ -56,9 +33,26 @@ public class Entity {
 	 * @param clazz class type of the entity.
 	 */
 	public Entity(Class<?> clazz) {
-		this(clazz,true);
-	}
+		if (!clazz
+				.isAnnotationPresent(org.orman.mapper.annotation.Entity.class))
+			throw new NotAnEntityException(clazz.getName()); // require @Entity
 
+		this.clazz = clazz;
+		this.originalName = clazz.getSimpleName();
+		this.originalFullName = clazz.getName();
+		
+		// make use of EntityInspector
+		EntityInspector ei = new EntityInspector(clazz);
+		this.fields = ei.getFields();
+		this.setDefaultConstructor(ei.getDefaultConstructor());
+
+		// make custom name binding if specified any on @Entity annotation.
+		String tmpCustomName = clazz.getAnnotation(
+				org.orman.mapper.annotation.Entity.class).table();
+		this.customName = (tmpCustomName == null || "".equals(tmpCustomName)) ? null
+				: tmpCustomName;
+	}
+	
 	public Class<?> getType() {
 		return clazz;
 	}

@@ -26,17 +26,17 @@ import org.orman.util.logging.Log;
  * Provides query execution and transaction managers so that it is a façade
  * class.
  * 
- * @author alp
+ * @author ahmet alp balkan
  * 
  */
 public class MappingSession {
 	private static PersistenceSchemeMapper scheme;
 	private static MappingConfiguration configuration;
-	
+
 	private static Database db;
 	private static DataTypeMapper typeMapper;
 	private static QueryExecutionContainer executer;
-	
+
 	private static boolean sessionStarted = false;
 
 	static {
@@ -44,75 +44,65 @@ public class MappingSession {
 		configuration = new MappingConfiguration();
 		// implementation, remove soon.
 	}
-	
-	public static void registerDatabase(Database database){
+
+	public static void registerDatabase(Database database) {
 		db = database;
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
 	}
-	
+
 	/**
-	 * Makes physical name and data type bindings to all entities and their fields 
-	 * from specified package then registers to the scheme.
-	 * @param packageName Entity container package
+	 * Finds and registers @{@link Entity}-annotated classes in given package,
+	 * recursively. See also <code>registerEntity(Class<?>)</code> method for
+	 * more.
+	 * 
+	 * @param packageName
+	 *            Entity container package name. e.g. com.my.entities
+	 * @throws MappingSessionAlreadyStartedException
+	 *             if session is already started.
+	 * @throws AnnotatedClassNotFoundInPackageException
+	 *             if no classes have been found in given package name, because
+	 *             assuming you think you have some. Helps preventing incorrect
+	 *             package name usage.
 	 */
 	public static void registerPackage(String packageName) {
-		List<Class<?>> annotatedClasses = null;
-		PhysicalNamingPolicy policy;
+		List<Class<?>> annotatedClasses = PackageEntityInspector.findEntitiesInPackage(packageName);
 		
-		if (sessionStarted) {
-			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
+		if (annotatedClasses == null || annotatedClasses.size() == 0){
+			// no @Entity-annotated classes found in package. 
+			AnnotatedClassNotFoundInPackageException ex = new AnnotatedClassNotFoundInPackageException(packageName);
 			Log.error(ex.getMessage());
 			throw ex;
 		}
 		
-		annotatedClasses = PackageEntityInspector.registerAllEntityClassesInPackage(packageName);
-		
-		if (annotatedClasses == null) {
-			AnnotatedClassNotFoundInPackageException ex = 
-					new AnnotatedClassNotFoundInPackageException(packageName);
-			Log.error(ex.getMessage());
-			throw ex;
-		}
-		
-		policy = configuration.getTableNamePolicy();
-		Entity entity;
-		
-		Log.info("Found %d annotated class(es) in %s", annotatedClasses.size(), packageName);
-		
+		// still throws exception
 		for (Class<?> currentClass : annotatedClasses) {
-			//create an entity object without annotation check. 
-			//because entity is already valid "@Entity" class
-			entity = new Entity(currentClass,false);
-			Log.info("Registering entity %s.", entity.getOriginalName());
-			PhysicalNameAndTypeBindingEngine.makeBinding(entity, policy);
-			
-			scheme.addEntity(entity);
+			registerEntity(currentClass);
 		}
 	}
 
-	
-	
 	/**
 	 * Makes physical name and data type bindings to entity and its fields then
 	 * registers to the scheme.
 	 * 
 	 * @param entityClass
+	 * @throws MappingSessionAlreadyStartedException
+	 *             if session is already started.
 	 */
 	public static void registerEntity(Class<?> entityClass) {
-		if (sessionStarted){
+		if (sessionStarted) {
 			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
 			Log.error(ex.getMessage());
 			throw ex;
 		}
-		
+
 		Entity e = new Entity(entityClass);
 
 		// BIND TABLE NAME
+		PhysicalNameAndTypeBindingEngine.makeBinding(e,
+				configuration.getTableNamePolicy());
+
 		Log.info("Registering entity %s.", e.getOriginalName());
-		PhysicalNameAndTypeBindingEngine.makeBinding(e, configuration
-				.getTableNamePolicy());
-		
 		scheme.addEntity(e);
 	}
 
@@ -129,7 +119,7 @@ public class MappingSession {
 	public static Entity getEntity(Class<?> entityClass) {
 		if (!sessionStarted)
 			throw new MappingSessionNotStartedException();
-		
+
 		Entity e = scheme.getBindedEntity(entityClass);
 
 		if (e == null)
@@ -137,11 +127,11 @@ public class MappingSession {
 
 		return e;
 	}
-	
+
 	public static boolean entityExists(Class<?> entityClass) {
 		if (!sessionStarted)
 			throw new MappingSessionNotStartedException();
-		
+
 		try {
 			getEntity(entityClass);
 			return true;
@@ -160,7 +150,7 @@ public class MappingSession {
 	public static Entity getEntityByTableName(String tableName) {
 		if (!sessionStarted)
 			throw new MappingSessionNotStartedException();
-		
+
 		return scheme.getEntityByTableName(tableName);
 	}
 
@@ -185,7 +175,7 @@ public class MappingSession {
 	public static Entity getEntityByClassName(String className) {
 		if (!sessionStarted)
 			throw new MappingSessionNotStartedException();
-		
+
 		return scheme.getEntityByClassName(className);
 	}
 
@@ -195,63 +185,67 @@ public class MappingSession {
 	 * {@link MappingConfiguration}, it may drop and reconstruct all the tables
 	 * from scratch.
 	 * 
-	 * <p>If the session is already started {@link MappingSessionAlreadyStartedException}
-	 * will be thrown.</p>
+	 * <p>
+	 * If the session is already started
+	 * {@link MappingSessionAlreadyStartedException} will be thrown.
+	 * </p>
 	 * 
 	 */
 	public static void start() {
-		if (sessionStarted){
+		if (sessionStarted) {
 			MappingSessionAlreadyStartedException e = new MappingSessionAlreadyStartedException();
 			Log.error(e.getMessage());
 			throw e;
 		}
 		startNoCheck();
 	}
-	
+
 	/**
-	 * <p>Does not throw {@link MappingSessionAlreadyStartedException} if the
-	 * session already started. If used instead of <code>start()</code>,
-	 * does not check whether session is already started or not and triggers
-	 * physical bindings and execution of scheme generator DDL queries.</p>
+	 * <p>
+	 * Does not throw {@link MappingSessionAlreadyStartedException} if the
+	 * session already started. If used instead of <code>start()</code>, does
+	 * not check whether session is already started or not and triggers physical
+	 * bindings and execution of scheme generator DDL queries.
+	 * </p>
 	 * 
 	 * See <code>start()</code> for a healthy bootstrap.
 	 */
-	public static void startNoCheck(){
+	public static void startNoCheck() {
 		sessionStarted = true; // mark the session as started.
-		
+
 		Log.info("Mapping session starting...");
-		
-		if (db == null){
+
+		if (db == null) {
 			NoDatabaseRegisteredException e = new NoDatabaseRegisteredException();
 			Log.error(e.getMessage());
 			throw e;
 		}
-		
-		
+
 		// set custom SQL grammar provider
 		SQLGrammarProvider p = db.getSQLGrammar();
-		if (p != null){
+		if (p != null) {
 			Log.info("Custom SQL grammar found: " + p.getClass().getName());
 			QueryType.setProvider(p);
 		}
-		
+
 		// BIND NAMES AND TYPES FOR FIELDS
 		Log.info("Preparing to make physical bindings for entities.");
-		for(Entity e: scheme.getEntities()){
-			//scheme.checkIdBinding(e);
-			//TODO CRITICAL: Enable asap.
-			
+		for (Entity e : scheme.getEntities()) {
+			// scheme.checkIdBinding(e);
+			// TODO CRITICAL: Enable asap.
+
 			// make generated name and type bindings to fields.
 			for (Field f : e.getFields()) {
-				PhysicalNameAndTypeBindingEngine.makeBinding(e, f, configuration
-						.getColumnNamePolicy(), typeMapper);
+				PhysicalNameAndTypeBindingEngine.makeBinding(e, f,
+						configuration.getColumnNamePolicy(), typeMapper);
 			}
-			
+
 			// check conflicting fields after bindings.
 			scheme.checkConflictingFields(e);
-			Log.info("No conflicting field names found on entity %s.", e.getOriginalName());
+			Log.info("No conflicting field names found on entity %s.",
+					e.getOriginalName());
 		}
-		
+
 		// CONSTRUCT DDL SCHEME FINALLY
 		constructScheme();
 	}
@@ -259,73 +253,72 @@ public class MappingSession {
 	/**
 	 * Prepares DDL queries to create existing scheme from scrats.
 	 * 
-	 * TODO return them as a list to execute somehow.
-	 * TODO drop table first (but catch-all errors if table does
-	 * not exist) then create it.
+	 * TODO return them as a list to execute somehow. TODO drop table first (but
+	 * catch-all errors if table does not exist) then create it.
 	 */
 	private static void constructScheme() {
 		Queue<Query> constructionQueries = new LinkedList<Query>();
 
 		SchemeCreationPolicy policy = configuration.getCreationPolicy();
-		
+
 		Log.info("Scheme creation policy is %s.", policy.toString());
-		
+
 		if (policy.equals(SchemeCreationPolicy.CREATE)
 				|| policy.equals(SchemeCreationPolicy.UPDATE)) {
-			
-			// TODO Discuss: Order of drop of existing tables. Current policy, tbls with most FK first.
+
+			// TODO Discuss: Order of drop of existing tables. Current policy,
+			// tbls with most FK first.
 			Collections.sort(scheme.getEntities(), new Comparator<Entity>() {
 				@Override
-				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count DESC
-					return new Integer(o2.getForeignKeyCount()).compareTo(o1.getForeignKeyCount());
+				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count
+															// DESC
+					return new Integer(o2.getForeignKeyCount()).compareTo(o1
+							.getForeignKeyCount());
 				}
 			});
-			
-			
-			for (Entity e : scheme.getEntities()){
-				if (policy.equals(SchemeCreationPolicy.CREATE)){
+
+			for (Entity e : scheme.getEntities()) {
+				if (policy.equals(SchemeCreationPolicy.CREATE)) {
 					// DROP TABLE IF EXISTS
 					Query dT = DDLQueryGenerator.dropTableQuery(e);
 					constructionQueries.offer(dT);
 				}
 			}
-			
-			//TODO Discuss: Order of creation of tables. Current policy, entities with lesser FK first.
+
+			// TODO Discuss: Order of creation of tables. Current policy,
+			// entities with lesser FK first.
 			Collections.sort(scheme.getEntities(), new Comparator<Entity>() {
 				@Override
-				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count ASC
-					return new Integer(o1.getForeignKeyCount()).compareTo(o2.getForeignKeyCount());
+				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count
+															// ASC
+					return new Integer(o1.getForeignKeyCount()).compareTo(o2
+							.getForeignKeyCount());
 				}
 			});
-			
+
 			for (Entity e : scheme.getEntities()) {
 				// CREATE TABLE
-				Query cT = DDLQueryGenerator.createTableQuery(e, policy
-						.equals(SchemeCreationPolicy.UPDATE));
+				Query cT = DDLQueryGenerator.createTableQuery(e,
+						policy.equals(SchemeCreationPolicy.UPDATE));
 				constructionQueries.offer(cT);
 
 				// CREATE INDEXES
 				// TODO CRITICAL: enable ASAP.
 				/*
-				for (Field f : e.getFields()) {
-					if (f.getIndex() != null) {
-						if (policy.equals(SchemeCreationPolicy.CREATE)){
-							// DROP INDEX 
-							Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
-							constructionQueries.offer(dI);
-						}
-						
-						// CREATE INDEX
-						Query cI = DDLQueryGenerator.createIndexQuery(e, f, policy
-								.equals(SchemeCreationPolicy.UPDATE));
-						constructionQueries.offer(cI);
-					}
-				}
-				*/
+				 * for (Field f : e.getFields()) { if (f.getIndex() != null) {
+				 * if (policy.equals(SchemeCreationPolicy.CREATE)){ // DROP
+				 * INDEX Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
+				 * constructionQueries.offer(dI); }
+				 * 
+				 * // CREATE INDEX Query cI =
+				 * DDLQueryGenerator.createIndexQuery(e, f, policy
+				 * .equals(SchemeCreationPolicy.UPDATE));
+				 * constructionQueries.offer(cI); } }
+				 */
 			}
-			
+
 			Log.info("Executing DDL construction queries.");
-			for(Query q : constructionQueries){
+			for (Query q : constructionQueries) {
 				getExecuter().executeOnly(q);
 			}
 			Log.info("DDL constructed successfully.");
