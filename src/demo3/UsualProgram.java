@@ -2,13 +2,10 @@ package demo3;
 
 import java.util.List;
 
-import org.orman.datasource.Database;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
-import org.orman.mysql.MySQL;
-import org.orman.mysql.MySQLSettingsImpl;
 import org.orman.sqlite.SQLite;
 import org.orman.util.logging.ILogger;
 import org.orman.util.logging.Log;
@@ -22,8 +19,8 @@ public class UsualProgram {
 		ILogger log = new Log4jAdapter();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.TRACE);
-		MappingSession.registerEntity(Payment.class);
-		MappingSession.registerEntity(Ticket.class);
+		MappingSession.registerPackage("demo3");
+		
 
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.UPDATE);
