@@ -6,15 +6,24 @@ package org.orman.sql;
  * 
  * @see QueryType
  * @author alp
- *
+ * 
  */
 public interface SQLGrammarProvider {
 	/**
-	 * Returns query template of given type of implementor DBMS
-	 * including  clause fields binded at runtime (surrounded by {})
-	 * without trailing semicolons.
+	 * Returns query template of given type of implementor DBMS including clause
+	 * fields binded at runtime (surrounded by {}) without trailing semicolons.
 	 * 
-	 * @param type 
+	 * @param type
+	 * @return
 	 */
 	public String getTemplate(QueryType type);
+
+	/**
+	 * Returns constraint clause template of given table constraint type
+	 * including some fields with (%s), that should be formatted at runtime.
+	 * 
+	 * @param tableConstraintType
+	 * @return
+	 */
+	public String getConstraint(TableConstraintType tableConstraintType);
 }

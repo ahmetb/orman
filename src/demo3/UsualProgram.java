@@ -15,12 +15,11 @@ import org.orman.util.logging.LoggingLevel;
 public class UsualProgram {
 	public static void main(String[] args) {
 		SQLite db = new SQLite("lite.db");
-		
+
 		ILogger log = new Log4jAdapter();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.TRACE);
 		MappingSession.registerPackage("demo3");
-		
 
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.UPDATE);
@@ -40,5 +39,9 @@ public class UsualProgram {
 				.fetchQuery(ModelQuery.select().from(Ticket.class).getQuery(),
 						Ticket.class);
 		System.out.println(tickets);
+
+		Object count = Model.fetchSingleValue(
+				ModelQuery.select().count().from(Ticket.class).getQuery());
+		System.out.println("Count = " + count);
 	}
 }

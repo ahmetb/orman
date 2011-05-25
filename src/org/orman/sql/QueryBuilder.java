@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.orman.sql.exception.NoTableSpecifiedException;
 import org.orman.sql.exception.QueryBuilderException;
+import org.orman.sql.exception.QueryTypeNotImplementedException;
 import org.orman.sql.util.Glue;
 import org.orman.sql.util.Serializer;
 
@@ -120,11 +121,11 @@ public class QueryBuilder {
 	public QueryBuilder createColumn(String column, String dataType, boolean isNullable, boolean isPrimaryKey, boolean isAutoIncrement){
 		//TODO hard-coded keywords can be specific to DBMS, generalize.
 		if(!isNullable)
-			dataType += " NOT NULL"; // append NOT NULL if "not"-nullable
+			dataType += " " + TableConstraintType.NOT_NULL.getTemplate(); // append NOT NULL if "not"-nullable
 		if(isPrimaryKey)
-			dataType += " PRIMARY KEY"; // append PRIMARY KEY
+			dataType += " " + TableConstraintType.PRIMARY_KEY.getTemplate(); // append PRIMARY KEY
 		if(isAutoIncrement)
-			dataType += " AUTO_INCREMENT"; // append AUTO INCREMENT (which is also PRIMARY KEY)
+			dataType += " " + TableConstraintType.AUTO_INCREMENT.getTemplate(); // append AUTO INCREMENT (which is also PRIMARY KEY)
 		
 		return this.selectAs(column, dataType);
 	}

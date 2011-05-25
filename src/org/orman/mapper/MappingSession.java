@@ -17,6 +17,7 @@ import org.orman.mapper.exception.UnregisteredEntityException;
 import org.orman.sql.Query;
 import org.orman.sql.QueryType;
 import org.orman.sql.SQLGrammarProvider;
+import org.orman.sql.TableConstraintType;
 import org.orman.util.logging.Log;
 
 /**
@@ -226,6 +227,7 @@ public class MappingSession {
 		if (p != null) {
 			Log.info("Custom SQL grammar found: " + p.getClass().getName());
 			QueryType.setProvider(p);
+			TableConstraintType.setProvider(p);
 		}
 
 		// BIND NAMES AND TYPES FOR FIELDS

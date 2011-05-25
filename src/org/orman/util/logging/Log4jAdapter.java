@@ -58,7 +58,7 @@ public class Log4jAdapter implements ILogger {
 
 	/* Log4j methods */
 	public void trace(String message, Object... params) {
-		getLogger().debug(String.format(message, params));
+		getLogger().trace(String.format(message, params));
 	}
 
 	public void debug(String message, Object... params) {

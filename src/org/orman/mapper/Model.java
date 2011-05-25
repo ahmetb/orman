@@ -409,7 +409,8 @@ public class Model<E> {
 	}
 	/**
 	 * Executes the query and returns the "first" result
-	 * mapped to the entity instance.
+	 * mapped to the entity instance. Reverse mapping is done
+	 * for <code>type</code> parameter.
 	 * 
 	 * CAUTION: If the query does not have SELECT * or 
 	 * has JOINs, or anything that can break the field
@@ -425,6 +426,21 @@ public class Model<E> {
 		if(l == null || l.size()==0) return null;
 		return l.get(0);
 	}
+	
+	/**
+	 * Executes the query and returns the single value as
+	 * String object. Conversion left to the user. 
+	 * 
+	 * @param q query generated with {@link ModelQuery}.
+	 * @param type preferably a primitive type.
+	 * @return
+	 */
+	public static Object fetchSingleValue(Query q){
+		Object o = MappingSession.getExecuter().executeForSingleValue(q);
+		return o;
+	}
+	
+	
 	
 	/**
 	 * Executes given query for no result, i.e. it can be used for

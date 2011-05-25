@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.orman.sql.QueryType;
 import org.orman.sql.SQLGrammarProvider;
+import org.orman.sql.TableConstraintType;
 import org.orman.sql.exception.QueryTypeNotImplementedException;
 
 /**
@@ -16,7 +17,7 @@ import org.orman.sql.exception.QueryTypeNotImplementedException;
  */
 public class SQLiteGrammar implements SQLGrammarProvider {
 	@SuppressWarnings("serial")
-	private static Map<QueryType, String> grammar = new EnumMap<QueryType, String>(QueryType.class){{
+	private static Map<QueryType, String> queryGrammar = new EnumMap<QueryType, String>(QueryType.class){{
 		// put statements into map;
 		put(QueryType.USE_DATABASE, "USE DATABASE {DATABASE}"); 
 		
@@ -44,10 +45,26 @@ public class SQLiteGrammar implements SQLGrammarProvider {
 		put(QueryType.ROLLBACK_TRANSACTION, "ROLLBACK"); 
 	}};
 	
+	private static Map<TableConstraintType, String> constraintGrammar = new EnumMap<TableConstraintType, String>(TableConstraintType.class){{
+		put(TableConstraintType.FOREIGN_KEY, "FOREIGN KEY (%s) REFERENCES %s (%s)");
+		put(TableConstraintType.UNIQUE, "UNIQUE (%s)");
+		put(TableConstraintType.PRIMARY_KEY ,"PRIMARY KEY");
+		put(TableConstraintType.AUTO_INCREMENT, "AUTOINCREMENT");
+		put(TableConstraintType.NOT_NULL, "NOT NULL");
+	}};
 	
 	@Override
 	public String getTemplate(QueryType type) {
-		String tpl = grammar.get(type);
+		String tpl = queryGrammar.get(type);
+		if (tpl == null)
+			throw new QueryTypeNotImplementedException(type.toString());
+		return tpl;
+	}
+
+
+	@Override
+	public String getConstraint(TableConstraintType type) {
+		String tpl = constraintGrammar.get(type);
 		if (tpl == null)
 			throw new QueryTypeNotImplementedException(type.toString());
 		return tpl;
