@@ -3,12 +3,12 @@ package demo;
 import org.orman.mapper.LoadingPolicy;
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.ManyToOne;
+import org.orman.mapper.annotation.PrimaryKey;
 
 @Entity
 public class Student extends Model<Student>{
-	@Id public long id;
+	@PrimaryKey public long id;
 	
 	public String name;
 	

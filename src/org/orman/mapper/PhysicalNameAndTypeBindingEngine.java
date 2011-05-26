@@ -1,9 +1,7 @@
 package org.orman.mapper;
 
 import org.orman.datasource.DataTypeMapper;
-import org.orman.mapper.annotation.AutoIncrement;
 import org.orman.mapper.annotation.Column;
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.mapper.annotation.PrimaryKey;
@@ -35,10 +33,11 @@ public class PhysicalNameAndTypeBindingEngine {
 
 	/**
 	 * Makes name and column type bindings to given <code>field</code>. It also
-	 * makes default name bindings to unnamed {@link Index}es (or {@link Id} fields
-	 * since it covers {@link Index})
+	 * makes default name bindings to unnamed {@link Index}es (or autoIncrement
+	 * {@link PrimaryKey} fields since it covers {@link Index})
 	 * 
-	 * @param entity used to generate index name if not specified.
+	 * @param entity
+	 *            used to generate index name if not specified.
 	 * @param field
 	 * @param namingPolicy
 	 * @param dataTypeMapper
@@ -123,8 +122,7 @@ public class PhysicalNameAndTypeBindingEngine {
 
 	private static java.lang.reflect.Field getPrimaryKeyFieldForClass(Class<?> clazz) {
 		for(java.lang.reflect.Field f : clazz.getDeclaredFields()){
-			if (f.isAnnotationPresent(PrimaryKey.class)
-					|| f.isAnnotationPresent(AutoIncrement.class)) {
+			if (f.isAnnotationPresent(PrimaryKey.class)){
 				return f;
 			}
 		}

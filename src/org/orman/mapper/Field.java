@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.orman.mapper.annotation.Column;
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 
 /**

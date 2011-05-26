@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.DuplicateColumnNamesException;
 import org.orman.mapper.exception.DuplicateTableNamesException;
 import org.orman.mapper.exception.NotDeclaredIdException;

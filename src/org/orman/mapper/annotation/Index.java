@@ -7,6 +7,8 @@ import org.orman.sql.IndexType;
 
 /**
  * Use this annotation to create index on this field.
+ * You can set a custom name or a custom type for the
+ * index.
  * 
  * @author alp
  */

@@ -7,15 +7,15 @@ import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mapper.annotation.Entity;
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.OneToMany;
+import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.sqlite.SQLite;
 import org.orman.util.logging.Log;
 import org.orman.util.logging.LoggingLevel;
 
 @Entity
 public class ClassRoom extends Model<ClassRoom> {
-	@Id
+	@PrimaryKey
 	public int id;
 	
 	public String name;

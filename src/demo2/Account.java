@@ -5,11 +5,11 @@ import java.util.Date;
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Entity;
-import org.orman.mapper.annotation.Id;
+import org.orman.mapper.annotation.PrimaryKey;
 
 @Entity
 public class Account extends Model<Account> {
-	@Id
+	@PrimaryKey
 	@Column(type = "CHAR(8)")
 	private String aid;
 	

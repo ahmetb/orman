@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.orman.mapper.annotation.AutoIncrement;
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.NotNull;
@@ -21,6 +19,7 @@ import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnannotatedCollectionFieldException;
 import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
+import org.orman.sql.IndexType;
 
 /**
  * Finds fields and getter-setter methods of a given {@link Entity} using Reflection API.
@@ -99,26 +98,22 @@ public class EntityInspector {
 				}
 				
 				
-				// Recognize @AutoIncrement annotation
-				if(f.isAnnotationPresent(AutoIncrement.class)){
-					newF.setAutoIncrement(true);
-					// Auto increment should be also a primary key.
-					newF.setPrimaryKey(true);
-				}
-				
-				// Recognize @PrimaryKey annotation (covers @Index) or @AutoIncrement
+				// Recognize @PrimaryKey annotation (covers @Index)
 				// Auto increment should be also a primary key.
-				if (f.isAnnotationPresent(PrimaryKey.class)
-						|| f.isAnnotationPresent(AutoIncrement.class)) {
+				if (f.isAnnotationPresent(PrimaryKey.class)) {
 					newF.setPrimaryKey(true);
+					
+					// if field is an auto increment
+					PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
+					newF.setAutoIncrement(pk.autoIncrement());
 					
 					if (!isSupportedForPrimaryKeyField(f.getType())){
 						throw new UnsupportedIdFieldTypeException(f.getType().getName(), clazz.getName());
 					}
 					
-					// if no custom @Index defined create a default
+					// if no custom @Index defined create a hash index by default
 					if(newF.getIndex() == null){
-						newF.setIndex(new FieldIndexHolder(null, true));
+						newF.setIndex(new FieldIndexHolder(null, true, IndexType.HASH));
 					}
 				}
 				

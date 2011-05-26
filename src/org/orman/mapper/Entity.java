@@ -3,7 +3,6 @@ package org.orman.mapper;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.NotAnEntityException;
 import org.orman.mapper.exception.NotDeclaredIdException;

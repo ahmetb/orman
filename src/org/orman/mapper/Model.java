@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.orman.datasource.ResultList;
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.NotNullableFieldException;
 import org.orman.mapper.exception.UnableToPersistDetachedEntityException;
 import org.orman.mapper.exception.UnableToSaveDetachedInstanceAsFieldException;
@@ -235,7 +234,8 @@ public class Model<E> {
 	}
 
 	/**
-	 * @return value of {@link Id} field of this domain class.
+	 * TODO CRITICAL: test & fix after Id depreciation.
+	 * @return value of {@link PrimaryKey} field of this domain class.
 	 */
 	private Object getEntityId() {
 		Field idField = getEntity().getPrimaryKeyField();
@@ -243,7 +243,9 @@ public class Model<E> {
 	}
 
 	/**
-	 * @return whether entity has a {@link Id} marked field.
+	 * TODO CRITICAL: test & fix after Id depreciation. 
+	 * @return whether entity has a {@link PrimaryKey} marked field.
+	 * 
 	 */
 	private boolean hasEntityId() {
 		try {
@@ -347,7 +349,7 @@ public class Model<E> {
 	}
 
 	/**
-	 * Used to return {@link Id}s of instance if <code>fieldVal</code> is an
+	 * Used to return id of instance if <code>fieldVal</code> is an
 	 * {@link org.orman.mapper.annotation.Entity}, return normal value
 	 * otherwise.
 	 */

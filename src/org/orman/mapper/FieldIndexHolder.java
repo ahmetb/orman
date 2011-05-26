@@ -12,6 +12,7 @@ public class FieldIndexHolder {
 	private String name;
 	private IndexType type;
 	
+	
 	public FieldIndexHolder(String name, boolean unique){
 		this(name, unique, IndexType.HASH);
 	}

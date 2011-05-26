@@ -2,13 +2,12 @@ package org.orman.mapper;
 
 import java.util.Random;
 
-import org.orman.mapper.annotation.Id;
 import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
 
 /**
  * Implementation for {@link IdGenerationPolicy}.ORMAN_ID_GENERATION type.
  * 
- * Experimental {@link Id} generator for String, int and long fields. Uses time
+ * Experimental autoIncrement id generator for String, int and long fields. Uses time
  * seed, randomizer and Model instance to produce a Id key.
  * 
  * Warning: DOES NOT GUARANTEE preventing collisions, however collisions are

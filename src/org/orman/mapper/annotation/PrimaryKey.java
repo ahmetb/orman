@@ -21,5 +21,11 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PrimaryKey {
-	// no implementation
+	/**
+	 * Indicates that the column is an auto increment field so that it will be
+	 * generated upon scheme construction. Make sure that this field is an
+	 * augmentable (numeric) type which your DBMS can handle if you set 
+	 * this to <code>true</code>. It is <code>false</code> by default.
+	 */
+	boolean autoIncrement() default false;
 }
