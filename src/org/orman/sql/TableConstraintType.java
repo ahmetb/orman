@@ -14,6 +14,7 @@ public enum TableConstraintType {
 	UNIQUE("UNIQUE (%s)"),
 	PRIMARY_KEY("PRIMARY KEY"),
 	AUTO_INCREMENT("AUTO INCREMENT"),
+	USING("USING (%s)"),
 	NOT_NULL("NOT NULL");
 
 	private String template;

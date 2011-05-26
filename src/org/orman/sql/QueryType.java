@@ -7,10 +7,10 @@ package org.orman.sql;
  * <code>SQLGrammarProvider</code> to this class at runtime.
  * 
  * <p>Caution: Any query type added/removed from here should be also updated on
- * <code>SQLGrammarProvider</code> implementations of various DBMSes. 
+ * {@link SQLGrammarProvider} implementations of various DBMSes. 
  * </p>
  * 
- * @author alp
+ * @author ahmet alp balkan
  * @see SQLGrammarProvider
  */
 public enum QueryType {
@@ -28,9 +28,9 @@ public enum QueryType {
 	UPDATE("UPDATE {TABLE_LIST} SET {COLUMN_VALUE_LIST} {WHERE}"),
 	DELETE("DELETE FROM {TABLE_LIST} {WHERE}"),
 	
-	
-	CREATE_INDEX("CREATE INDEX {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST})"), // highly depends on DBMS
-	CREATE_UNIQUE_INDEX("CREATE UNIQUE INDEX {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST})"), // highly depends on DBMS
+	// Actually INDEX queries are not in SQL standards. (-: 
+	CREATE_INDEX("CREATE INDEX {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST}) USING {COLUMN_OR_CONSTRAINT_DESCRIPTION_LIST}"), // highly depends on DBMS
+	CREATE_UNIQUE_INDEX("CREATE UNIQUE INDEX {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST}) USING {COLUMN_OR_CONSTRAINT_DESCRIPTION_LIST}"), // highly depends on DBMS
 	CREATE_INDEX_IF_NOT_EXISTS("CREATE INDEX IF NOT EXISTS {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST})"), // highly depends on DBMS
 	CREATE_UNIQUE_INDEX_IF_NOT_EXISTS("CREATE UNIQUE INDEX IF NOT EXISTS {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST})"), // highly depends on DBMS
 	DROP_INDEX("DROP INDEX {INDEX_NAME}"), // highly depends on DBMS

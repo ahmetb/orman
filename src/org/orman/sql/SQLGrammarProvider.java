@@ -26,4 +26,12 @@ public interface SQLGrammarProvider {
 	 * @return
 	 */
 	public String getConstraint(TableConstraintType tableConstraintType);
+
+	/**
+	 * Returns keyword of an {@link IndexType} using grammar provider.
+	 * 
+	 * @param tableConstraintType
+	 * @return
+	 */
+	public String getIndexType(IndexType indexType);
 }

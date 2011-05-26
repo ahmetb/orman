@@ -24,9 +24,9 @@ public class Field implements Comparable<Field> {
 	private String type;
 	private String customType;
 	private FieldIndexHolder index;
-	private boolean isId = false;
 	private boolean isNullable = true;
 	private boolean isList = false;
+	private boolean isPrimaryKey = false;
 	private boolean isForeignKey = false;
 	private boolean isAutoIncrement = false;
 
@@ -107,23 +107,6 @@ public class Field implements Comparable<Field> {
 		return index;
 	}
 
-	/**
-	 * @param isId
-	 *            use <code>true</code> to make this field an Id field (can
-	 *            exist only once in an {@link Entity} and create index on this
-	 *            {@link Field}.
-	 */
-	public void makeId(boolean isId) {
-		this.isId = isId;
-	}
-
-	/**
-	 * @return <code>false</code> if this field is not a {@link Index}.
-	 */
-	public boolean isId() {
-		return isId;
-	}
-
 	public void setSetterMethod(Method setterMethod) {
 		this.setterMethod = setterMethod;
 	}
@@ -190,5 +173,13 @@ public class Field implements Comparable<Field> {
 
 	public boolean isAutoIncrement() {
 		return isAutoIncrement;
+	}
+
+	public void setPrimaryKey(boolean isPrimaryKey) {
+		this.isPrimaryKey = isPrimaryKey;
+	}
+
+	public boolean isPrimaryKey() {
+		return isPrimaryKey;
 	}
 }

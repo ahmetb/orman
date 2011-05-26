@@ -15,6 +15,7 @@ import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
+import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.NotDeclaredDefaultConstructorException;
 import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
@@ -97,11 +98,15 @@ public class EntityInspector {
 						newF.setGetterMethod(getter); // bind getter.
 				}
 				
+				if(f.isAnnotationPresent(PrimaryKey.class)){
+					newF.setPrimaryKey(true);
+				}
+				
 				// Recognize @AutoIncrement annotation
-				// TODO deprecate @Id as soon as possible.
 				if(f.isAnnotationPresent(AutoIncrement.class)){
 					newF.setAutoIncrement(true);
 					// Auto increment should be also a primary key.
+					newF.setPrimaryKey(true);
 				}
 				
 				// Recognize @Id annotation (covers @Index) or @AutoIncrement
@@ -123,7 +128,7 @@ public class EntityInspector {
 				// Recognize @Index annotation.
 				if(f.isAnnotationPresent(Index.class)){
 					Index ann = f.getAnnotation(Index.class);
-					newF.setIndex(new FieldIndexHolder(ann.name(), ann.unique()));
+					newF.setIndex(new FieldIndexHolder(ann.name(), ann.unique(), ann.type()));
 					newF.setNullable(false);
 				}
 				

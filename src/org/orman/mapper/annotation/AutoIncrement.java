@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
  * 
  * <p>
  * Caution: Auto increment fields are automatically set as primary key even if
- * it is not explicitly declared as with annotation.
+ * it is not explicitly declared as with annotation {@link PrimaryKey}.
  * </p>
  * 
  * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>

@@ -81,7 +81,7 @@ public class DDLQueryGenerator {
 		}
 
 		return QueryBuilder.getBuilder(type).from(e.getGeneratedName())
-				.setIndex(on.getGeneratedName(), on.getIndex().name())
+				.setIndex(on.getGeneratedName(), on.getIndex().name(), on.getIndex().getType())
 				.getQuery();
 	}
 	
@@ -95,7 +95,7 @@ public class DDLQueryGenerator {
 			throw new IndexNotFoundException(on.getOriginalName());
 		
 		return QueryBuilder.getBuilder(QueryType.DROP_INDEX).from(e.getGeneratedName()) // TODO CRITICAL: _IF_EXISTS dropped because not exists in MySQL.
-		.setIndex(on.getGeneratedName(), on.getIndex().name())
+		.setIndex(on.getGeneratedName(), on.getIndex().name(), on.getIndex().getType())
 		.getQuery();
 	}
 }

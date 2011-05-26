@@ -183,10 +183,12 @@ public class QueryBuilder {
 	 * 
 	 * Index name STORED ON => field alias
 	 * Index column STORED ON => field list
-	 * Table name STORED ON => table name (use .from())
+	 * Table name STORED ON => table name (use .from()) (this is not here)
+	 * Index type STORED ON => table constraint USING.
 	 */
-	public QueryBuilder setIndex(String on, String indexName){
+	public QueryBuilder setIndex(String on, String indexName, IndexType type){
 		this.query.setIndexName(indexName);
+		this.addConstraint(new TableConstraint(TableConstraintType.USING, type.getKeyword()));
 		return this.select(on);
 	}
 	
@@ -421,7 +423,6 @@ public class QueryBuilder {
 			}
 			if(i != fl.size()-1) sb.append(", ");
 		}
-		
 		return sb.toString();
 	}
 	
