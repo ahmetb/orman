@@ -7,7 +7,6 @@ import org.orman.mapper.annotation.Id;
 
 @Entity
 public class Payment extends Model<Payment>{
-	@Id
 	@AutoIncrement
 	public long tx_id;
 	

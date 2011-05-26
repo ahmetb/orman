@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.orman.mapper.annotation.Id;
+import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.NotAnEntityException;
 import org.orman.mapper.exception.NotDeclaredIdException;
 
@@ -62,11 +63,18 @@ public class Entity {
 	}
 
 	/**
-	 * @return {@link Id} {@link Field} of this entity.
+	 * 
+	 * Returns {@link PrimaryKey} {@link Field} of this entity. Most probably this is
+	 *         used for reverse binding and will not work if more than one
+	 *         primary key fields exist!
+	 * @return first found primary key field in entity.
+	 * 
+	 * TODO fix multi pk situation, maybe with an autoincrement check.
+	 *         
 	 */
-	public Field getIdField() {
+	public Field getPrimaryKeyField() {
 		for (Field f : getFields())
-			if (f.isId())
+			if (f.isPrimaryKey())
 				return f;
 		throw new NotDeclaredIdException(this.getOriginalFullName());
 	}

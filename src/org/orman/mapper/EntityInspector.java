@@ -98,9 +98,6 @@ public class EntityInspector {
 						newF.setGetterMethod(getter); // bind getter.
 				}
 				
-				if(f.isAnnotationPresent(PrimaryKey.class)){
-					newF.setPrimaryKey(true);
-				}
 				
 				// Recognize @AutoIncrement annotation
 				if(f.isAnnotationPresent(AutoIncrement.class)){
@@ -109,13 +106,13 @@ public class EntityInspector {
 					newF.setPrimaryKey(true);
 				}
 				
-				// Recognize @Id annotation (covers @Index) or @AutoIncrement
+				// Recognize @PrimaryKey annotation (covers @Index) or @AutoIncrement
 				// Auto increment should be also a primary key.
-				if (f.isAnnotationPresent(Id.class)
+				if (f.isAnnotationPresent(PrimaryKey.class)
 						|| f.isAnnotationPresent(AutoIncrement.class)) {
-					newF.makeId(true);
+					newF.setPrimaryKey(true);
 					
-					if (!isSupportedForIdField(f.getType())){
+					if (!isSupportedForPrimaryKeyField(f.getType())){
 						throw new UnsupportedIdFieldTypeException(f.getType().getName(), clazz.getName());
 					}
 					
@@ -173,7 +170,7 @@ public class EntityInspector {
 	 * @param type of some field to be an {@link Id} candidate.
 	 * @return true if eligible, false otherwise.
 	 */
-	private static boolean isSupportedForIdField(Class<?> type){
+	private static boolean isSupportedForPrimaryKeyField(Class<?> type){
 		for(int i = 0 ; i < ID_SUPPORTED_TYPES.length; i++)
 			if(type.equals(ID_SUPPORTED_TYPES[i])) return true;
 		return false;

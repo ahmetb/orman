@@ -9,7 +9,6 @@ import org.orman.mapper.annotation.OneToOne;
 
 @Entity
 public class Ticket extends Model<Ticket>{
-	@Id
 	@AutoIncrement
 	public long id;
 	

@@ -52,7 +52,7 @@ public class MySQLGrammar implements SQLGrammarProvider {
 		put(TableConstraintType.UNIQUE, "UNIQUE (%s)");
 		put(TableConstraintType.PRIMARY_KEY ,"PRIMARY KEY");
 		put(TableConstraintType.USING, "USING (%s)");
-		put(TableConstraintType.AUTO_INCREMENT, "AUTO INCREMENT");
+		put(TableConstraintType.AUTO_INCREMENT, "AUTO_INCREMENT");
 		put(TableConstraintType.NOT_NULL, "NOT NULL");
 		
 	}};

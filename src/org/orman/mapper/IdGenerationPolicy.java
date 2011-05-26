@@ -1,5 +1,6 @@
 package org.orman.mapper;
 
+import org.orman.mapper.annotation.AutoIncrement;
 import org.orman.mapper.annotation.Id;
 
 /**
@@ -11,8 +12,8 @@ import org.orman.mapper.annotation.Id;
  */
 public enum IdGenerationPolicy {
 	/**
-	 * Provides a way to set id such that developer should update {@link Id}
-	 * field manually and makes sure that there is NO collision on @Id field.
+	 * Provides a way to set id such that developer should update {@link AutoIncrement}
+	 * field manually and makes sure that there is NO collision on @AutoIncrement field.
 	 */
 	MANUAL,
 

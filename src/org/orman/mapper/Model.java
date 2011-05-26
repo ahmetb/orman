@@ -76,7 +76,7 @@ public class Model<E> {
 		// Bind last insert id if IdGenerationPolicy is DEFER_TO_DBMS
 		if (MappingSession.getConfiguration().getIdGenerationPolicy().equals(
 				IdGenerationPolicy.DEFER_TO_DBMS)) {
-			Field idField = getEntity().getIdField();
+			Field idField = getEntity().getPrimaryKeyField();
 			setEntityField(idField, getEntity(), MappingSession
 					.getExecuter().getLastInsertId(idField.getClazz()));
 		}
@@ -93,7 +93,8 @@ public class Model<E> {
 			boolean useField = true;
 
 			// make id value binding
-			if (f.isId()) {
+			// TODO CRITICAL: test this for multi primary keys!
+			if (f.isPrimaryKey()) {
 				IdGenerationPolicy policy = MappingSession.getConfiguration()
 						.getIdGenerationPolicy();
 
@@ -173,7 +174,7 @@ public class Model<E> {
 
 				qb.set(f.getGeneratedName(), fieldVal);
 			}
-			qb.where(C.eq(getEntity().getIdField().getGeneratedName(),
+			qb.where(C.eq(getEntity().getPrimaryKeyField().getGeneratedName(),
 					__persistencyId)); //TODO discuss: what about entities without @Id? (__persistencyId)
 			return qb.getQuery();
 		} else
@@ -229,7 +230,7 @@ public class Model<E> {
 	private Query prepareDeleteQuery() {
 		return QueryBuilder.delete().from(getEntity().getGeneratedName())
 				.where(
-						C.eq(getEntity().getIdField().getGeneratedName(),
+						C.eq(getEntity().getPrimaryKeyField().getGeneratedName(),
 								__persistencyId)).getQuery();
 	}
 
@@ -237,7 +238,7 @@ public class Model<E> {
 	 * @return value of {@link Id} field of this domain class.
 	 */
 	private Object getEntityId() {
-		Field idField = getEntity().getIdField();
+		Field idField = getEntity().getPrimaryKeyField();
 		return getEntityField(idField);
 	}
 
@@ -246,7 +247,7 @@ public class Model<E> {
 	 */
 	private boolean hasEntityId() {
 		try {
-			getEntity().getIdField();
+			getEntity().getPrimaryKeyField();
 			return true;
 		} catch (Exception e) {
 		} 

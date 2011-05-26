@@ -147,18 +147,18 @@ public class PersistenceSchemeMapper {
 	 *             if does not exist any.
 	 * @param e
 	 */
-	//TODO CRITICAL: Decide: Is @Id annotation necessary? Can't there exist multiple PKs?
-	public void checkIdBinding(Entity e) {
-		int idOccurrenceCount = 0;
+	//TODO CRITICAL: Decide: Is @PrimaryKey or @AutoIncrement annotation necessary? Can't there exist multiple PKs?
+	public void checkPrimaryKeyBinding(Entity e) {
+		int okOccurrenceCount = 0;
 
 		for (Field f : e.getFields()) {
-			if (f.isId())
-				idOccurrenceCount++;
+			if (f.isPrimaryKey())
+				okOccurrenceCount++;
 		}
 		
-		if (idOccurrenceCount < 1)
+		if (okOccurrenceCount < 1)
 			throw new NotDeclaredIdException(e.getOriginalFullName());
-		else if (idOccurrenceCount > 1)
+		else if (okOccurrenceCount > 1)
 			throw new TooManyIdException(e.getOriginalFullName());
 	}
 

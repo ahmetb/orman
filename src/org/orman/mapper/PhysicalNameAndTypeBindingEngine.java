@@ -1,10 +1,12 @@
 package org.orman.mapper;
 
 import org.orman.datasource.DataTypeMapper;
+import org.orman.mapper.annotation.AutoIncrement;
 import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Id;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.OneToOne;
+import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.util.logging.Log;
 
 /**
@@ -76,7 +78,7 @@ public class PhysicalNameAndTypeBindingEngine {
 				
 				Log.trace("OneToOne mapping detected on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
 			} else if(MappingSession.entityExists(field.getClazz())){
-				// infer entity @Id type if @*to* annotations does not exist 
+				// infer entity @PrimaryKey type if @*to* annotations does not exist 
 				Class<?> idType = getIdTypeForClass(field.getClazz());
 				fieldType = idType;
 				
@@ -112,16 +114,17 @@ public class PhysicalNameAndTypeBindingEngine {
 	}
 	
 	private static String getCustomizedBinding(Class<?> clazz) {
-		java.lang.reflect.Field idField = getIdFieldForClass(clazz);
+		java.lang.reflect.Field idField = getPrimaryKeyFieldForClass(clazz);
 		if (idField.isAnnotationPresent(Column.class)){
 			return idField.getAnnotation(Column.class).type();
 		}
 		return null;
 	}
 
-	private static java.lang.reflect.Field getIdFieldForClass(Class<?> clazz) {
+	private static java.lang.reflect.Field getPrimaryKeyFieldForClass(Class<?> clazz) {
 		for(java.lang.reflect.Field f : clazz.getDeclaredFields()){
-			if(f.isAnnotationPresent(Id.class)){
+			if (f.isAnnotationPresent(PrimaryKey.class)
+					|| f.isAnnotationPresent(AutoIncrement.class)) {
 				return f;
 			}
 		}
@@ -129,6 +132,6 @@ public class PhysicalNameAndTypeBindingEngine {
 	}
 
 	private static Class<?> getIdTypeForClass(Class<?> clazz) {
-		return getIdFieldForClass(clazz).getType();
+		return getPrimaryKeyFieldForClass(clazz).getType();
 	}
 }

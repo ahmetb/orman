@@ -14,6 +14,7 @@ import org.orman.mapper.exception.MappingSessionAlreadyStartedException;
 import org.orman.mapper.exception.MappingSessionNotStartedException;
 import org.orman.mapper.exception.NoDatabaseRegisteredException;
 import org.orman.mapper.exception.UnregisteredEntityException;
+import org.orman.sql.IndexType;
 import org.orman.sql.Query;
 import org.orman.sql.QueryType;
 import org.orman.sql.SQLGrammarProvider;
@@ -222,12 +223,13 @@ public class MappingSession {
 			throw e;
 		}
 
-		// set custom SQL grammar provider
+		// set custom SQL grammar provider binding
 		SQLGrammarProvider p = db.getSQLGrammar();
 		if (p != null) {
 			Log.info("Custom SQL grammar found: " + p.getClass().getName());
 			QueryType.setProvider(p);
 			TableConstraintType.setProvider(p);
+			IndexType.setProvider(p);
 		}
 
 		// BIND NAMES AND TYPES FOR FIELDS

@@ -40,12 +40,12 @@ public class DDLQueryGenerator {
 			
 			if (!f.isList()){ // list columns are not visible on DDL.
 				qb.createColumn(f.getGeneratedName(), f.getType(),
-						f.isNullable(), f.isId(), f.isAutoIncrement());
+						f.isNullable(), f.isPrimaryKey(), f.isAutoIncrement());
 			}
 			
 			if (f.isForeignKey()){
 				Entity mappedTo = MappingSession.getEntity(f.getClazz());
-				qb.addConstraint(new TableConstraint(TableConstraintType.FOREIGN_KEY, f.getGeneratedName(), mappedTo.getGeneratedName(), mappedTo.getIdField().getGeneratedName()));
+				qb.addConstraint(new TableConstraint(TableConstraintType.FOREIGN_KEY, f.getGeneratedName(), mappedTo.getGeneratedName(), mappedTo.getPrimaryKeyField().getGeneratedName()));
 			}
 		}
 
