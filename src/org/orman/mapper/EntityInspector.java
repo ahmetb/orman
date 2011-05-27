@@ -97,30 +97,28 @@ public class EntityInspector {
 						newF.setGetterMethod(getter); // bind getter.
 				}
 				
-				
 				// Recognize @PrimaryKey annotation (covers @Index)
-				// Auto increment should be also a primary key.
-				if (f.isAnnotationPresent(PrimaryKey.class)) {
+				PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
+				if (pk != null) {
 					newF.setPrimaryKey(true);
-					
-					// if field is an auto increment
-					PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
-					newF.setAutoIncrement(pk.autoIncrement());
 					
 					if (!isSupportedForPrimaryKeyField(f.getType())){
 						throw new UnsupportedIdFieldTypeException(f.getType().getName(), clazz.getName());
 					}
 					
+					// Set auto-increment type.
+					newF.setAutoIncrement(pk.autoIncrement());
+					
 					// if no custom @Index defined create a hash index by default
 					if(newF.getIndex() == null){
-						newF.setIndex(new FieldIndexHolder(null, true, IndexType.HASH));
+						newF.setIndex(new FieldIndexHolder(null, true, IndexType.HASH, true));
 					}
 				}
 				
 				// Recognize @Index annotation.
 				if(f.isAnnotationPresent(Index.class)){
 					Index ann = f.getAnnotation(Index.class);
-					newF.setIndex(new FieldIndexHolder(ann.name(), ann.unique(), ann.type()));
+					newF.setIndex(new FieldIndexHolder(ann.name(), ann.unique(), ann.type(), false));
 					newF.setNullable(false);
 				}
 				

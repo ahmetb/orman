@@ -1,5 +1,6 @@
 package org.orman.mapper;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -225,6 +226,7 @@ public class MappingSession {
 
 		// set custom SQL grammar provider binding
 		SQLGrammarProvider p = db.getSQLGrammar();
+		
 		if (p != null) {
 			Log.info("Custom SQL grammar found: " + p.getClass().getName());
 			QueryType.setProvider(p);
@@ -306,19 +308,24 @@ public class MappingSession {
 						policy.equals(SchemeCreationPolicy.UPDATE));
 				constructionQueries.offer(cT);
 
-				// CREATE INDEXES
-				// TODO CRITICAL: enable ASAP.
-				/*
-				 * for (Field f : e.getFields()) { if (f.getIndex() != null) {
-				 * if (policy.equals(SchemeCreationPolicy.CREATE)){ // DROP
-				 * INDEX Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
-				 * constructionQueries.offer(dI); }
-				 * 
-				 * // CREATE INDEX Query cI =
-				 * DDLQueryGenerator.createIndexQuery(e, f, policy
-				 * .equals(SchemeCreationPolicy.UPDATE));
-				 * constructionQueries.offer(cI); } }
-				 */
+				//CREATE INDEXES
+				List<Field> compositeIndexedFields = new ArrayList<Field>(2);
+				//TODO implement composite indexes.
+				for (Field f : e.getFields()) {
+					if (f.getIndex() != null) {
+						compositeIndexedFields.add(f);
+						if (policy.equals(SchemeCreationPolicy.CREATE)) { // DROP
+																			// INDEX
+							Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
+							constructionQueries.offer(dI);
+						}
+
+						// CREATE INDEX
+						Query cI = DDLQueryGenerator.createIndexQuery(e, f,
+								policy.equals(SchemeCreationPolicy.UPDATE));
+						constructionQueries.offer(cI);
+					}
+				}
 			}
 
 			Log.info("Executing DDL construction queries.");

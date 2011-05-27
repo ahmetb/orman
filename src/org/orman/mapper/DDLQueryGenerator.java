@@ -45,7 +45,7 @@ public class DDLQueryGenerator {
 			
 			if (f.isForeignKey()){
 				Entity mappedTo = MappingSession.getEntity(f.getClazz());
-				qb.addConstraint(new TableConstraint(TableConstraintType.FOREIGN_KEY, f.getGeneratedName(), mappedTo.getGeneratedName(), mappedTo.getPrimaryKeyField().getGeneratedName()));
+				qb.addConstraint(new TableConstraint(TableConstraintType.FOREIGN_KEY, f.getGeneratedName(), mappedTo.getGeneratedName(), mappedTo.getAutoIncrementField().getGeneratedName()));
 			}
 		}
 
@@ -94,7 +94,7 @@ public class DDLQueryGenerator {
 		if (on.getIndex() == null) 
 			throw new IndexNotFoundException(on.getOriginalName());
 		
-		return QueryBuilder.getBuilder(QueryType.DROP_INDEX).from(e.getGeneratedName()) // TODO CRITICAL: _IF_EXISTS dropped because not exists in MySQL.
+		return QueryBuilder.getBuilder(QueryType.DROP_INDEX_IF_EXISTS).from(e.getGeneratedName()) // TODO CRITICAL: _IF_EXISTS dropped because not exists in MySQL.
 		.setIndex(on.getGeneratedName(), on.getIndex().name(), on.getIndex().getType())
 		.getQuery();
 	}

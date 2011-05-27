@@ -63,19 +63,19 @@ public class Entity {
 
 	/**
 	 * 
-	 * Returns {@link PrimaryKey} {@link Field} of this entity. Most probably this is
-	 *         used for reverse binding and will not work if more than one
-	 *         primary key fields exist!
-	 * @return first found primary key field in entity.
+	 * Returns Auto-increment {@link PrimaryKey} {@link Field} of this @{@link Entity},
+	 * if it is not found a <code>null</code> is returned. 
+	 *         
+	 * @return first found auto increment primary key field in entity, <code>null</code> if not found.
 	 * 
 	 * TODO fix multi pk situation, maybe with an autoincrement check.
 	 *         
 	 */
-	public Field getPrimaryKeyField() {
+	public Field getAutoIncrementField() {
 		for (Field f : getFields())
-			if (f.isPrimaryKey())
+			if (f.isAutoIncrement())
 				return f;
-		throw new NotDeclaredIdException(this.getOriginalFullName());
+		return null;
 	}
 
 	public String getOriginalName() {

@@ -53,7 +53,7 @@ public class ReverseMapping {
 						Object fieldValue = makeCardinalityBinding(f, instance,
 							((Model<?>) instance)
 									.getEntityField(((Model<?>) instance)
-											.getEntity().getPrimaryKeyField()));
+											.getEntity().getAutoIncrementField()));
 						
 						if (fieldValue != null) ((Model<?>) instance).setEntityField(f, e, fieldValue);
 					}
@@ -106,7 +106,7 @@ public class ReverseMapping {
 				if (doLoading) {
 					
 					Query c = ModelQuery.select().from(intendedEntity).where(
-							C.eq(intendedType, intendedEntity.getPrimaryKeyField()
+							C.eq(intendedType, intendedEntity.getAutoIncrementField()
 									.getOriginalName(), key)).getQuery();
 					
 					E result = (E) Model.fetchSingle(c, intendedType);

@@ -45,14 +45,14 @@ public class Model<E> {
 	}
 
 	/**
-	 * Can be used to find that the instance is exactly
-	 * as its state when saved in terms of persistence.
+	 * Can be used to find that the instance is exactly as its state when saved
+	 * in terms of persistence.
 	 * 
-	 * Detached instances are not saved at all or changed
-	 * after saving or fetching from database.
-	 * 		
-	 * @return false if object is changed or not saved at all,
-	 * true if the object is saved.
+	 * Detached instances are not saved at all or changed after saving or
+	 * fetching from database.
+	 * 
+	 * @return false if object is changed or not saved at all, true if the
+	 *         object is saved.
 	 */
 	public boolean isPersistent() {
 		return (this.hashCode() == __persistencyHash)
@@ -67,17 +67,22 @@ public class Model<E> {
 	 */
 	public void insert() {
 		// TODO discuss: persistence check?
-		
-		Query q = prepareInsertQuery();
 
+		Query q = prepareInsertQuery();
 		MappingSession.getExecuter().executeOnly(q);
 
 		// Bind last insert id if IdGenerationPolicy is DEFER_TO_DBMS
-		if (MappingSession.getConfiguration().getIdGenerationPolicy().equals(
-				IdGenerationPolicy.DEFER_TO_DBMS)) {
-			Field idField = getEntity().getPrimaryKeyField();
-			setEntityField(idField, getEntity(), MappingSession
-					.getExecuter().getLastInsertId(idField.getClazz()));
+		// if an auto increment field exists.
+		if (MappingSession.getConfiguration().getIdGenerationPolicy()
+				.equals(IdGenerationPolicy.DEFER_TO_DBMS)) {
+			Field autoIncrField = getEntity().getAutoIncrementField();
+
+			if (autoIncrField != null) {
+				setEntityField(autoIncrField, getEntity(), MappingSession
+						.getExecuter()
+						.getLastInsertId(autoIncrField.getClazz()));
+			}
+
 		}
 
 		makePersistent();
@@ -99,13 +104,14 @@ public class Model<E> {
 
 				if (policy == IdGenerationPolicy.ORMAN_ID_GENERATOR)
 					/* bind generated id to the transient instance */
-					setEntityField(f, getEntity(), NativeIdGenerator
-							.generate(f, this));
+					setEntityField(f, getEntity(),
+							NativeIdGenerator.generate(f, this));
 				if (policy == IdGenerationPolicy.DEFER_TO_DBMS)
 					useField = false;
 			}
-			
-			useField = useField && !f.isList(); // list fields are not physically created.
+
+			useField = useField && !f.isList(); // list fields are not
+												// physically created.
 
 			if (useField) { // use field in query
 				Object fieldVal = getEntityField(f);
@@ -121,9 +127,9 @@ public class Model<E> {
 					fieldVal = fieldValueSerializer(fieldVal);
 
 					if (!instance.isPersistent()) {
-						throw new UnableToSaveDetachedInstanceAsFieldException(f
-								.getOriginalName(), instance.getClass()
-								.toString());
+						throw new UnableToSaveDetachedInstanceAsFieldException(
+								f.getOriginalName(), instance.getClass()
+										.toString());
 					}
 				}
 
@@ -134,15 +140,16 @@ public class Model<E> {
 	}
 
 	/**
-	 * Saves the persistent instance to the database "if changes are made
-	 * on it". If no changes are made, no queries will be executed.
+	 * Saves the persistent instance to the database "if changes are made on
+	 * it". If no changes are made, no queries will be executed.
 	 */
 	public void update() {
-		//TODO discuss: is persistency check required? 
+		// TODO discuss: is persistency check required?
 		Query q = prepareUpdateQuery();
-		if (q != null) MappingSession.getExecuter().executeOnly(q);
+		if (q != null)
+			MappingSession.getExecuter().executeOnly(q);
 
-		//TODO discuss: what should be done if list fields are updated.
+		// TODO discuss: what should be done if list fields are updated.
 		makePersistent();
 	}
 
@@ -165,16 +172,20 @@ public class Model<E> {
 					fieldVal = fieldValueSerializer(fieldVal);
 
 					if (!instance.isPersistent()) {
-						throw new UnableToSaveDetachedInstanceAsFieldException(f
-								.getOriginalName(), instance.getClass()
-								.toString());
+						throw new UnableToSaveDetachedInstanceAsFieldException(
+								f.getOriginalName(), instance.getClass()
+										.toString());
 					}
 				}
 
 				qb.set(f.getGeneratedName(), fieldVal);
 			}
-			qb.where(C.eq(getEntity().getPrimaryKeyField().getGeneratedName(),
-					__persistencyId)); //TODO discuss: what about entities without @Id? (__persistencyId)
+			qb.where(C.eq(getEntity().getAutoIncrementField()
+					.getGeneratedName(), __persistencyId)); // TODO discuss:
+															// what about
+															// entities without
+															// @Id?
+															// (__persistencyId)
 			return qb.getQuery();
 		} else
 			return null;
@@ -195,11 +206,12 @@ public class Model<E> {
 	/**
 	 * Deletes current instance from the database and makes it transient.
 	 * 
-	 * Precondition: instance is persistent.
-	 * Postcondition: instance is transient (non-persistent).
+	 * Precondition: instance is persistent. Postcondition: instance is
+	 * transient (non-persistent).
 	 * 
-	 * @throws UnableToPersistDetachedEntityException if the instance which is being
-	 * attempted to be saved is not persistent (or detached).
+	 * @throws UnableToPersistDetachedEntityException
+	 *             if the instance which is being attempted to be saved is not
+	 *             persistent (or detached).
 	 * 
 	 */
 	public void delete() {
@@ -227,33 +239,21 @@ public class Model<E> {
 	}
 
 	private Query prepareDeleteQuery() {
-		return QueryBuilder.delete().from(getEntity().getGeneratedName())
-				.where(
-						C.eq(getEntity().getPrimaryKeyField().getGeneratedName(),
-								__persistencyId)).getQuery();
+		return QueryBuilder
+				.delete()
+				.from(getEntity().getGeneratedName())
+				.where(C.eq(getEntity().getAutoIncrementField()
+						.getGeneratedName(), __persistencyId)).getQuery();
 	}
 
 	/**
 	 * TODO CRITICAL: test & fix after Id depreciation.
+	 * 
 	 * @return value of {@link PrimaryKey} field of this domain class.
 	 */
 	private Object getEntityId() {
-		Field idField = getEntity().getPrimaryKeyField();
+		Field idField = getEntity().getAutoIncrementField();
 		return getEntityField(idField);
-	}
-
-	/**
-	 * TODO CRITICAL: test & fix after Id depreciation. 
-	 * @return whether entity has a {@link PrimaryKey} marked field.
-	 * 
-	 */
-	private boolean hasEntityId() {
-		try {
-			getEntity().getPrimaryKeyField();
-			return true;
-		} catch (Exception e) {
-		} 
-		return false;
 	}
 
 	/**
@@ -270,9 +270,9 @@ public class Model<E> {
 			__persistencyFieldHashes[i] = (o == null || f.isList()) ? DEFAULT_TRANSIENT_HASHCODE
 					: o.hashCode();
 		}
-		if (hasEntityId())
+		if (getEntity().getAutoIncrementField() != null)
 			__persistencyId = getEntityId();
-		
+
 		__persistencyHash = this.hashCode();
 	}
 
@@ -300,8 +300,8 @@ public class Model<E> {
 
 		if (getter == null) { // field is already public
 			try {
-				return getEntity().getType().getDeclaredField(field.getOriginalName())
-						.get(this);
+				return getEntity().getType()
+						.getDeclaredField(field.getOriginalName()).get(this);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
 				e.printStackTrace(); // TODO LOG
@@ -325,14 +325,13 @@ public class Model<E> {
 	 * Various exceptions may thrown if unsuitable <code>value</code> is passed
 	 * or <code>field</code> does not belong to the {@link Entity}.
 	 */
-	protected void setEntityField(Field field, Entity of,
-			Object value) {
+	protected void setEntityField(Field field, Entity of, Object value) {
 		Method setter = field.getSetterMethod();
 
 		if (setter == null) { // field is already public
 			try {
-				of.getType().getDeclaredField(field.getOriginalName()).set(
-						this, value);
+				of.getType().getDeclaredField(field.getOriginalName())
+						.set(this, value);
 			} catch (Exception e) {
 				// TODO caution: assuming field certainly exists and accessible.
 				e.printStackTrace(); // TODO log
@@ -372,86 +371,93 @@ public class Model<E> {
 		int hash = 1;
 
 		for (Field f : getEntity().getFields()) {
-			if (f.isList()) continue; // TODO list fields are not counted.
+			if (f.isList())
+				continue; // TODO list fields are not counted.
 			Object o = getEntityField(f);
 
-			if (!(o instanceof Model<?>)) //TODO FATAL Model instances are not counted in hashcode!!! do something!!!
+			if (!(o instanceof Model<?>)) // TODO FATAL Model instances are not
+											// counted in hashcode!!! do
+											// something!!!
 				hash += (o == null ? 1 : o.hashCode()) * 7; // magic.
 		}
 
 		// prevent coincidently correspontransiency flag
 		return hash == DEFAULT_TRANSIENT_HASHCODE ? hash | 0x9123 : hash;
 	}
-	
+
 	/**
-	 * Executes the query and returns the rows mapped to
-	 * entities as a list.
+	 * Executes the query and returns the rows mapped to entities as a list.
 	 * 
-	 * CAUTION: If the query does not have SELECT * or 
-	 * has JOINs, or anything that can break the field
-	 * order as they are declared in the class.
+	 * CAUTION: If the query does not have SELECT * or has JOINs, or anything
+	 * that can break the field order as they are declared in the class.
 	 * 
-	 * @param q query generated with {@link ModelQuery}.
-	 * @param intendedType instances will be casted to this type.
+	 * @param q
+	 *            query generated with {@link ModelQuery}.
+	 * @param intendedType
+	 *            instances will be casted to this type.
 	 * @return set of results. never null.
 	 */
-	public static <E> List<E> fetchQuery(Query q, Class<E> intendedType){
+	public static <E> List<E> fetchQuery(Query q, Class<E> intendedType) {
 		Entity e = MappingSession.getEntity(intendedType);
 		List<E> mappedRecordList = new ArrayList<E>();
-		
-		ResultList resultList = MappingSession.getExecuter().executeForResultList(q);
-		
-		if(resultList != null){
+
+		ResultList resultList = MappingSession.getExecuter()
+				.executeForResultList(q);
+
+		if (resultList != null) {
 			// something is returned, do the reverse mapping and add to the
 			// list.
-			for(int i = 0 ; i < resultList.getRowCount(); i++){
-				mappedRecordList.add(ReverseMapping.map(resultList.getResultRow(i), intendedType, e));
+			for (int i = 0; i < resultList.getRowCount(); i++) {
+				mappedRecordList.add(ReverseMapping.map(
+						resultList.getResultRow(i), intendedType, e));
 			}
 		}
 		return mappedRecordList;
 	}
+
 	/**
-	 * Executes the query and returns the "first" result
-	 * mapped to the entity instance. Reverse mapping is done
-	 * for <code>type</code> parameter.
+	 * Executes the query and returns the "first" result mapped to the entity
+	 * instance. Reverse mapping is done for <code>type</code> parameter.
 	 * 
-	 * CAUTION: If the query does not have SELECT * or 
-	 * has JOINs, or anything that can break the field
-	 * order as they are declared in the class.
+	 * CAUTION: If the query does not have SELECT * or has JOINs, or anything
+	 * that can break the field order as they are declared in the class.
 	 * 
-	 * @param q query generated with {@link ModelQuery}.
-	 * @return null if no results are found, an instance if some
-	 * results are successfully retrieved.
+	 * @param q
+	 *            query generated with {@link ModelQuery}.
+	 * @return null if no results are found, an instance if some results are
+	 *         successfully retrieved.
 	 */
-	public static <E> E fetchSingle(Query q, Class<E> type){
+	public static <E> E fetchSingle(Query q, Class<E> type) {
 		List<E> l = fetchQuery(q, type);
-		
-		if(l == null || l.size()==0) return null;
+
+		if (l == null || l.size() == 0)
+			return null;
 		return l.get(0);
 	}
-	
+
 	/**
-	 * Executes the query and returns the single value as
-	 * String object. Conversion left to the user. 
+	 * Executes the query and returns the single value as String object.
+	 * Conversion left to the user.
 	 * 
-	 * @param q query generated with {@link ModelQuery}.
-	 * @param type preferably a primitive type.
+	 * @param q
+	 *            query generated with {@link ModelQuery}.
+	 * @param type
+	 *            preferably a primitive type.
 	 * @return
 	 */
-	public static Object fetchSingleValue(Query q){
+	public static Object fetchSingleValue(Query q) {
 		Object o = MappingSession.getExecuter().executeForSingleValue(q);
 		return o;
 	}
-	
-	
-	
+
 	/**
 	 * Executes given query for no result, i.e. it can be used for
-	 * <code>DELETE</code>, <code>UPDATE</code> queries. 
+	 * <code>DELETE</code>, <code>UPDATE</code> queries.
 	 * 
-	 * @param q query generated with {@link ModelQuery}.
+	 * @param q
+	 *            query generated with {@link ModelQuery}.
 	 */
-	public static void execute(Query q){
+	public static void execute(Query q) {
 		MappingSession.getExecuter().executeOnly(q);
 	}
 

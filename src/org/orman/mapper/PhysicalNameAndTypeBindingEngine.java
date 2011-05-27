@@ -5,6 +5,7 @@ import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.mapper.annotation.PrimaryKey;
+import org.orman.mapper.exception.NotDeclaredIdException;
 import org.orman.util.logging.Log;
 
 /**
@@ -69,7 +70,7 @@ public class PhysicalNameAndTypeBindingEngine {
 			//TODO add OneToMany and ManyToOne and ManyToMany when eligible.
 			if (field.isAnnotationPresent(OneToOne.class)){
 				//  there exists 1:1 set type as matched field's Id type.
-				Class<?> idType = getIdTypeForClass(field.getClazz());
+				Class<?> idType = getAutoIncrementTypeForClass(field.getClazz());
 				fieldType = idType;
 				
 				// assign whether a customized field type exists with @Column.
@@ -78,13 +79,19 @@ public class PhysicalNameAndTypeBindingEngine {
 				Log.trace("OneToOne mapping detected on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
 			} else if(MappingSession.entityExists(field.getClazz())){
 				// infer entity @PrimaryKey type if @*to* annotations does not exist 
-				Class<?> idType = getIdTypeForClass(field.getClazz());
+				Class<?> idType = getAutoIncrementTypeForClass(field.getClazz());
 				fieldType = idType;
 				
+				if (idType == null){
+					throw new NotDeclaredIdException(field.getClazz().getName());
+				}
+				
+				Log.error("Foreign type is %s", fieldType);
 				// assign whether a customized field type exists with @Column.
 				customizedBindingType = getCustomizedBinding(field.getClazz());
 				
-				Log.trace("Direct entity mapping inferred on field %s.%s.", entity.getOriginalName(), field.getOriginalName());
+				Log.trace("Direct entity mapping inferred on field %s.%s.",
+						entity.getOriginalName(), field.getOriginalName());
 			} else {
 				// usual conditions
 				fieldType = field.getClazz();
@@ -95,41 +102,51 @@ public class PhysicalNameAndTypeBindingEngine {
 			else
 				field.setType(dataTypeMapper.getTypeFor(fieldType));
 			
-			Log.debug("Field '%s'(%s) mapped to '%s'(%s) using %s.", field.getOriginalName(), field.getClazz().getName(), field.getGeneratedName(), field.getType(), customizedBindingType != null ? "@Column annotation":"type of @Id field");
+			Log.debug("Field '%s'(%s) mapped to '%s'(%s) using %s.", field
+					.getOriginalName(), field.getClazz().getName(), field
+					.getGeneratedName(), field.getType(),
+					customizedBindingType != null ? "@Column annotation"
+							: "type of @PrimaryKey or @AutoIncrement field");
 		}
-
+		
 		/* INDEX SETTINGS BINDING */
 		if (field.getIndex() != null) {
 			if (field.getIndex().name() == null
 					|| "".equals(field.getIndex().name())) {
-				// missing index name, create using field name followed by
-				// _index policy.
+				// missing index name, create using field name followed by _index policy.
 				String indexName = String.format(INDEX_FORMAT, entity.getGeneratedName(),
 						field.getGeneratedName(), INDEX_POSTFIX);
-				Log.trace("Field '%s' index name binded as '%s'", field.getOriginalName(), indexName);
+				Log.trace("Field '%s' index name binded as '%s'",
+						field.getOriginalName(), indexName);
 				field.getIndex().name(indexName);
 			}
 		}
 	}
 	
 	private static String getCustomizedBinding(Class<?> clazz) {
-		java.lang.reflect.Field idField = getPrimaryKeyFieldForClass(clazz);
+		java.lang.reflect.Field idField = getAutoIncrementFieldForClass(clazz);
+		if (idField == null) return null;
 		if (idField.isAnnotationPresent(Column.class)){
 			return idField.getAnnotation(Column.class).type();
 		}
 		return null;
 	}
 
-	private static java.lang.reflect.Field getPrimaryKeyFieldForClass(Class<?> clazz) {
+	private static java.lang.reflect.Field getAutoIncrementFieldForClass(Class<?> clazz) {
 		for(java.lang.reflect.Field f : clazz.getDeclaredFields()){
-			if (f.isAnnotationPresent(PrimaryKey.class)){
-				return f;
+			PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
+			if (pk != null){
+				if (pk.autoIncrement()){
+					return f;
+				}
 			}
 		}
 		return null;
 	}
 
-	private static Class<?> getIdTypeForClass(Class<?> clazz) {
-		return getPrimaryKeyFieldForClass(clazz).getType();
+	private static Class<?> getAutoIncrementTypeForClass(Class<?> clazz) {
+		java.lang.reflect.Field f = getAutoIncrementFieldForClass(clazz);
+		if (f == null) return null;
+		else return f.getType();
 	}
 }

@@ -16,6 +16,9 @@ public class Query extends DataSource implements Aliasable {
 	private List<IQueryField> fieldList;
 	private Map<String, String> valuedFieldMap; 
 	private Map<SubclauseType, ISubclause> subclauses;
+	private List<TableConstraint> constraints;
+
+
 	private String indexName;
 
 	private String alias;
@@ -25,6 +28,7 @@ public class Query extends DataSource implements Aliasable {
 		subclauses = new EnumMap<SubclauseType, ISubclause>(SubclauseType.class);
 		fieldList = new ArrayList<IQueryField>();
 		valuedFieldMap = new HashMap<String, String>();
+		constraints = new ArrayList<TableConstraint>();
 	}
 
 	public Query(QueryType queryType) {
@@ -71,6 +75,10 @@ public class Query extends DataSource implements Aliasable {
 			throw new DuplicateSubclauseException(t.toString());
 		this.subclauses.put(t, s);
 	}
+	
+	public void addTableConstraint(TableConstraint t) {
+		constraints.add(t);
+	}
 
 	public ISubclause getSubclause(SubclauseType t) {
 		return this.subclauses.get(t);
@@ -99,6 +107,10 @@ public class Query extends DataSource implements Aliasable {
 
 	public Map<String, String> getValuedFieldMap() {
 		return valuedFieldMap;
+	}
+	
+	public List<TableConstraint> getConstraints() {
+		return constraints;
 	}
 	
 	/**

@@ -114,6 +114,12 @@ public class QueryBuilder {
 		return this;
 	}
 	
+	// foreign key, using index etc.
+	public void addConstraint(TableConstraint tableConstraint) {
+		this.select(tableConstraint.toString());
+		this.query.addTableConstraint(tableConstraint);
+	}
+	
 	/**
 	 * Uses column list storage of the query, be cautious
 	 * while using this except CREATE TABLE queries.
@@ -188,7 +194,7 @@ public class QueryBuilder {
 	 */
 	public QueryBuilder setIndex(String on, String indexName, IndexType type){
 		this.query.setIndexName(indexName);
-		this.addConstraint(new TableConstraint(TableConstraintType.USING, type.getKeyword()));
+		this.query.addTableConstraint(new TableConstraint(TableConstraintType.USING, type.getKeyword()));
 		return this.select(on);
 	}
 	
@@ -316,6 +322,7 @@ public class QueryBuilder {
 	}
 	
 	
+	
 	/*
 	 * QUERY BUILDER METHODS 
 	 */
@@ -365,6 +372,10 @@ public class QueryBuilder {
 			if(++i != e.size()) sb.append(", ");
 		}
 		return sb.toString();
+	}
+	
+	private String prepareTableConstraints() {
+		return Glue.concat(this.query.getConstraints(), ", ");
 	}
 
 	private String prepareTableList() throws NoTableSpecifiedException {
@@ -435,6 +446,8 @@ public class QueryBuilder {
 			return prepareSelectFieldList();
 		if ("COLUMN_OR_CONSTRAINT_DESCRIPTION_LIST".equals(tplField))
 			return prepareFieldDescriptionList();
+		if ("TABLE_CONSTRAINT".equals(tplField))
+			return prepareTableConstraints();
 		if ("TABLE_LIST".equals(tplField))
 			return prepareTableList();
 		if ("INDEX_NAME".equals(tplField))
@@ -458,7 +471,6 @@ public class QueryBuilder {
 		// nothing found, desperately replace it with ""
 		return "";
 	}
-	
 
 	private String prepareSubclause(SubclauseType sType) {
 		ISubclause s = this.query.getSubclause(sType);
@@ -482,10 +494,6 @@ public class QueryBuilder {
 		template = fillTemplate(template, modelMap);
 		
 		return template;
-	}
-
-	public void addConstraint(TableConstraint tableConstraint) {
-		this.select(tableConstraint.toString());
 	}
 	
 	/*

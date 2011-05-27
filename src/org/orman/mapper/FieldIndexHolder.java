@@ -11,16 +11,17 @@ public class FieldIndexHolder {
 	private boolean unique;
 	private String name;
 	private IndexType type;
-	
+	private boolean primary;
 	
 	public FieldIndexHolder(String name, boolean unique){
-		this(name, unique, IndexType.HASH);
+		this(name, unique, IndexType.HASH, false);
 	}
 	
-	public FieldIndexHolder(String name, boolean unique, IndexType type){
+	public FieldIndexHolder(String name, boolean unique, IndexType type, boolean isPrimary){
 		this.name = name;
 		this.unique = unique;
 		this.type = type;
+		this.primary = isPrimary;
 	}
 	
 	public boolean unique(){
@@ -45,6 +46,14 @@ public class FieldIndexHolder {
 
 	public IndexType getType() {
 		return type;
+	}
+
+	public void setPrimary(boolean isPrimary) {
+		this.primary = isPrimary;
+	}
+
+	public boolean isPrimary() {
+		return primary;
 	}
 	
 }

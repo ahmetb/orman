@@ -24,19 +24,22 @@ public class UsualProgram {
 		MappingSession.registerPackage("demo3");
 
 		MappingSession.getConfiguration().setCreationPolicy(
-				SchemeCreationPolicy.UPDATE);
+				SchemeCreationPolicy.CREATE);
 		MappingSession.registerDatabase(db);
 		MappingSession.start();
 
 		Payment p = new Payment();
 		p.amount = (float) (Math.random() * 1000);
-		p.insert();
+		//p.insert();
 
 		Ticket t = new Ticket();
 		t.seat = "abc" + Math.random();
 		t.payment = p;
-		t.insert();
-
+		//t.insert();
+		
+		
+		System.exit(0);
+		
 		List<Ticket> tickets = Model
 				.fetchQuery(ModelQuery.select().from(Ticket.class).getQuery(),
 						Ticket.class);
