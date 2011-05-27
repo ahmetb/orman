@@ -16,8 +16,9 @@ import org.orman.util.logging.Log;
  * 
  */
 public class PhysicalNameAndTypeBindingEngine {
-	private static final String INDEX_POSTFIX = "index";
-	private static final String INDEX_FORMAT = "%s_%s_%s";
+	public static final String INDEX_POSTFIX = "index";
+	private static final String FIELD_INDEX_FORMAT = "%s_%s_%s";
+	public static final String COMPOSITE_INDEX_FORMAT = "%s_%s";
 
 	public static void makeBinding(Entity entity,
 			PhysicalNamingPolicy namingPolicy) {
@@ -114,8 +115,15 @@ public class PhysicalNameAndTypeBindingEngine {
 			if (field.getIndex().name() == null
 					|| "".equals(field.getIndex().name())) {
 				// missing index name, create using field name followed by _index policy.
-				String indexName = String.format(INDEX_FORMAT, entity.getGeneratedName(),
+				String indexName = null;
+				
+				if(field.isPrimaryKey()){
+					indexName = String.format(COMPOSITE_INDEX_FORMAT,
+							entity.getGeneratedName(), INDEX_POSTFIX);
+				} else {
+					indexName = String.format(FIELD_INDEX_FORMAT, entity.getGeneratedName(),
 						field.getGeneratedName(), INDEX_POSTFIX);
+				}
 				Log.trace("Field '%s' index name binded as '%s'",
 						field.getOriginalName(), indexName);
 				field.getIndex().name(indexName);

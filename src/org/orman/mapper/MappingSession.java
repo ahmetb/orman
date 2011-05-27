@@ -309,22 +309,42 @@ public class MappingSession {
 				constructionQueries.offer(cT);
 
 				//CREATE INDEXES
-				List<Field> compositeIndexedFields = new ArrayList<Field>(2);
+				List<Field> compositeIndexFields = new ArrayList<Field>(2);
+				List<Field> singleIndexFields = new ArrayList<Field>(2);
 				//TODO implement composite indexes.
 				for (Field f : e.getFields()) {
 					if (f.getIndex() != null) {
-						compositeIndexedFields.add(f);
-						if (policy.equals(SchemeCreationPolicy.CREATE)) { // DROP
-																			// INDEX
-							Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
-							constructionQueries.offer(dI);
+						if (f.isPrimaryKey() && !f.isAutoIncrement()) compositeIndexFields.add(f);
+						if (!f.isPrimaryKey()){
+							singleIndexFields.add(f);
 						}
-
-						// CREATE INDEX
-						Query cI = DDLQueryGenerator.createIndexQuery(e, f,
-								policy.equals(SchemeCreationPolicy.UPDATE));
-						constructionQueries.offer(cI);
 					}
+				}
+				
+				// Process composite index (primary keys).
+				if (policy.equals(SchemeCreationPolicy.CREATE)) {
+				// DROP INDEX first
+					Query dCI = DDLQueryGenerator.dropCompositeIndexQuery(e);
+					if (dCI != null) constructionQueries.offer(dCI);
+				}
+				// CREATE INDEX compositely, then
+				Query cCI = DDLQueryGenerator.createCompositeIndexQuery(e,
+						compositeIndexFields,
+						policy.equals(SchemeCreationPolicy.UPDATE));
+				if (cCI != null) constructionQueries.offer(cCI);
+				
+				
+				// Create single indexes
+				for (Field f : singleIndexFields) {
+					if (policy.equals(SchemeCreationPolicy.CREATE)) {
+						// DROP INDEX first
+						Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
+						constructionQueries.offer(dI);
+					}
+					// CREATE INDEX then
+					Query cI = DDLQueryGenerator.createIndexQuery(e, f,
+							policy.equals(SchemeCreationPolicy.UPDATE));
+					constructionQueries.offer(cI);
 				}
 			}
 

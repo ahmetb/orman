@@ -128,8 +128,6 @@ public class QueryBuilder {
 		//TODO hard-coded keywords can be specific to DBMS, generalize.
 		if(!isNullable)
 			dataType += " " + TableConstraintType.NOT_NULL.getTemplate(); // append NOT NULL if "not"-nullable
-		if(isPrimaryKey)
-			dataType += " " + TableConstraintType.PRIMARY_KEY.getTemplate(); // append PRIMARY KEY
 		if(isAutoIncrement)
 			dataType += " " + TableConstraintType.AUTO_INCREMENT.getTemplate(); // append AUTO INCREMENT (which is also PRIMARY KEY)
 		
@@ -192,10 +190,10 @@ public class QueryBuilder {
 	 * Table name STORED ON => table name (use .from()) (this is not here)
 	 * Index type STORED ON => table constraint USING.
 	 */
-	public QueryBuilder setIndex(String on, String indexName, IndexType type){
+	public QueryBuilder setIndex(String onTable, String indexName, IndexType type){
 		this.query.setIndexName(indexName);
 		this.query.addTableConstraint(new TableConstraint(TableConstraintType.USING, type.getKeyword()));
-		return this.select(on);
+		return this.select(onTable);
 	}
 	
 	/**

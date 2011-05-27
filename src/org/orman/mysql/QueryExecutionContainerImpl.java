@@ -138,7 +138,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(q.getExecutableSql());
+			stmt.execute(q.getExecutableSql());
 		} catch (SQLException e) {
 			throwError(e);
 		}

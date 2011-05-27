@@ -39,8 +39,8 @@ public class MySQLGrammar implements SQLGrammarProvider {
 		put(QueryType.CREATE_UNIQUE_INDEX, "CREATE UNIQUE INDEX {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST}) {TABLE_CONSTRAINT}"); 
 		put(QueryType.CREATE_INDEX_IF_NOT_EXISTS, "CREATE INDEX IF NOT EXISTS {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST}) {TABLE_CONSTRAINT}"); 
 		put(QueryType.CREATE_UNIQUE_INDEX_IF_NOT_EXISTS, "CREATE UNIQUE INDEX IF NOT EXISTS {INDEX_NAME} ON {TABLE_LIST} ({SELECT_COLUMN_LIST}) {TABLE_CONSTRAINT}"); 
-		put(QueryType.DROP_INDEX, "DROP INDEX {INDEX_NAME} ON {TABLE_LIST}"); 
-		put(QueryType.DROP_INDEX_IF_EXISTS, "DROP INDEX IF EXISTS {INDEX_NAME} ON {TABLE_LIST}"); 
+		put(QueryType.DROP_INDEX, "DROP INDEX {INDEX_NAME} "); 
+		put(QueryType.DROP_INDEX_IF_EXISTS, "SELECT \"DROP INDEX IF EXISTS does not work in god damn MySQL\" FROM DUAL"); // if exists not implemented in MySQL http://dev.mysql.com/doc/refman/5.0/en/drop-index.html 
 
 		put(QueryType.BEGIN_TRANSACTION, "START TRANSACTION"); 
 		put(QueryType.COMMIT_TRANSACTION, "COMMIT"); 
@@ -50,9 +50,9 @@ public class MySQLGrammar implements SQLGrammarProvider {
 	private Map<TableConstraintType, String> constraintGrammar = new EnumMap<TableConstraintType, String>(TableConstraintType.class){{
 		put(TableConstraintType.FOREIGN_KEY, "FOREIGN KEY (%s) REFERENCES %s (%s)");
 		put(TableConstraintType.UNIQUE, "UNIQUE (%s)");
-		put(TableConstraintType.PRIMARY_KEY ,"PRIMARY KEY");
-		put(TableConstraintType.USING, "USING (%s)");
-		put(TableConstraintType.AUTO_INCREMENT, "AUTO_INCREMENT");
+		put(TableConstraintType.PRIMARY_KEY ,"PRIMARY KEY (%s)");
+		put(TableConstraintType.USING, "USING %s");
+		put(TableConstraintType.AUTO_INCREMENT, "PRIMARY KEY AUTO_INCREMENT");
 		put(TableConstraintType.NOT_NULL, "NOT NULL");
 		
 	}};

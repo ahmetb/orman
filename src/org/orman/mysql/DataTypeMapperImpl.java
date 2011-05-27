@@ -9,7 +9,7 @@ public class DataTypeMapperImpl implements DataTypeMapper {
 
 	private static DoubleAssociativeMap<Class<?>, String> typeMap = new DoubleAssociativeMap<Class<?>, String>();
 	static {
-		typeMap.put(String.class, "LONGTEXT");
+		typeMap.put(String.class, "VARCHAR(767)");
 		typeMap.put(Character.TYPE, "CHAR");
 		typeMap.put(Short.TYPE, "MEDIUMINT(9)");
 		typeMap.put(Integer.TYPE, "INT(11)");

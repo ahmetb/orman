@@ -51,8 +51,8 @@ public class SQLiteGrammar implements SQLGrammarProvider {
 	private Map<TableConstraintType, String> constraintGrammar = new EnumMap<TableConstraintType, String>(TableConstraintType.class){{
 		put(TableConstraintType.FOREIGN_KEY, "FOREIGN KEY (%s) REFERENCES %s (%s)");
 		put(TableConstraintType.UNIQUE, "UNIQUE (%s)");
-		put(TableConstraintType.PRIMARY_KEY ,"PRIMARY KEY");
-		put(TableConstraintType.AUTO_INCREMENT, "AUTOINCREMENT");
+		put(TableConstraintType.PRIMARY_KEY ,"PRIMARY KEY (%s)");
+		put(TableConstraintType.AUTO_INCREMENT, "PRIMARY KEY AUTOINCREMENT");
 		put(TableConstraintType.USING, "USING (%s)");
 		put(TableConstraintType.NOT_NULL, "NOT NULL");
 	}};
