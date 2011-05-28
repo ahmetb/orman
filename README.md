@@ -14,6 +14,12 @@ Project Aims
 * Support for SQLite on Android devices with existing libraries.
 * Provide transaction manager and query execution container.
 
+Dev Community
+=============
+
+Feel free to write wikis (if you understand how framework works) or follow
+commit logs by subscribing to our commit-logs list at [groups.google/orman-commits](http://groups.google.com/group/orman-commits).
+
 Contributors
 ============
 
