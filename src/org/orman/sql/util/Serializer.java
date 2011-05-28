@@ -1,5 +1,7 @@
 package org.orman.sql.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import org.orman.sql.StringLiteral;
 public class Serializer {
 	
 	private static final String NULL_CONSTANT = "NULL";
+	private static final DateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static String serialize(Object o){
 		
@@ -22,12 +25,9 @@ public class Serializer {
 		}
 		
 		if (o instanceof Date){
-			return new StringLiteral(new java.sql.Date(((Date) o).getTime()).toString()).toString();
+			return new StringLiteral(dateTimeFormatter.format((Date) o)).toString();
 		}
-		
-		if (o instanceof java.sql.Date){
-			return new StringLiteral(((java.sql.Date) o).toString()).toString();
-		}
+
 		
 		if (o instanceof String[]){
 			return "("+Glue.concat((String[]) o, ", ")+")";

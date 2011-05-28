@@ -1,5 +1,6 @@
 package demo3;
 
+import java.util.Date;
 import java.util.List;
 
 import org.orman.datasource.Database;
@@ -24,7 +25,7 @@ public class UsualProgram {
 		MappingSession.registerPackage("demo3");
 
 		MappingSession.getConfiguration().setCreationPolicy(
-				SchemeCreationPolicy.UPDATE);
+				SchemeCreationPolicy.USE_EXISTING);
 		MappingSession.registerDatabase(db);
 		MappingSession.start();
 
@@ -35,6 +36,7 @@ public class UsualProgram {
 		Ticket t = new Ticket();
 		t.seat = "abc" + Math.random();
 		t.payment = p;
+		t.date = new Date();
 		t.insert();
 
 		

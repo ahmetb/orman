@@ -107,7 +107,7 @@ public class PhysicalNameAndTypeBindingEngine {
 					.getOriginalName(), field.getClazz().getName(), field
 					.getGeneratedName(), field.getType(),
 					customizedBindingType != null ? "@Column annotation"
-							: "type of @PrimaryKey or @AutoIncrement field");
+							: "type of @PrimaryKey field");
 		}
 		
 		/* INDEX SETTINGS BINDING */

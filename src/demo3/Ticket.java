@@ -1,5 +1,7 @@
 package demo3;
 
+import java.util.Date;
+
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Index;
@@ -8,17 +10,18 @@ import org.orman.sql.IndexType;
 
 @Entity
 public class Ticket extends Model<Ticket>{
-	@PrimaryKey
+	@PrimaryKey(autoIncrement=true)
 	public long id;
 	
-	@PrimaryKey
 	public String seat;
 	
 	@Index(type=IndexType.BTREE)
 	public Payment payment;
 	
+	public Date date;
+	
 	@Override
 	public String toString() {
-		return  "ID:"+id + " " + seat + " " + ((payment == null) ? null : payment.amount)+"\n";
+		return  "ID:"+id + " (" + date + ") " + seat + " " + ((payment == null) ? null : payment.amount)+"\n";
 	}
 }

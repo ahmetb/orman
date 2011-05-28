@@ -1,10 +1,16 @@
 package org.orman.mapper;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.orman.datasource.ResultList.ResultRow;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
+import org.orman.util.logging.Log;
 
 /**
  * Provides reverse mapping engine which can convert {@link ResultRow} objects
@@ -16,6 +22,9 @@ import org.orman.sql.Query;
  * @author alp
  */
 public class ReverseMapping {
+	private static final DateFormat dateTimeParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final DateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	@SuppressWarnings("unchecked")
 	public static <E> E map(ResultRow row, Class<E> type,
 			Entity e) {
@@ -213,6 +222,30 @@ public class ReverseMapping {
 			else
 				return ((Integer) smartCasting(value, Integer.TYPE)) > 0;
 		}
+		
+		if (Date.class.equals(desired)) {
+			// destination: java.util.Date.
+			if (value.getClass().equals(Date.class))
+				return value;
+			else {
+				try {
+					String dateStr = value.toString();
+					Date d = null;
+					
+					if (dateStr.length() > 10){
+						d = dateTimeParser.parse(dateStr);
+					} else {
+						d = dateParser.parse(dateStr);
+					}
+					Log.trace("Date %s parsed to %s.", dateStr, d);
+					return d;
+				} catch (ParseException e) {
+					Log.error("The following could not be parsed: " + value.toString());
+					return null;
+				}
+			}
+		}
+	
 
 		return value;
 	}
