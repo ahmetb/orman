@@ -98,9 +98,11 @@ public class PackageEntityInspector {
 			}
 
 			annotatedClasses = populateClasses(new File(fileName), packageName);
-
+			
 			for (Class<?> currentClass : annotatedClasses) {
-				if (currentClass
+				// currentClass becomes null for non-Java files in package. 
+				// and may throw NullPointerException. make null-check.
+				if (currentClass != null && currentClass
 						.isAnnotationPresent(org.orman.mapper.annotation.Entity.class)) {
 					classObjects.add(currentClass);
 				}

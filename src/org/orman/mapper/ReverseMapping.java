@@ -237,7 +237,6 @@ public class ReverseMapping {
 					} else {
 						d = dateParser.parse(dateStr);
 					}
-					Log.trace("Date %s parsed to %s.", dateStr, d);
 					return d;
 				} catch (ParseException e) {
 					Log.error("The following could not be parsed: " + value.toString());

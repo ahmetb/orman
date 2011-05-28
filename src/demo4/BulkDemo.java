@@ -1,9 +1,13 @@
 package demo4;
 
+import java.util.List;
+
 import org.orman.datasource.Database;
 import org.orman.mapper.BulkInsert;
 import org.orman.mapper.IdGenerationPolicy;
 import org.orman.mapper.MappingSession;
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mysql.MySQL;
 import org.orman.mysql.MySQLSettingsImpl;
@@ -47,6 +51,13 @@ public class BulkDemo {
 			System.out.println("Ops. Something went wrong!");
 		else
 			System.out.println(String.format("Total %d record(s) affected",totalRecord));
+		
+
+		List<Product> products = Model.fetchQuery(
+				ModelQuery.select().from(Product.class).orderBy("-Product.id")
+						.getQuery(), Product.class);
+		
+		System.out.println(products);
 		
 		db.closeConnection();
 	}
