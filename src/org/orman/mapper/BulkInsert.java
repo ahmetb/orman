@@ -21,14 +21,13 @@ import org.orman.util.logging.Log;
  * Bulk record insertion support
  * @author 0ffffffffh
  */
-public class BulkInsert {
+public class BulkInsert<E extends Model<E>> {
 	
-	private Class<?> classType;
+	private Class<E> classType; //we should store this for object instance creation.
 	private boolean isReady,rowSeperatorDefault,hasAutoInc;
 	private String fieldSeperator,rowSeperator,regExp,sourceFile;
 	private List<Field> fields;
 	private InputStreamReader sourceStream;
-	private EntityInspector inspector;
 	private Map<String,TypeCastHandler> castMap = null;
 	
 	private final static String[] dateFormats = {"dd-MM-yyyy","yyyy-MM-dd","MM/dd/yyyy",
@@ -238,13 +237,13 @@ public class BulkInsert {
 	//CAST HANDLER END
 	
 	
-	public BulkInsert(Class<?> clazz, String sourceFile, String regExp) {
+	public BulkInsert(Class<E> clazz, String sourceFile, String regExp) {
 		this.regExp = regExp;
 		
 		initCommons(clazz,sourceFile);
 	}
 	
-	public BulkInsert(Class<?> clazz, String sourceFile, String fieldSeperator, String rowSeperator) throws Exception {
+	public BulkInsert(Class<E> clazz, String sourceFile, String fieldSeperator, String rowSeperator) {
 		this.fieldSeperator = fieldSeperator;
 		this.rowSeperator = rowSeperator;
 		
@@ -258,15 +257,17 @@ public class BulkInsert {
 			this.rowSeperatorDefault = true;
 	}
 	
-	private void initCommons(Class<?> clazz, String sourceFile) {
+	private void initCommons(Class<E> clazz, String sourceFile) {
 		this.castMap = new HashMap<String,TypeCastHandler>();
 		this.isReady = false;
 		this.sourceFile = sourceFile;
 		this.classType = clazz;
 		
-		inspector = new EntityInspector(clazz);
+		if (!MappingSession.entityExists(clazz)) {
+			return;
+		}
 		
-		fields = inspector.getFields();
+		fields = MappingSession.getEntity(clazz).getFields();
 		
 		dateCast.normalize();
 		
@@ -291,12 +292,12 @@ public class BulkInsert {
 		
 	}
 	
-	private Object createNewInstanceOf(Class<?> clazz) {
+	private Object createNewInstanceOf(Class<E> clazz) {
 		Constructor<?> ctor = null;
 		Object instance;
 		
 		try {
-			ctor = inspector.getDefaultConstructor();
+			ctor = MappingSession.getEntity(clazz).getDefaultConstructor();
 		}
 		catch (NotDeclaredDefaultConstructorException e) {
 			Log.error(e.getMessage());
@@ -543,7 +544,7 @@ public class BulkInsert {
 	private int startBulkInsertUsingSeperators() throws Exception {
 		String row;
 		String [] rowFields;
-		Model<Object> model;
+		Model<E> model;
 		int affectedRecordCount=0;
 		
 		if (!createInputStream())
@@ -557,14 +558,18 @@ public class BulkInsert {
 				continue;
 			}
 			
-			model = (Model<Object>)createObjectUsingFields(rowFields);
+			model = (E)createObjectUsingFields(rowFields);
 			
-			model.insert();
-			
-			affectedRecordCount++;
+			if (model != null) {
+				model.insert();
+				affectedRecordCount++;
+			}
+			else {
+				Log.error(String.format("Could not create object for row (%s)", row));
+			}
 		}
 		
-		return affectedRecordCount++;
+		return affectedRecordCount;
 	}
 	
 	public int startBulkInsert() {

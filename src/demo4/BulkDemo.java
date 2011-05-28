@@ -18,7 +18,6 @@ import org.orman.util.logging.LoggingLevel;
 
 public class BulkDemo {
 	public static void main(String[] args) {
-		BulkInsert bulkInsertion = null;
 		int totalRecord;
 		
 		ILogger log = new Log4jAdapter();
@@ -39,13 +38,9 @@ public class BulkDemo {
 		
 		MappingSession.start();
 		
-		try {
-			bulkInsertion = new BulkInsert(Product.class, "./src/demo4/products.txt","**",BulkInsert.NEW_LINE);
-		} catch (Exception e) {
-			System.out.println("An error occurred: " + e.getMessage());
-		}
 		
-		totalRecord = bulkInsertion.startBulkInsert();
+		totalRecord = Model.bulkInsert(Product.class, "./src/demo4/products.txt", "**",BulkInsert.NEW_LINE);
+		
 		
 		if (totalRecord == -1) 
 			System.out.println("Ops. Something went wrong!");

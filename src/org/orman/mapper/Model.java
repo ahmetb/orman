@@ -58,7 +58,17 @@ public class Model<E> {
 		return (this.hashCode() == __persistencyHash)
 				&& __persistencyHash != DEFAULT_TRANSIENT_HASHCODE;
 	}
-
+	
+	public static <E extends Model<E>> int bulkInsert(Class<E> clazz, String sourceFile, String regEx) {
+		BulkInsert<E> bulkOp = new BulkInsert<E>(clazz, sourceFile, regEx);
+		return bulkOp.startBulkInsert();
+	}
+	
+	public static <E extends Model<E>> int bulkInsert(Class<E> clazz, String sourceFile, String fieldSeperator, String rowSeperator) {
+		BulkInsert<E> bulkOp = new BulkInsert<E>(clazz, sourceFile, fieldSeperator, rowSeperator);
+		return bulkOp.startBulkInsert();
+	}
+	
 	/**
 	 * Inserts the instance to the database as row and then binds generated id
 	 * if IdGenerationPolicy is DEFER_TO_DBMS.
