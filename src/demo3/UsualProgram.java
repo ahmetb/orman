@@ -7,8 +7,7 @@ import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
-import org.orman.mysql.MySQL;
-import org.orman.mysql.MySQLSettingsImpl;
+import org.orman.sqlite.SQLite;
 import org.orman.util.logging.ILogger;
 import org.orman.util.logging.Log;
 import org.orman.util.logging.Log4jAdapter;
@@ -16,8 +15,8 @@ import org.orman.util.logging.LoggingLevel;
 
 public class UsualProgram {
 	public static void main(String[] args) {
-		//Database db = new SQLite("lite.db");
-		Database db = new MySQL(new MySQLSettingsImpl("root", "root", "test"));
+		Database db = new SQLite("lite.db");
+		//Database db = new MySQL(new MySQLSettingsImpl("root", "root", "test"));
 
 		ILogger log = new Log4jAdapter();
 		Log.setLogger(log);
@@ -25,21 +24,19 @@ public class UsualProgram {
 		MappingSession.registerPackage("demo3");
 
 		MappingSession.getConfiguration().setCreationPolicy(
-				SchemeCreationPolicy.CREATE);
+				SchemeCreationPolicy.UPDATE);
 		MappingSession.registerDatabase(db);
 		MappingSession.start();
 
 		Payment p = new Payment();
 		p.amount = (float) (Math.random() * 1000);
-		//p.insert();
+		p.insert();
 
 		Ticket t = new Ticket();
 		t.seat = "abc" + Math.random();
 		t.payment = p;
-		//t.insert();
-		
-		
-		System.exit(0);
+		t.insert();
+
 		
 		List<Ticket> tickets = Model
 				.fetchQuery(ModelQuery.select().from(Ticket.class).getQuery(),

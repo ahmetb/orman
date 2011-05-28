@@ -98,7 +98,7 @@ public class Model<E> {
 
 			// make id value binding
 			// TODO CRITICAL: test this for multi primary keys!
-			if (f.isPrimaryKey()) {
+			if (f.isPrimaryKey() && f.isAutoIncrement()) {
 				IdGenerationPolicy policy = MappingSession.getConfiguration()
 						.getIdGenerationPolicy();
 
