@@ -13,8 +13,6 @@ import org.orman.sql.QueryBuilder;
 import org.orman.sql.QueryType;
 import org.orman.sql.TableConstraint;
 import org.orman.sql.TableConstraintType;
-import org.orman.sql.exception.NoTableSpecifiedException;
-import org.orman.sql.util.Glue;
 
 /**
  * Generates DDL (data description language) {@link Query} for given entity

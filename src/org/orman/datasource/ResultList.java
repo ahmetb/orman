@@ -69,7 +69,7 @@ public class ResultList {
 	 * Returns column value of a row which is at given index. Time complexity:
 	 * O(1).
 	 * 
-	 * @param index
+	 * @param rowIndex
 	 *            starts from 0.
 	 * @param column
 	 *            column name. throws error if does not exist. case-sensitive.
@@ -85,7 +85,6 @@ public class ResultList {
 	 * Time complexity O(1).
 	 * 
 	 * @param rowIndex
-	 * @return
 	 */
 	public Object[] getRow(int rowIndex) {
 		return this.records[rowIndex];
@@ -97,7 +96,6 @@ public class ResultList {
 	 * Time complexity O(1).
 	 * 
 	 * @param rowIndex
-	 * @return
 	 */
 	public ResultRow getResultRow(int rowIndex) {
 		return new ResultRow(columnNameMap, getRow(rowIndex));

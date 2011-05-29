@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.orman.mapper.annotation.PrimaryKey;
+import org.orman.mapper.exception.FieldNotFoundException;
 import org.orman.mapper.exception.NotAnEntityException;
 import org.orman.mapper.exception.NotDeclaredIdException;
 
@@ -59,6 +60,19 @@ public class Entity {
 
 	public List<Field> getFields() {
 		return fields;
+	}
+	
+	/**
+	 * @param fieldName case-sensitive field name of entity class.
+	 * @throws FieldNotFoundException if given field is not found in class.
+	 * @return found field instance.
+	 */
+	public Field getFieldByName(String fieldName){
+		for(Field i : getFields()){
+			if (i.getOriginalName().equals(fieldName))
+				return i;
+		}
+		throw new FieldNotFoundException(originalFullName, fieldName);
 	}
 
 	/**

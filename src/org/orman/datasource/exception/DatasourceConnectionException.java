@@ -1,5 +1,7 @@
 package org.orman.datasource.exception;
 
+import org.orman.exception.OrmanException;
+
 public class DatasourceConnectionException extends OrmanException {
 	private static final String format = "Datasource connection error: %s"; 
 	

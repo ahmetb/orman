@@ -20,7 +20,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
 	/**
 	 * Initialize database, create db file if not exists.
-	 * @param settings
+	 * @param db
 	 */
 	public QueryExecutionContainerImpl(SQLiteDatabase db){
 		this.db = db;

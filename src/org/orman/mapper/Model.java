@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.orman.datasource.ResultList;
+import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.NotNullableFieldException;
 import org.orman.mapper.exception.UnableToPersistDetachedEntityException;
 import org.orman.mapper.exception.UnableToSaveDetachedInstanceAsFieldException;
@@ -58,17 +59,20 @@ public class Model<E> {
 		return (this.hashCode() == __persistencyHash)
 				&& __persistencyHash != DEFAULT_TRANSIENT_HASHCODE;
 	}
-	
-	public static <E extends Model<E>> int bulkInsert(Class<E> clazz, String sourceFile, String regEx) {
+
+	public static <E extends Model<E>> int bulkInsert(Class<E> clazz,
+			String sourceFile, String regEx) {
 		BulkInsert<E> bulkOp = new BulkInsert<E>(clazz, sourceFile, regEx);
 		return bulkOp.startBulkInsert();
 	}
-	
-	public static <E extends Model<E>> int bulkInsert(Class<E> clazz, String sourceFile, String fieldSeperator, String rowSeperator) {
-		BulkInsert<E> bulkOp = new BulkInsert<E>(clazz, sourceFile, fieldSeperator, rowSeperator);
+
+	public static <E extends Model<E>> int bulkInsert(Class<E> clazz,
+			String sourceFile, String fieldSeperator, String rowSeperator) {
+		BulkInsert<E> bulkOp = new BulkInsert<E>(clazz, sourceFile,
+				fieldSeperator, rowSeperator);
 		return bulkOp.startBulkInsert();
 	}
-	
+
 	/**
 	 * Inserts the instance to the database as row and then binds generated id
 	 * if IdGenerationPolicy is DEFER_TO_DBMS.
@@ -202,6 +206,13 @@ public class Model<E> {
 	}
 
 	private List<Field> getChangedFields(List<Field> allFields) {
+		// if field hashes are null, then the field is not 
+		// persisted at all.
+		if (__persistencyFieldHashes == null) {
+			throw new UnableToPersistDetachedEntityException(this.getEntity()
+					.getOriginalFullName());
+		}
+
 		List<Field> updatedFields = new ArrayList<Field>();
 
 		for (int i = 0; i < __persistencyFieldHashes.length; i++) {

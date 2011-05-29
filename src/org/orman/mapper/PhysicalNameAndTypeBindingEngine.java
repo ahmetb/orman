@@ -87,7 +87,6 @@ public class PhysicalNameAndTypeBindingEngine {
 					throw new NotDeclaredIdException(field.getClazz().getName());
 				}
 				
-				Log.error("Foreign type is %s", fieldType);
 				// assign whether a customized field type exists with @Column.
 				customizedBindingType = getCustomizedBinding(field.getClazz());
 				

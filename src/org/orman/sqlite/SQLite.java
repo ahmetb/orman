@@ -9,9 +9,8 @@ import org.orman.sqlite.generic.SQLiteGrammar;
 import org.orman.util.logging.Log;
 
 /**
- * SQLite implementation with sqlite4java library
- * {@link http://code.google.com/p/sqlite4java/}
- * 
+ * SQLite implementation with sqlite4java library.
+ * Uses sqlite4java: http://code.google.com/p/sqlite4java/
  * Known SQLite problems:
  * - RIGHT and FULL OUTER JOIN unsupported.
  * - Writing to VIEWs unsupported.

@@ -14,8 +14,8 @@ import org.gjt.mm.mysql.Driver;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
 import org.orman.datasource.exception.DatasourceConnectionException;
-import org.orman.datasource.exception.OrmanException;
 import org.orman.datasource.exception.QueryExecutionException;
+import org.orman.exception.OrmanException;
 import org.orman.sql.Query;
 import org.orman.util.logging.Log;
 

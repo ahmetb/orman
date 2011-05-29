@@ -5,12 +5,13 @@ import java.lang.reflect.Method;
 
 import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Index;
+import org.orman.mapper.annotation.PrimaryKey;
 
 /**
  * Holds field information such as its original name, generated (physical) name,
- * data type, nullability, whether it is a {@link Index} or {@link Id} field and
- * getter-setter methods to obtain and set its value during object mapping if it
- * is a non-public field.
+ * data type, nullability, whether it is a {@link Index} or {@link PrimaryKey}
+ * field and getter-setter methods to obtain and set its value during object
+ * mapping if it is a non-public field.
  * 
  * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 

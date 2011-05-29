@@ -4,8 +4,8 @@ import java.util.Date;
 
 /**
  * Just an usual logging tool outputs given log to <code>stdout</code> or
- * <code>stderr</code> if given log has at least threshold logging level.
- * Will not log values under given threshold level (default: WARN).
+ * <code>stderr</code> if given log has at least threshold logging level. Will
+ * not log values under given threshold level (default: WARN).
  * 
  * <p>
  * Default logging adapter for the framework.
@@ -16,6 +16,11 @@ import java.util.Date;
  */
 public class StandardLogger implements ILogger {
 	LoggingLevel level = LoggingLevel.WARN;
+	private long startMsecs;
+
+	public StandardLogger() {
+		this.startMsecs = System.currentTimeMillis();
+	}
 
 	public void trace(String message, Object... params) {
 		if (isLoggable(LoggingLevel.TRACE))
@@ -47,26 +52,29 @@ public class StandardLogger implements ILogger {
 			logErr("FATAL", String.format(message, params));
 	}
 
-
-	private boolean isLoggable(LoggingLevel logLevel){
+	private boolean isLoggable(LoggingLevel logLevel) {
 		return (this.level.getValue() <= logLevel.getValue());
 	}
-	
+
 	@Override
 	public void setLevel(LoggingLevel level) {
 		this.level = level == null ? LoggingLevel.WARN : level;
 	}
-	
+
 	/* logger methods */
 
 	private void log(String level, Object message) {
-		System.out.println(new Date().toString() + " [" + level + "] "
-				+ message);
+		System.out.println(getMsecs() + " " + new Date().toString() + " ["
+				+ level + "] " + message);
 	}
-	
+
 	private void logErr(String level, Object message) {
-		System.err.println(new Date().toString() + " [" + level + "] "
-				+ message);
+		System.err.println(getMsecs() + " " + new Date().toString() + " ["
+				+ level + "] " + message);
 	}
-	
+
+	private long getMsecs() {
+		return System.currentTimeMillis() - startMsecs;
+	}
+
 }

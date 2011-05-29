@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.DuplicateColumnNamesException;
 import org.orman.mapper.exception.DuplicateTableNamesException;
 import org.orman.mapper.exception.NotDeclaredIdException;
@@ -137,7 +138,7 @@ public class PersistenceSchemeMapper {
 	}
 
 	/**
-	 * Ensures that {@link Id} annotation exist exactly once in {@link Field}s
+	 * Ensures that {@link PrimaryKey} annotation exist exactly once in {@link Field}s
 	 * of given {@link Entity}.
 	 * 
 	 * @throws TooManyIdException

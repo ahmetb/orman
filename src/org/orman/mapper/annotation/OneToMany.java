@@ -19,7 +19,7 @@ import org.orman.mapper.LoadingPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OneToMany {
 	/**
-	 * Target type.
+	 * Target type class.
 	 * @return
 	 */
 	Class<?> toType();

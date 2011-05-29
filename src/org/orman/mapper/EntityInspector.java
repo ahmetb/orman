@@ -61,9 +61,7 @@ public class EntityInspector {
 
 				boolean isList = false;
 				// if the field is collection of something, store its generic. 
-				if (fieldType.equals(List.class)
-						|| fieldType.equals(ArrayList.class)
-						|| fieldType.equals(LinkedList.class)){
+				if (fieldType.equals(EntityList.class)){
 					/*
 					 * we have a 1:* or *:* mapping
 					 */
@@ -127,7 +125,11 @@ public class EntityInspector {
 					newF.setNullable(false);
 				}
 				
-				// Recognize @OnyToOne, @OneToMany, @ManyToMany annotations (covers @Index) 
+				/**
+				 ** Recognize @OnyToOne, @OneToMany, @ManyToMany annotations (covers @Index) 
+				 **/
+				
+				// OneToOne
 				if(f.isAnnotationPresent(OneToOne.class)){ // TODO add other cardinality annotations, too
 					newF.setForeignKey(true); // make field a foreign key.
 					
