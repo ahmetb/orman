@@ -39,5 +39,11 @@ public @interface OneToMany {
 	 */
 	String targetBindingField() default "";
 	
-	LoadingPolicy load() default LoadingPolicy.EAGER;
+	/**
+	 * Default option is LAZY since it works pretty well
+	 * when {@link ManyToOne} is EAGER (default). 
+	 * 
+	 * @return loading policy of field
+	 */
+	LoadingPolicy load() default LoadingPolicy.LAZY;
 }

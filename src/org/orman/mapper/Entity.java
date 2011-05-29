@@ -68,11 +68,7 @@ public class Entity {
 	 * @return found field instance.
 	 */
 	public Field getFieldByName(String fieldName){
-		for(Field i : getFields()){
-			if (i.getOriginalName().equals(fieldName))
-				return i;
-		}
-		throw new FieldNotFoundException(originalFullName, fieldName);
+		return F.f(getType(), fieldName);
 	}
 
 	/**

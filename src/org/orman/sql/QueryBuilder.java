@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.orman.mapper.ModelQuery;
 import org.orman.sql.exception.NoTableSpecifiedException;
 import org.orman.sql.exception.QueryBuilderException;
-import org.orman.sql.exception.QueryTypeNotImplementedException;
 import org.orman.sql.util.Glue;
 import org.orman.sql.util.Serializer;
 

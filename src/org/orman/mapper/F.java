@@ -52,6 +52,11 @@ public class F {
 	/**
 	 * Only a shorthand for getField(..,..). Use <code>field(..,..)</code>
 	 * method to get its physical name practically.
+	 * 
+	 * @throws EntityNotFoundException
+	 *             if entity is not mapped
+	 * @throws FieldNotFoundException
+	 *             if field name is incorrect (case-sensitive)
 	 */
 	public static Field f(Class<?> type, String fieldName) {
 		Entity e = MappingSession.getEntity(type);

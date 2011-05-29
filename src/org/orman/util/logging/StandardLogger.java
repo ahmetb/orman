@@ -64,13 +64,11 @@ public class StandardLogger implements ILogger {
 	/* logger methods */
 
 	private void log(String level, Object message) {
-		System.out.println(getMsecs() + " " + new Date().toString() + " ["
-				+ level + "] " + message);
+		System.out.println(getMsecs() + " " + " [" + level + "] " + message);
 	}
 
 	private void logErr(String level, Object message) {
-		System.err.println(getMsecs() + " " + new Date().toString() + " ["
-				+ level + "] " + message);
+		System.err.println(getMsecs() + " " + " [" + level + "] " + message);
 	}
 
 	private long getMsecs() {

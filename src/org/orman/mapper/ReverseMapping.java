@@ -117,7 +117,6 @@ public class ReverseMapping {
 				doLoading |= !f.isAnnotationPresent(OneToOne.class) && !f.isAnnotationPresent(ManyToOne.class);
 				
 				if (doLoading) {
-					
 					Query c = ModelQuery.select().from(intendedEntity).where(
 							C.eq(intendedType, intendedEntity.getAutoIncrementField()
 									.getOriginalName(), key)).getQuery();
@@ -132,7 +131,6 @@ public class ReverseMapping {
 							((Model<E>) result).setEntityField(on, intendedEntity, instance);
 						}
 					}
-					
 					return result;
 				}
 				
