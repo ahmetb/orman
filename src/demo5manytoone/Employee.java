@@ -1,6 +1,5 @@
 package demo5manytoone;
 
-import org.orman.mapper.LoadingPolicy;
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.Index;
@@ -16,11 +15,11 @@ public class Employee extends Model<Employee>{
 	@Index(type=IndexType.HASH)
 	public String name;
 	
-	@ManyToOne(load=LoadingPolicy.LAZY)
+	@ManyToOne
 	public Department dept;
 	
 	@Override
 	public String toString() {
-		return id + " " + name;
+		return id + " " + name + " @" + dept;
 	}
 }

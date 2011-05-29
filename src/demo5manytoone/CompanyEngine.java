@@ -1,8 +1,11 @@
 package demo5manytoone;
 
+import java.util.List;
+
 import org.orman.datasource.Database;
 import org.orman.mapper.EntityList;
 import org.orman.mapper.MappingSession;
+import org.orman.mapper.Model;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.sqlite.SQLite;
 import org.orman.util.logging.Log;
@@ -52,8 +55,19 @@ public class CompanyEngine {
 		e3.insert();
 		d2.employees.add(e3);
 		
+		System.out.println("Printing existing departments.");
+		
 		System.out.println(d1.employees);
 		System.out.println(d2.employees);
+		
+		System.out.println("Requerying departments.");
+		
+		List<Department> depts = Model.fetchAll(Department.class);
+		for(Department d : depts){
+			System.out.println("**** Dept. " + d.toString() + "  " + d.employees);
+		}
+		
+		System.out.println("End of program.");
 		
 	}
 

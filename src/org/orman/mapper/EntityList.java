@@ -34,7 +34,7 @@ import org.orman.util.logging.Log;
  * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>
  */
 
-public class EntityList<D extends Model<D>, E extends Model<E>> implements List<E> {
+public class EntityList<D, E extends Model<E>> implements List<E> {
 	private boolean lazyLoadingEnabled = false;
 	private boolean lazyLoaded = false;
 	
@@ -60,23 +60,36 @@ public class EntityList<D extends Model<D>, E extends Model<E>> implements List<
 		this.lazyLoadingEnabled = isLazyLoading;
 	}
 	
+	public EntityList(Class<D> holderType, Class<E> targetType, D holderInstance, List<E> existingResultList){
+		this(holderType, targetType, holderInstance);
+		this.elements = existingResultList;
+	}
+	
 	private void lazyLoadIfNeeded() {
 		// if lazy loading exists and not executed OR usual initialization
 		if ((lazyLoadingEnabled && !lazyLoaded) || elements == null){
 			if (lazyLoadingEnabled) lazyLoaded = true;
 			
-			Query q = ModelQuery
-					.select()
-					.from(targetType)
-					.where(C.eq(targetType,
-							getTargetField(holderEntity, targetEntity).getGeneratedName(),
-							holderInstance)).getQuery();
-			
-			elements = Model.fetchQuery(q, targetType);
-			Log.trace("Fetched %d target entities to EntityList.", elements.size());
+			refreshList();
 		}
 	}
 	
+	/**
+	 * Refreshes entity list from the database without any conditions
+	 * satisfied.
+	 */
+	public void refreshList() {
+		Query q = ModelQuery
+		.select()
+		.from(targetType)
+		.where(C.eq(targetType,
+				getTargetField(holderEntity, targetEntity).getGeneratedName(),
+				holderInstance)).getQuery();
+
+		elements = Model.fetchQuery(q, targetType);
+		Log.trace("Fetched %d target entities to EntityList.", elements.size());
+	}
+
 	public synchronized boolean add(E e) {
 		if (e == null) return false;
 		lazyLoadIfNeeded();
@@ -98,6 +111,7 @@ public class EntityList<D extends Model<D>, E extends Model<E>> implements List<
 	}
 
 	private Field getTargetField(Entity holderEntity, Entity targetEntity) {
+		// TODO this class assumes there exists only OneToMany in one class.
 		for(Field i : holderEntity.getFields()){
 			OneToMany ann = i.getAnnotation(OneToMany.class);
 			if (ann != null){
@@ -256,6 +270,7 @@ public class EntityList<D extends Model<D>, E extends Model<E>> implements List<
 	}
 
 	public String toString() {
-		return elements.toString();
+		lazyLoadIfNeeded();
+		return (elements == null) ? null : elements.toString();
 	}
 }

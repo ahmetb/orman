@@ -470,6 +470,16 @@ public class Model<E> {
 		Object o = MappingSession.getExecuter().executeForSingleValue(q);
 		return o;
 	}
+	
+	/**
+	 * Finds all instances of a given @{@code Entity}-annotated class type.
+	 * 
+	 * @param ofEntity entity class type
+	 * @return non-empty list of result list. never <code>null</code>.
+	 */
+	public static <E> List<E> fetchAll(Class<E> ofEntity){
+		return fetchQuery(ModelQuery.select().from(ofEntity).getQuery(), ofEntity);
+	}
 
 	/**
 	 * Executes given query for no result, i.e. it can be used for

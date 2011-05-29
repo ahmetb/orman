@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.orman.datasource.ResultList.ResultRow;
 import org.orman.mapper.annotation.ManyToOne;
@@ -11,6 +12,9 @@ import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
 import org.orman.util.logging.Log;
+
+import demo5manytoone.Department;
+import demo5manytoone.Employee;
 
 /**
  * Provides reverse mapping engine which can convert {@link ResultRow} objects
@@ -37,7 +41,7 @@ public class ReverseMapping {
 		} catch (Exception e1) {
 			// TODO assuming that no invocation exceptions will occur at
 			// runtime.
-			e1.printStackTrace(); // TODO log.
+			Log.error(e1.getMessage());
 		}
 
 		if (instance != null)
@@ -63,7 +67,7 @@ public class ReverseMapping {
 							((Model<?>) instance)
 									.getEntityField(((Model<?>) instance)
 											.getEntity().getAutoIncrementField()));
-						
+
 						if (fieldValue != null) ((Model<?>) instance).setEntityField(f, e, fieldValue);
 					}
 			}
@@ -137,8 +141,8 @@ public class ReverseMapping {
 				/* we have a 1:* or *:* mapping */
 				boolean doLoading = false;
 				
-				doLoading = doLoading | (f.isAnnotationPresent(OneToMany.class) && f.getAnnotation(
-						OneToMany.class).load().equals(LoadingPolicy.EAGER));
+				OneToMany ann = f.getAnnotation(OneToMany.class);
+				doLoading |= (ann != null) && ann.load().equals(LoadingPolicy.EAGER);
 				
 				if (doLoading){
 					OneToMany config = f.getAnnotation(OneToMany.class);
@@ -148,9 +152,13 @@ public class ReverseMapping {
 					)
 					.getQuery();
 					
-					return Model.fetchQuery(q, intendedType);
-				}					
-				return null;
+					List resultList = Model.fetchQuery(q, intendedType);
+					return new EntityList(instance.getClass(), intendedType, instance, resultList);
+				} else {
+					// set lazy loading EntityList
+					return new EntityList(instance.getClass(), intendedType, instance, true);
+				}
+				
 			}
 		}
 	}

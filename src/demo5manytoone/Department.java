@@ -16,4 +16,9 @@ public class Department extends Model<Department>{
 	
 	@OneToMany(toType = Employee.class, on = "dept", load=LoadingPolicy.LAZY)
 	public EntityList<Department, Employee> employees;
+	
+	@Override
+	public String toString() {
+		return title;
+	}
 }

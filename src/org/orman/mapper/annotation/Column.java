@@ -1,7 +1,9 @@
 package org.orman.mapper.annotation;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Use of this annotation is not mandatory but
@@ -12,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD) // works only on class fields
 public @interface Column{
 	String name() default "";
 	
