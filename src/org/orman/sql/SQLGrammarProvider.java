@@ -5,7 +5,7 @@ package org.orman.sql;
  * this for each DBMS and then bind to {@link QueryType} at runtime.
  * 
  * @see QueryType
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public interface SQLGrammarProvider {

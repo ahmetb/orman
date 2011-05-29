@@ -5,7 +5,7 @@ import org.orman.sql.util.Glue;
 /**
  * To hold logically operable two or more criteria.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class Criteria extends Criterion {
 	

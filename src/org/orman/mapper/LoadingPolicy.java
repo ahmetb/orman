@@ -3,7 +3,7 @@ package org.orman.mapper;
 /**
  * Describes loading policy between entitiy relations.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 public enum LoadingPolicy {

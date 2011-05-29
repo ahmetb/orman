@@ -13,7 +13,7 @@ import org.orman.mapper.LoadingPolicy;
  * if you want to give a specific index name, override it with {@link Index}
  * annotation.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)

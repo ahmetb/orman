@@ -5,7 +5,8 @@ import org.orman.sql.IndexType;
 /**
  * Holds index information of a {@link Field} such as 
  * its name and uniqueness. 
- * @author alp
+ * 
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class FieldIndexHolder {
 	private boolean unique;

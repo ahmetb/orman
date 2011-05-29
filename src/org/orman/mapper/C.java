@@ -9,7 +9,7 @@ import org.orman.sql.Criterion;
  * {@link Criterion} producing methods and those which work with actual
  * {@link Entity}es and {@link Field}s.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class C extends org.orman.sql.C {

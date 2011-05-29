@@ -20,7 +20,7 @@ import org.orman.sql.util.Glue;
  * Generates DDL (data description language) {@link Query} for given entity
  * scheme.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 // TODO implement tableexists(..)? query and then schemegenerationpolicy.

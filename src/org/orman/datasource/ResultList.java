@@ -10,7 +10,7 @@ import java.util.Map;
  * Those Objects may be {@link String}, {@link Float}, {@link Double},
  * {@link Integer} or <code>null</code>. Be cautions while using.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class ResultList {
 	private String[] columnNames;

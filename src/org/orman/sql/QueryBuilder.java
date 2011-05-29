@@ -26,7 +26,7 @@ import org.orman.sql.util.Serializer;
  * @see {@link org.orman.mapper.ModelQuery} for building queries using
  *      {@link org.orman.mapper.annotation.Entity}-annotated classes and their
  *      fields.
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class QueryBuilder {

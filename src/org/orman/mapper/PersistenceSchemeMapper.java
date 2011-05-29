@@ -17,7 +17,7 @@ import org.orman.util.logging.Log;
 /**
  * Holds object mapping scheme and their physical table names.  
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 public class PersistenceSchemeMapper {

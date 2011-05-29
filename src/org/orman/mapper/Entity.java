@@ -12,7 +12,7 @@ import org.orman.mapper.exception.NotDeclaredIdException;
  * {@link org.orman.mapper.annotation.Entity}. It holds original class name,
  * generated table name, {@link Field}s of the entity.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class Entity {

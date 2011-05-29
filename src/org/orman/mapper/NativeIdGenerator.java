@@ -13,7 +13,7 @@ import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
  * Warning: DOES NOT GUARANTEE preventing collisions, however collisions are
  * very unlikely.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 

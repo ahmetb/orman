@@ -30,10 +30,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		throw new QueryExecutionException("SQLiteAndroid error:" + e.toString());
 	}
 	
-	/**
-	 * Only executes the query without obtaining any results.
-	 * throws {@link QueryExecutionException} if error occurs.
-	 */
+
 	@Override
 	public void executeOnly(Query q) {		
 		Log.trace("Executing: " + q);

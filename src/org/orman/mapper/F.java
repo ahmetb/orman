@@ -4,10 +4,10 @@ import org.orman.mapper.exception.EntityNotFoundException;
 import org.orman.mapper.exception.FieldNotFoundException;
 
 /**
- * Shorthand fa√ßade to provide {@link Field} objects quickly in a
+ * Shorthand façade to provide {@link Field} objects quickly in a
  * {@link ModelQuery} context.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class F {
 	/**

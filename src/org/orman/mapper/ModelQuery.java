@@ -16,7 +16,7 @@ import org.orman.sql.QueryType;
  * 
  * @see QueryBuilder for building queries with physical names.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class ModelQuery {

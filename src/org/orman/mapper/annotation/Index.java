@@ -10,7 +10,7 @@ import org.orman.sql.IndexType;
  * You can set a custom name or a custom type for the
  * index.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Index {

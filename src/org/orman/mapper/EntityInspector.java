@@ -24,7 +24,7 @@ import org.orman.sql.IndexType;
 /**
  * Finds fields and getter-setter methods of a given {@link Entity} using Reflection API.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 public class EntityInspector {

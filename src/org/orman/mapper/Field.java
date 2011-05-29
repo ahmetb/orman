@@ -12,7 +12,7 @@ import org.orman.mapper.annotation.Index;
  * getter-setter methods to obtain and set its value during object mapping if it
  * is a non-public field.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class Field implements Comparable<Field> {

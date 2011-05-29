@@ -6,9 +6,10 @@ import org.orman.datasource.DataTypeMapper;
 import org.orman.util.DoubleAssociativeMap;
 
 /**
- * {@link http://www.sqlite.org/datatype3.html}
- * 
- * @author alp
+ * SQLite data type mappings. 
+ *
+ * @see http://www.sqlite.org/datatype3.html
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 public class DataTypeMapperImpl implements DataTypeMapper {

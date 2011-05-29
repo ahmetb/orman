@@ -20,7 +20,7 @@ import org.orman.sql.QueryType;
  * or persistent etc. Provides methods to get-set values of fields in this
  * domain class..
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class Model<E> {
 	private static final int DEFAULT_TRANSIENT_HASHCODE = -1;

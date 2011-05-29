@@ -3,7 +3,7 @@ package org.orman.mapper;
 /**
  * Holds mapping configuration policies.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class MappingConfiguration {
 	

@@ -4,7 +4,7 @@ package org.orman.mapper;
  * Determines how the schemes are designated on the <code>start()</code> of
  * {@link MappingSession}.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public enum SchemeCreationPolicy {

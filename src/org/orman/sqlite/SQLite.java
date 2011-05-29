@@ -20,7 +20,7 @@ import org.orman.util.logging.Log;
  * Known framework problems on SQLite
  * - Full-text search extension fts3 not supported.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class SQLite implements Database {
 	private SQLiteSettingsImpl settings;

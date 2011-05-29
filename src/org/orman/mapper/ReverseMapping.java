@@ -19,7 +19,7 @@ import org.orman.util.logging.Log;
  * 
  * Has smart and safe type conversions so that returned data is appropriate.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class ReverseMapping {
 	private static final DateFormat dateTimeParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

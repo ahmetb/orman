@@ -16,7 +16,7 @@ import org.orman.mapper.LoadingPolicy;
  * This creates a non-unique index on this field. If you want to override its name,
  * use {@link Index} annotaation after that.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ManyToOne {

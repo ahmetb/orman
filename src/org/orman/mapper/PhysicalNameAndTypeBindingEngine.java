@@ -12,7 +12,7 @@ import org.orman.util.logging.Log;
  * Provides methods to make physical name and column type bindings to fields and
  * physiscal table name bindings for the classes.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class PhysicalNameAndTypeBindingEngine {

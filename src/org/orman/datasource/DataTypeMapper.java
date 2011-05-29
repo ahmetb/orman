@@ -4,7 +4,7 @@ package org.orman.datasource;
  * Maps primitive data types, their wrappers and literals to actual column types
  * according to DBMS.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public interface DataTypeMapper {

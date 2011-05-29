@@ -7,7 +7,7 @@ import org.orman.mapper.annotation.PrimaryKey;
  * before executing queries. They can be auto incremented by DBMS or native
  * generator of framework can be used or it can be manually set.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public enum IdGenerationPolicy {
 	/**

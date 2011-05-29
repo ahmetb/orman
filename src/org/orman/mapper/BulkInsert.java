@@ -18,7 +18,8 @@ import org.orman.sql.util.TypeCastHandler;
 import org.orman.util.logging.Log;
 
 /**
- * Bulk record insertion support
+ * Bulk record insertion support class for {@link Model} classes.
+ * 
  * @author 0ffffffffh
  */
 public class BulkInsert<E extends Model<E>> {

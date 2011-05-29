@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
  * required when specifying custom dynamic data type
  * or a custom name for the column. 
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

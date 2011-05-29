@@ -11,7 +11,7 @@ import org.orman.mapper.exception.NotNullableFieldException;
  * if this column of the instance is null on insert and
  * update operations. 
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -4,7 +4,7 @@ package org.orman.mapper;
  * Holds information about physical name formatting guidelines of fields or
  * table names.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class PhysicalNamingPolicy {

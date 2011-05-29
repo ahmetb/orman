@@ -6,7 +6,8 @@ import java.util.List;
 /**
  * Provides method to convert given name to a physical name using
  * some {@link PhysicalNamingPolicy}.
- * @author alp
+ * 
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 public class PhysicalNameGenerator {

@@ -6,9 +6,9 @@ import org.orman.datasource.QueryExecutionContainer;
 import org.orman.sql.SQLGrammarProvider;
 
 /**
- * MySQL implementation with JDBC (Connector/J)
+ * MySQL implementation with JDBC (Connector/J).
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public class MySQL implements Database {
 	private MySQLSettingsImpl settings;

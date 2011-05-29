@@ -3,39 +3,40 @@ package org.orman.sql;
 import org.orman.sql.util.Serializer;
 
 /**
- * Fa√ßade class for criterion operations such as
- * creating simple queries, logical expressions,
- * conjuctions and manual criteria etc.
+ * Façade class for criterion operations such as creating simple queries,
+ * logical expressions, conjuctions and manual criteria etc.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class C {
 	private static final char QUERY_VALUE_WILDCARD = '?';
-	
-	public static Criterion custom(String expression){
+
+	public static Criterion custom(String expression) {
 		return new SimpleBinaryCriterion(expression, null, null);
 	}
-	
-	public static Criterion custom(String expression, Object... values){
+
+	public static Criterion custom(String expression, Object... values) {
 		// replace question marks with serialized values.
-		
-		if (values != null){
+
+		if (values != null) {
 			int used = 0;
-			
-			while(expression.indexOf(QUERY_VALUE_WILDCARD) > -1){
-				if(used > values.length-1) {
+
+			while (expression.indexOf(QUERY_VALUE_WILDCARD) > -1) {
+				if (used > values.length - 1) {
 					break;
 				} else {
-					String serializedValue = Serializer.serialize(values[used++]);
-					expression = expression.replace(QUERY_VALUE_WILDCARD+"", serializedValue);
+					String serializedValue = Serializer
+							.serialize(values[used++]);
+					expression = expression.replace(QUERY_VALUE_WILDCARD + "",
+							serializedValue);
 				}
 			}
 		}
 		return new SimpleBinaryCriterion(expression, null, null);
 	}
-	
-	// LOGICAL CONJUCTIONS 
+
+	// LOGICAL CONJUCTIONS
 
 	public static Criteria and(Criterion... criteria) {
 		return new Criteria(LogicalOperator.AND, criteria);
@@ -44,13 +45,13 @@ public class C {
 	public static Criteria or(Criterion... criteria) {
 		return new Criteria(LogicalOperator.OR, criteria);
 	}
-	
+
 	// SIMPLE COMPARISON METHODS
-	
+
 	public static Criterion eq(String field, Object val) {
 		return new SimpleBinaryCriterion(field, BinaryOp.EQUALS, val);
 	}
-	
+
 	public static Criterion notEq(String field, Object val) {
 		return new SimpleBinaryCriterion(field, BinaryOp.NOT_EQUALS, val);
 	}
@@ -94,64 +95,76 @@ public class C {
 	public static Criterion notIn(String field, Object val) {
 		return new SimpleBinaryCriterion(field, BinaryOp.NOT_IN, val);
 	}
-	
-	//UNARY SET OPERATIONS
-	
+
+	// UNARY SET OPERATIONS
+
 	public static Criterion exists(Query nestedQuery) {
 		return new UnaryCriteria(SetUnaryOp.EXISTS, nestedQuery);
 	}
-	
+
 	public static Criterion notExists(Query nestedQuery) {
 		return new UnaryCriteria(SetUnaryOp.NOT_EXISTS, nestedQuery);
 	}
-	
+
 	// NESTED QUANTIFIERS QUERYING
-	
+
 	public static Criterion eqAll(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.EQUALS, SetQuantifier.ALL, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.EQUALS,
+				SetQuantifier.ALL, nestedQuery);
 	}
-	
+
 	public static Criterion eqAny(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.EQUALS, SetQuantifier.ANY, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.EQUALS,
+				SetQuantifier.ANY, nestedQuery);
 	}
-	
+
 	public static Criterion notEqAll(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.NOT_EQUALS, SetQuantifier.ALL, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.NOT_EQUALS,
+				SetQuantifier.ALL, nestedQuery);
 	}
-	
+
 	public static Criterion notEqAny(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.NOT_EQUALS, SetQuantifier.ANY, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.NOT_EQUALS,
+				SetQuantifier.ANY, nestedQuery);
 	}
-	
+
 	public static Criterion gtAll(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_THAN, SetQuantifier.ALL, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_THAN,
+				SetQuantifier.ALL, nestedQuery);
 	}
-	
+
 	public static Criterion gtAny(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_THAN, SetQuantifier.ANY, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_THAN,
+				SetQuantifier.ANY, nestedQuery);
 	}
-	
+
 	public static Criterion geqAll(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_EQUAL, SetQuantifier.ALL, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_EQUAL,
+				SetQuantifier.ALL, nestedQuery);
 	}
-	
+
 	public static Criterion geqAny(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_EQUAL, SetQuantifier.ANY, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.GREATER_EQUAL,
+				SetQuantifier.ANY, nestedQuery);
 	}
 
 	public static Criterion ltAll(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.LESS_THAN, SetQuantifier.ALL, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.LESS_THAN,
+				SetQuantifier.ALL, nestedQuery);
 	}
-	
+
 	public static Criterion ltAny(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.LESS_THAN, SetQuantifier.ANY, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.LESS_THAN,
+				SetQuantifier.ANY, nestedQuery);
 	}
-	
+
 	public static Criterion leqAll(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.LESS_EQUAL, SetQuantifier.ALL, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.LESS_EQUAL,
+				SetQuantifier.ALL, nestedQuery);
 	}
-	
+
 	public static Criterion leqAny(String field, Query nestedQuery) {
-		return new SimpleBinaryCriterion(field, BinaryOp.LESS_EQUAL, SetQuantifier.ANY, nestedQuery);
+		return new SimpleBinaryCriterion(field, BinaryOp.LESS_EQUAL,
+				SetQuantifier.ANY, nestedQuery);
 	}
 }

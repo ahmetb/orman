@@ -6,7 +6,7 @@ import org.orman.sql.SQLGrammarProvider;
  * Generic database interface that databases
  * should implement.
  *  
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */
 public interface Database {
 	public DataTypeMapper getTypeMapper();

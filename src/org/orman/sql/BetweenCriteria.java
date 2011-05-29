@@ -3,9 +3,9 @@ package org.orman.sql;
 import org.orman.sql.util.Serializer;
 
 /**
- * Used commonly for BETWEEN clause.
+ * Used commonly for <code>BETWEEN</code> clause.
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
 public class BetweenCriteria extends Criterion {

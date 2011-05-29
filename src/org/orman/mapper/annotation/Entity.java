@@ -4,9 +4,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Required to make a class persistable entity.
+ * Required to make a class persistable entity. Use this
+ * on the classes that you want to make entities. 
  * 
- * @author alp
+ * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
