@@ -44,7 +44,7 @@ public class BlogEngine {
 		p1.keywords.add(k3);
 		
 		// for p2, add keywords on keyword using post.
-		k1.posts.add(p1);
+		k1.posts.add(p2);
 		k2.posts.add(p2);
 		k4.posts.add(p2);
 		
