@@ -69,11 +69,11 @@ public class Entity {
 		Class<?> targetType = syntheticEntitySource.getClazz();
 		syntheticTypes = new Class<?>[]{holderType, targetType};
 		
-		// produce a name for syntheticentity by concating holder-target classnames.
-		this.originalName = holderType.getSimpleName() + targetType.getSimpleName();
+		// produce a name for synthetic entity by concatenating holder-target
+		// class names.
+		this.originalName = holderType.getSimpleName().toString().concat(targetType.getSimpleName().toString());
 		
 		// create two fields regarding holder and target classes.
-		// TODO implement
 		
 		// make custom name binding if specified any on @ManyToMany annotation.
 		// if code reaches here, precondition is satisfied: annotation exists.

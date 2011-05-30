@@ -123,7 +123,7 @@ public class MappingSession {
 		PhysicalNameAndTypeBindingEngine.makeBinding(e,
 				configuration.getTableNamePolicy());
 
-		Log.info("Registering synthetic entity %s.", e.getOriginalName());
+		Log.info("Registering synthetic entity %s --> %s.", e.getOriginalName(), e.getGeneratedName());
 		scheme.addEntity(e);
 	}
 
@@ -135,6 +135,7 @@ public class MappingSession {
 	 *             while using without a unregistered class. This throws
 	 *             exception because getEntity() method assumed to be not
 	 *             <code>null</code> in the rest of the project.
+	 * @throws MappingSessionNotStartedException 
 	 * 
 	 */
 	public static Entity getEntity(Class<?> entityClass) {
@@ -246,6 +247,7 @@ public class MappingSession {
 
 			// make generated name and type bindings to fields.
 			for (Field f : e.getFields()) {
+				Log.trace("%s.%s", e.getOriginalName(), f);
 				PhysicalNameAndTypeBindingEngine.makeBinding(e, f,
 						configuration.getColumnNamePolicy(), typeMapper);
 			}
@@ -287,14 +289,44 @@ public class MappingSession {
 	 * entities and *registers* them to the {@link MappingSession}.
 	 */
 	private static void prepareSyntheticEntities() {
+		List<Entity> syntheticRegisterQueue = new LinkedList<Entity>();
+		
 		for (Entity e : scheme.getEntities()) {
 			for (Field f : e.getFields()) {
 				if (f.isList() && f.isAnnotationPresent(ManyToMany.class)) {
-					Entity synthetic = new Entity(f);
-					Log.trace("Synthetic entity created, registering.");
-					// registerSyntheticEntity(synthetic);
+					// if not already mapped on reverse side
+					boolean exists = false;
+					
+					for(Entity cand : syntheticRegisterQueue){
+						Class<?>[] types = cand.getSyntheticTypes(); 
+						if (types != null && types.length == 2){
+							// required to have 2 types by definition.
+							Class<?> holderType = f.getRawField().getDeclaringClass();
+							Class<?> targetType = f.getClazz();
+							
+							exists = (holderType.equals(types[0]) && targetType
+									.equals(types[1]))
+									|| (holderType.equals(types[1]) && targetType
+											.equals(types[0]));
+						}
+					}
+					if (!exists){
+						Entity synthetic = new Entity(f);
+						Log.trace(
+								"Synthetic entity (%s, %s) created, registering.",
+								synthetic.getSyntheticTypes()[0]
+										.getSimpleName(), synthetic
+										.getSyntheticTypes()[1].getSimpleName());
+						syntheticRegisterQueue.add(synthetic);
+					}
 				}
 			}
+		}
+		
+		// process registration queue. registration inside loop causes
+		// concurrent modification problems.
+		for(Entity s : syntheticRegisterQueue){
+			registerSyntheticEntity(s);
 		}
 	}
 
