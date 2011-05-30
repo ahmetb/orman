@@ -29,7 +29,7 @@ import org.orman.util.logging.Log;
  * </p>
  * 
  * @param <D> the entity class of holder type.
- * @param <E> the entity class of target type.
+ * @param <E> the entity class of target type extends {@link Model}.
  * 
  * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>
  */

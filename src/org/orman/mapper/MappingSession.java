@@ -10,6 +10,7 @@ import java.util.Queue;
 import org.orman.datasource.DataTypeMapper;
 import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
+import org.orman.mapper.annotation.ManyToMany;
 import org.orman.mapper.exception.AnnotatedClassNotFoundInPackageException;
 import org.orman.mapper.exception.MappingSessionAlreadyStartedException;
 import org.orman.mapper.exception.MappingSessionNotStartedException;
@@ -30,7 +31,7 @@ import org.orman.util.logging.Log;
  * class.
  * 
  * @author ahmet alp balkan
- * 
+ * @author 0ffffffffh
  */
 public class MappingSession {
 	private static PersistenceSchemeMapper scheme;
@@ -69,15 +70,17 @@ public class MappingSession {
 	 *             package name usage.
 	 */
 	public static void registerPackage(String packageName) {
-		List<Class<?>> annotatedClasses = PackageEntityInspector.findEntitiesInPackage(packageName);
-		
-		if (annotatedClasses == null || annotatedClasses.size() == 0){
-			// no @Entity-annotated classes found in package. 
-			AnnotatedClassNotFoundInPackageException ex = new AnnotatedClassNotFoundInPackageException(packageName);
+		List<Class<?>> annotatedClasses = PackageEntityInspector
+				.findEntitiesInPackage(packageName);
+
+		if (annotatedClasses == null || annotatedClasses.size() == 0) {
+			// no @Entity-annotated classes found in package.
+			AnnotatedClassNotFoundInPackageException ex = new AnnotatedClassNotFoundInPackageException(
+					packageName);
 			Log.error(ex.getMessage());
 			throw ex;
 		}
-		
+
 		// still throws exception
 		for (Class<?> currentClass : annotatedClasses) {
 			registerEntity(currentClass);
@@ -106,6 +109,21 @@ public class MappingSession {
 				configuration.getTableNamePolicy());
 
 		Log.info("Registering entity %s.", e.getOriginalName());
+		scheme.addEntity(e);
+	}
+
+	protected static void registerSyntheticEntity(Entity e) {
+		if (sessionStarted) {
+			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
+			Log.error(ex.getMessage());
+			throw ex;
+		}
+
+		// BIND TABLE NAME
+		PhysicalNameAndTypeBindingEngine.makeBinding(e,
+				configuration.getTableNamePolicy());
+
+		Log.info("Registering synthetic entity %s.", e.getOriginalName());
 		scheme.addEntity(e);
 	}
 
@@ -214,25 +232,11 @@ public class MappingSession {
 	 * See <code>start()</code> for a healthy bootstrap.
 	 */
 	public static void startNoCheck() {
+		preSessionStartHooks();
+
 		sessionStarted = true; // mark the session as started.
 
 		Log.info("Mapping session starting...");
-
-		if (db == null) {
-			NoDatabaseRegisteredException e = new NoDatabaseRegisteredException();
-			Log.error(e.getMessage());
-			throw e;
-		}
-
-		// set custom SQL grammar provider binding
-		SQLGrammarProvider p = db.getSQLGrammar();
-		
-		if (p != null) {
-			Log.info("Custom SQL grammar found: " + p.getClass().getName());
-			QueryType.setProvider(p);
-			TableConstraintType.setProvider(p);
-			IndexType.setProvider(p);
-		}
 
 		// BIND NAMES AND TYPES FOR FIELDS
 		Log.info("Preparing to make physical bindings for entities.");
@@ -252,15 +256,52 @@ public class MappingSession {
 					e.getOriginalName());
 		}
 
+		if (db == null) {
+			NoDatabaseRegisteredException e = new NoDatabaseRegisteredException();
+			Log.error(e.getMessage());
+			throw e;
+		}
+
+		// set custom SQL grammar provider binding
+		SQLGrammarProvider p = db.getSQLGrammar();
+
+		if (p != null) {
+			Log.info("Custom SQL grammar found: " + p.getClass().getName());
+			QueryType.setProvider(p);
+			TableConstraintType.setProvider(p);
+			IndexType.setProvider(p);
+		}
+
 		// CONSTRUCT DDL SCHEME FINALLY
 		constructScheme();
+	}
+
+	private static void preSessionStartHooks() {
+		// Prepare synthetic (@ManyToMany) entities.
+		prepareSyntheticEntities();
+	}
+
+	/**
+	 * Scans the whole registered entities in the scheme along with their fields
+	 * and finds @{@link ManyToMany} annotated-fields then creates synthetic
+	 * entities and *registers* them to the {@link MappingSession}.
+	 */
+	private static void prepareSyntheticEntities() {
+		for (Entity e : scheme.getEntities()) {
+			for (Field f : e.getFields()) {
+				if (f.isList() && f.isAnnotationPresent(ManyToMany.class)) {
+					Entity synthetic = new Entity(f);
+					Log.trace("Synthetic entity created, registering.");
+					// registerSyntheticEntity(synthetic);
+				}
+			}
+		}
 	}
 
 	/**
 	 * Prepares DDL queries to create existing scheme from scrats.
 	 * 
-	 * TODO return them as a list to execute somehow. TODO drop table first (but
-	 * catch-all errors if table does not exist) then create it.
+	 * TODO return them as a list to execute somehow.
 	 */
 	private static void constructScheme() {
 		Queue<Query> constructionQueries = new LinkedList<Query>();
@@ -308,32 +349,34 @@ public class MappingSession {
 						policy.equals(SchemeCreationPolicy.UPDATE));
 				constructionQueries.offer(cT);
 
-				//CREATE INDEXES
+				// CREATE INDEXES
 				List<Field> compositeIndexFields = new ArrayList<Field>(2);
 				List<Field> singleIndexFields = new ArrayList<Field>(2);
-				//TODO implement composite indexes.
+				// TODO implement composite indexes.
 				for (Field f : e.getFields()) {
 					if (f.getIndex() != null) {
-						if (f.isPrimaryKey() && !f.isAutoIncrement()) compositeIndexFields.add(f);
-						if (!f.isPrimaryKey()){
+						if (f.isPrimaryKey() && !f.isAutoIncrement())
+							compositeIndexFields.add(f);
+						if (!f.isPrimaryKey()) {
 							singleIndexFields.add(f);
 						}
 					}
 				}
-				
+
 				// Process composite index (primary keys).
 				if (policy.equals(SchemeCreationPolicy.CREATE)) {
-				// DROP INDEX first
+					// DROP INDEX first
 					Query dCI = DDLQueryGenerator.dropCompositeIndexQuery(e);
-					if (dCI != null) constructionQueries.offer(dCI);
+					if (dCI != null)
+						constructionQueries.offer(dCI);
 				}
 				// CREATE INDEX compositely, then
 				Query cCI = DDLQueryGenerator.createCompositeIndexQuery(e,
 						compositeIndexFields,
 						policy.equals(SchemeCreationPolicy.UPDATE));
-				if (cCI != null) constructionQueries.offer(cCI);
-				
-				
+				if (cCI != null)
+					constructionQueries.offer(cCI);
+
 				// Create single indexes
 				for (Field f : singleIndexFields) {
 					if (policy.equals(SchemeCreationPolicy.CREATE)) {

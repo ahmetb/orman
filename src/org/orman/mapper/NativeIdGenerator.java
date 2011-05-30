@@ -2,7 +2,7 @@ package org.orman.mapper;
 
 import java.util.Random;
 
-import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
+import org.orman.mapper.exception.UnsupportedPrimaryKeyFieldTypeException;
 
 /**
  * Implementation for {@link IdGenerationPolicy}.ORMAN_ID_GENERATION type.
@@ -47,7 +47,7 @@ public class NativeIdGenerator {
 		 * method, which is very unlikely if the access violations have not
 		 * occurred.
 		 */
-		throw new UnsupportedIdFieldTypeException(idType.getName(), instance.getType().toString());
+		throw new UnsupportedPrimaryKeyFieldTypeException(idType.getName(), instance.getType().toString());
 	}
 
 	private static String generateString(Model<?> instance) {

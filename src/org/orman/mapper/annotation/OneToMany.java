@@ -28,7 +28,8 @@ public @interface OneToMany {
 	Class<?> toType();
 	
 	/**
-	 * Target column to store this instance's id.
+	 * Target field to store this instance's id.
+	 * 
 	 * @return
 	 */
 	String on();
@@ -38,6 +39,7 @@ public @interface OneToMany {
 	 * with this value.
 	 */
 	String targetBindingField() default "";
+	// TODO implement target binding. (redundant use on().)
 	
 	/**
 	 * Default option is LAZY since it works pretty well

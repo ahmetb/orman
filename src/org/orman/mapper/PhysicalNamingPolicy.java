@@ -9,9 +9,9 @@ package org.orman.mapper;
  */
 public class PhysicalNamingPolicy {
 
-	private boolean uppercase = false;
-	private boolean underscore = true;
-	private boolean pluralize = false;
+	private boolean uppercase = false; // TODO implement
+	private boolean underscore = true; // TODO implement
+	private boolean pluralize = false; // TODO implement
 
 	public boolean isUppercase() {
 		return uppercase;

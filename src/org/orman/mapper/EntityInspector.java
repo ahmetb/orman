@@ -5,10 +5,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.orman.mapper.annotation.Index;
+import org.orman.mapper.annotation.ManyToMany;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.NotNull;
 import org.orman.mapper.annotation.OneToMany;
@@ -18,7 +18,7 @@ import org.orman.mapper.exception.NotDeclaredDefaultConstructorException;
 import org.orman.mapper.exception.NotDeclaredGetterException;
 import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnannotatedCollectionFieldException;
-import org.orman.mapper.exception.UnsupportedIdFieldTypeException;
+import org.orman.mapper.exception.UnsupportedPrimaryKeyFieldTypeException;
 import org.orman.sql.IndexType;
 
 /**
@@ -65,9 +65,14 @@ public class EntityInspector {
 					/*
 					 * we have a 1:* or *:* mapping
 					 */
-					if (f.isAnnotationPresent(OneToMany.class)){
-						fieldType = f.getAnnotation(OneToMany.class).toType();
-					} else {
+					OneToMany otm = f.getAnnotation(OneToMany.class);
+					ManyToMany mtm = f.getAnnotation(ManyToMany.class);
+					if (otm != null){
+						fieldType = otm.toType();
+					} else if( mtm != null){
+						fieldType = mtm.toType();
+					}
+					else {
 						// TODO add ManyToMany.
 						throw new UnannotatedCollectionFieldException(f.getName(), this.clazz.getName());
 					}
@@ -101,7 +106,7 @@ public class EntityInspector {
 					newF.setPrimaryKey(true);
 					
 					if (!isSupportedForPrimaryKeyField(f.getType())){
-						throw new UnsupportedIdFieldTypeException(f.getType().getName(), clazz.getName());
+						throw new UnsupportedPrimaryKeyFieldTypeException(f.getType().getName(), clazz.getName());
 					}
 					
 					// Set auto-increment type.

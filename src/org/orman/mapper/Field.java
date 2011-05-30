@@ -55,6 +55,18 @@ public class Field implements Comparable<Field> {
 					.equals(tmpCustomType)) ? null : tmpCustomType;
 		}
 	}
+	
+	/**
+	 * Creates field for a synthetic entity with given class.
+	 * Postcondition: custom name does not exists, original name
+	 * derived from name of the class. Type is binded after
+	 * {@link MappingSession} starts.
+	 * 
+	 * @param clazz
+	 */
+	protected Field(Class<?> clazz){
+		this.clazz = clazz;
+	}
 
 	public String getCustomName() {
 		return customName;
