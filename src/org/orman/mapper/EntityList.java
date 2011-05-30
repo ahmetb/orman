@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.orman.exception.FeatureNotImplementedException;
+import org.orman.mapper.annotation.ManyToMany;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.exception.FieldNotFoundException;
@@ -44,6 +45,8 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 	private List<E> elements;
 	private Entity holderEntity;
 	private Entity targetEntity;
+	
+	Entity syntheticRelation;
 
 	public EntityList(Class<D> holderType, Class<E> targetType, D holderInstance){
 		this.holderInstance = holderInstance;
@@ -53,6 +56,7 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 		
 		holderEntity = MappingSession.getEntity(holderType);
 		targetEntity = MappingSession.getEntity(targetType);
+		syntheticRelation = MappingSession.getSyntheticEntity(holderType, targetType);
 	}
 	
 	public EntityList(Class<D> holderType, Class<E> targetType, D holderInstance, boolean isLazyLoading){
@@ -79,13 +83,41 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 	 * satisfied.
 	 */
 	public void refreshList() {
-		Query q = ModelQuery
-		.select()
-		.from(targetType)
-		.where(C.eq(targetType,
-				getTargetField(holderEntity, targetEntity).getGeneratedName(),
-				holderInstance)).getQuery();
-
+		ModelQuery mq = ModelQuery.select();
+		
+		if (syntheticRelation != null){
+			// ManyToMany exists.
+			List<Field> synthFields = syntheticRelation.getFields();
+			
+			Field queryField = null; // guaranteed to be filled.
+			for(Field sF : synthFields){
+				if (sF.getClazz().equals(holderType)){
+					queryField = sF;
+					break;
+				}
+			}
+			
+			ModelQuery subq = ModelQuery.select().from(syntheticRelation);
+			subq = subq.selectColumn(
+					syntheticRelation,
+					synthFields.get(
+							synthFields.get(0).equals(queryField) ? 1 : 0)
+							.getOriginalName());
+			subq = subq.where(C.eq(syntheticRelation,
+				queryField.getOriginalName(),
+				holderInstance));
+			
+			mq = mq.from(targetType);
+			mq = mq.where(C.in(targetType, targetEntity.getAutoIncrementField().getOriginalName(), subq.getQuery()));
+		} else {
+			// OneToMany exists.
+			mq = mq.from(targetType);
+			mq = mq.where(C.eq(targetType,
+					getTargetField(holderEntity, targetEntity).getGeneratedName(),
+					holderInstance));
+		}
+		Query q = mq.getQuery();
+		
 		elements = Model.fetchQuery(q, targetType);
 		Log.trace("Fetched %d target entities to EntityList.", elements.size());
 	}
@@ -97,33 +129,113 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 		Entity holderEntity = MappingSession.getEntity(holderType);
 		Entity targetEntity = MappingSession.getEntity(targetType);
 		
-		// find @OneToMany class on holderType
-		// then get on() from it.
-		Field targetField = getTargetField(holderEntity, targetEntity);
-
-
-		e.setEntityField(targetField, targetEntity, holderInstance);
-		e.update();
-		
-		elements.add(e); // add to list.
+		if (syntheticRelation == null){
+			// find @OneToMany class on holderType
+			// then get on() from it.
+			Field targetField = getTargetField(holderEntity, targetEntity);
+			e.setEntityField(targetField, targetEntity, holderInstance);
+			e.update(); // do update on weak entity.
+			
+			this.softAdd(e); // add to list.
+		} else {
+			// create insert query on synthetic join table
+			ModelQuery inq = ModelQuery.insert().from(syntheticRelation);
+			
+			@SuppressWarnings("rawtypes")
+			Object holderId = ((Model)holderInstance).getEntityField(holderEntity.getAutoIncrementField());
+			
+			Object targetId = e.getEntityField(targetEntity.getAutoIncrementField());
+			
+			for(Field sF : syntheticRelation.getFields()){
+				inq = inq.set(sF, (sF.getClazz().equals(holderType)) ? holderId : targetId);
+			}
+			Model.execute(inq.getQuery());
+			
+			// find @ManyToMany class on targetType
+			Field targetField = getM2MTargetField(targetEntity);
+			
+			if (targetField != null){
+				// @ManyToMany exists on the other side, update it.
+				EntityList foreignList = (EntityList) e.getEntityField(targetField);
+				foreignList.softAdd((Model)holderInstance);
+			}
+			
+			this.softAdd(e);
+		}
 		
 		return true;
 	}
+	
+	/**
+	 * Does not update database, just adds the value to the
+	 * underlying list. Does lazy loading if needed.
+	 * @param e instance.
+	 */
+	protected synchronized boolean softAdd(E e){
+		lazyLoadIfNeeded();
+		return elements.add(e);
+	}
 
-	private Field getTargetField(Entity holderEntity, Entity targetEntity) {
-		// TODO this class assumes there exists only OneToMany in one class.
-		for(Field i : holderEntity.getFields()){
-			OneToMany ann = i.getAnnotation(OneToMany.class);
-			if (ann != null){
-				String targetFieldName = ann.on();
-				Field targetField = targetEntity.getFieldByName(targetFieldName);
+
+	public E remove(int index) {
+		lazyLoadIfNeeded();
+		E e = elements.remove(index);
+		if (e == null){ return null; }
+		else {
+			// if ManyToOne just delete weak entity.
+			if (syntheticRelation == null){
+				e.delete();
+			} else {
+				// On ManyToMany, break relationship.
+				ModelQuery dq = ModelQuery.delete().from(syntheticRelation);
+
+				@SuppressWarnings("rawtypes")
+				Object holderId = ((Model)holderInstance).getEntityField(holderEntity.getAutoIncrementField());
+				Object targetId = e.getEntityField(targetEntity.getAutoIncrementField());
 				
-				if (targetField == null) throw new FieldNotFoundException(holderEntity.getOriginalFullName(), targetFieldName);
-				return targetField;
+				List<Field> sFL = syntheticRelation.getFields();
+				boolean is1stFieldHolder = sFL.get(0).getClazz().equals(holderType);
+				
+				dq = dq.where(C.and(
+						C.eq(syntheticRelation, is1stFieldHolder ? sFL.get(0).getOriginalName() : sFL.get(1).getOriginalName(), is1stFieldHolder  ? holderId : targetId),
+						C.eq(syntheticRelation, !is1stFieldHolder ? sFL.get(0).getOriginalName() : sFL.get(1).getOriginalName(), !is1stFieldHolder  ? holderId : targetId)
+						));
+				Model.execute(dq.getQuery());
+			}
+			return e;
+		}
+	}
+	
+	public boolean removeAll(Collection<?> c) {
+		for(Object o : c){
+			boolean result = remove(o);
+			if (!result){ // early termination
+				return false;
 			}
 		}
-		return null; // unreachabdle
+		return true;
 	}
+
+	public boolean retainAll(Collection<?> c) {
+		throw new FeatureNotImplementedException("This method is not implemented on EntityList.");
+	}
+
+	public E set(int index, E element) {
+		throw new FeatureNotImplementedException("This method is not supported on EntityList.");
+	}
+	
+	public boolean contains(Object o) {
+		lazyLoadIfNeeded();
+		
+		return elements.contains(o);
+	}
+
+	public boolean containsAll(Collection<?> c) {
+		lazyLoadIfNeeded();
+		
+		return elements.containsAll(c);
+	}
+
 
 	public void add(int index, E element) {
 		add(element);
@@ -153,24 +265,26 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 	public void clear() {
 		lazyLoadIfNeeded();
 		
-		for(E e : elements){
-			e.delete();
+		while(!isEmpty()){
+			remove(0);
 		}
-		elements.clear(); // remove from list.
+		elements.clear(); // clear list.
 	}
 
-	public boolean contains(Object o) {
+	public boolean remove(Object o) {
 		lazyLoadIfNeeded();
 		
-		return elements.contains(o);
-	}
-
-	public boolean containsAll(Collection<?> c) {
-		lazyLoadIfNeeded();
+		@SuppressWarnings("unchecked")
+		E e = (E) o;
 		
-		return elements.containsAll(c);
+		if (e == null) return false;
+		else {
+			e.delete();
+			return elements.remove(o);
+		}
 	}
 
+	
 	public E get(int index) {
 		lazyLoadIfNeeded();
 		
@@ -208,48 +322,6 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 		return elements.listIterator(index);
 	}
 
-	public boolean remove(Object o) {
-		lazyLoadIfNeeded();
-		
-		@SuppressWarnings("unchecked")
-		E e = (E) o;
-		
-		if (e == null) return false;
-		else {
-			e.delete();
-			return elements.remove(o);
-		}
-	}
-
-	public E remove(int index) {
-		lazyLoadIfNeeded();
-		E e = elements.remove(index);
-		
-		if (e == null){ return null; }
-		else {
-			e.delete();
-			return e;
-		}
-	}
-
-	public boolean removeAll(Collection<?> c) {
-		for(Object o : c){
-			boolean result = remove(o);
-			if (!result){ // early termination
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public boolean retainAll(Collection<?> c) { // bunelan?
-		throw new FeatureNotImplementedException("This method is not implemented on EntityList.");
-	}
-
-	public E set(int index, E element) {
-		throw new FeatureNotImplementedException("This method is not supported on EntityList.");
-	}
-
 	public int size() {
 		lazyLoadIfNeeded();
 		return elements.size();
@@ -272,5 +344,49 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 	public String toString() {
 		lazyLoadIfNeeded();
 		return (elements == null) ? null : elements.toString();
+	}
+	
+	/**
+	 * Finds @{@link OneToMany}-annotated field on given
+	 * holder entity and then extracts and returns foreign key
+	 * {@link Field} on target entity.
+	 *   
+	 * @param holderEntity
+	 * @param targetEntity
+	 */
+	private Field getTargetField(Entity holderEntity, Entity targetEntity) {
+		// TODO this class assumes there exists only OneToMany in one class.
+		for(Field i : holderEntity.getFields()){
+			OneToMany ann = i.getAnnotation(OneToMany.class);
+			if (ann != null){
+				String targetFieldName = ann.onField();
+				Field targetField = targetEntity.getFieldByName(targetFieldName);
+				
+				if (targetField == null)
+					throw new FieldNotFoundException(
+							holderEntity.getOriginalFullName(), targetFieldName);
+				else return targetField;
+			}
+		}
+		return null; 
+	}
+	
+	/**
+	 * Locates other @{@link ManyToMany}-annotated {@link Field} on
+	 * reverse target entity and returns its {@link EntityList} so that
+	 * values can be softly add to provide consistency.
+	 *   
+	 * @param targetEntity
+	 * @return <code>null</code> if not exists.
+	 */
+	private Field getM2MTargetField(Entity targetEntity) {
+		// TODO this class assumes there exists only OneToMany in one class.
+		for(Field cand : targetEntity.getFields()){
+			ManyToMany ann = cand.getAnnotation(ManyToMany.class);
+			if (ann != null){
+				return cand;
+			}
+		}
+		return null; 
 	}
 }

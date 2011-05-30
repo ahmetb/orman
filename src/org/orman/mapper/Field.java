@@ -66,6 +66,7 @@ public class Field implements Comparable<Field> {
 	 */
 	protected Field(Class<?> clazz){
 		this.clazz = clazz;
+		this.originalName = clazz.getSimpleName()+"Id";
 	}
 
 	public String getCustomName() {
@@ -156,11 +157,11 @@ public class Field implements Comparable<Field> {
 	}
 
 	public boolean isAnnotationPresent(Class<? extends Annotation> ann) {
-		return rawField.isAnnotationPresent(ann);
+		return rawField == null ? false : rawField.isAnnotationPresent(ann);
 	}
 
 	public <A extends Annotation> A getAnnotation(Class<A> annClass) {
-		return rawField.getAnnotation(annClass);
+		return rawField == null ? null : rawField.getAnnotation(annClass);
 	}
 
 	public void setList(boolean isList) {

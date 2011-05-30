@@ -38,6 +38,7 @@ public class DDLQueryGenerator {
 		qb.from(e.getGeneratedName());
 
 		List<Field> primaryKeyFields = new ArrayList<Field>();
+		List<TableConstraint> foreignKeys = new ArrayList<TableConstraint>();
 		boolean autoIncrementFound = false;
 		for (Field f : e.getFields()) {
 			if (!f.isList() && (f.getGeneratedName() == null || f.getType() == null)) {
@@ -57,7 +58,7 @@ public class DDLQueryGenerator {
 			
 			if (f.isForeignKey()){
 				Entity mappedTo = MappingSession.getEntity(f.getClazz());
-				qb.addConstraint(new TableConstraint(TableConstraintType.FOREIGN_KEY, f.getGeneratedName(), mappedTo.getGeneratedName(), mappedTo.getAutoIncrementField().getGeneratedName()));
+				foreignKeys.add(new TableConstraint(TableConstraintType.FOREIGN_KEY, f.getGeneratedName(), mappedTo.getGeneratedName(), mappedTo.getAutoIncrementField().getGeneratedName()));
 			}
 		}
 		
@@ -75,6 +76,11 @@ public class DDLQueryGenerator {
 				}
 				qb.addConstraint(new TableConstraint(TableConstraintType.PRIMARY_KEY, sb.toString()));
 			}
+		}
+		
+		// add foreign keys at the end.
+		for(TableConstraint fkC : foreignKeys){
+			qb.addConstraint(fkC);
 		}
 
 		return qb.getQuery();

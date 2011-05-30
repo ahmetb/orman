@@ -67,13 +67,12 @@ public class EntityInspector {
 					 */
 					OneToMany otm = f.getAnnotation(OneToMany.class);
 					ManyToMany mtm = f.getAnnotation(ManyToMany.class);
-					if (otm != null){
+					if (otm != null){ // 1:* relationship
 						fieldType = otm.toType();
-					} else if( mtm != null){
+					} else if( mtm != null){ // *:* relationship
 						fieldType = mtm.toType();
-					}
-					else {
-						// TODO add ManyToMany.
+					} else {
+						// not eligible relationship on entitylist field.
 						throw new UnannotatedCollectionFieldException(f.getName(), this.clazz.getName());
 					}
 					isList = true;

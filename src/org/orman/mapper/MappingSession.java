@@ -246,6 +246,7 @@ public class MappingSession {
 			// TODO CRITICAL: Enable asap.
 
 			// make generated name and type bindings to fields.
+			if(e.getFields() != null)
 			for (Field f : e.getFields()) {
 				Log.trace("%s.%s", e.getOriginalName(), f);
 				PhysicalNameAndTypeBindingEngine.makeBinding(e, f,
@@ -297,6 +298,7 @@ public class MappingSession {
 					// if not already mapped on reverse side
 					boolean exists = false;
 					
+					// already mapped?
 					for(Entity cand : syntheticRegisterQueue){
 						Class<?>[] types = cand.getSyntheticTypes(); 
 						if (types != null && types.length == 2){
@@ -328,6 +330,31 @@ public class MappingSession {
 		for(Entity s : syntheticRegisterQueue){
 			registerSyntheticEntity(s);
 		}
+	}
+	
+	/**
+	 * Returns synthetic entity managing {@link ManyToMany} relation.
+	 * 
+	 * @param holderType a side of {@link ManyToMany} relation.
+	 * @param targetType a side of {@link ManyToMany} relation.
+	 * @return <code>null</code> if not found.
+	 */
+	public static Entity getSyntheticEntity(Class<?> holderType, Class<?> targetType) {
+		for (Entity cand : scheme.getEntities()) {
+			if (cand.isSynthetic()) {
+				Class<?>[] types = cand.getSyntheticTypes();
+				if (types != null && types.length == 2) {
+					// required to have 2 types by definition.
+					if ((holderType.equals(types[0]) && targetType
+							.equals(types[1]))
+							|| (holderType.equals(types[1]) && targetType
+									.equals(types[0]))) {
+						return cand;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

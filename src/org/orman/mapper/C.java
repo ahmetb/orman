@@ -1,6 +1,5 @@
 package org.orman.mapper;
 
-import org.orman.mapper.annotation.Entity;
 import org.orman.sql.Criterion;
 
 /**
@@ -18,15 +17,20 @@ public class C extends org.orman.sql.C {
 			Object val) {
 		return C.eq(F.formatField(entityClass, fieldName), serialize(val));
 	}
+	
+	public static Criterion eq(Entity entity, String fieldName,
+			Object val) {
+		return C.eq(F.formatField(entity, fieldName), serialize(val));
+	}
 
 	public static Criterion notEq(Class<?> entityClass, String fieldName,
 			Object val) {
 		return C.notEq(F.formatField(entityClass, fieldName), serialize(val));
 	}
-
-	public static Criterion gt(Class<?> entityClass, String fieldName,
+	
+	public static Criterion notEq(Entity entity, String fieldName,
 			Object val) {
-		return C.gt(F.formatField(entityClass, fieldName), val);
+		return C.notEq(F.formatField(entity, fieldName), serialize(val));
 	}
 
 	public static Criterion geq(Class<?> entityClass, String fieldName,

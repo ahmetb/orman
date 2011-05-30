@@ -11,6 +11,8 @@ import org.orman.sql.IndexType;
  * Use this annotation to create index on this field.
  * You can set a custom name or a custom type for the
  * index.
+ * <p>Note: SQLite does not have index types. This setting is
+ * discarded upon DDL generation phase if using SQLite.</p>
  * 
  * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  */

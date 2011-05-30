@@ -146,7 +146,7 @@ public class ReverseMapping {
 					OneToMany config = f.getAnnotation(OneToMany.class);
 					Query q = ModelQuery.select().from(intendedEntity)
 					.where(
-							C.eq(intendedType, config.on(), key)
+							C.eq(intendedType, config.onField(), key)
 					)
 					.getQuery();
 					

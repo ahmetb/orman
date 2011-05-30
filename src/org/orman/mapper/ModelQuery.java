@@ -46,6 +46,16 @@ public class ModelQuery {
 	public static ModelQuery type(QueryType type) {
 		return new ModelQuery(type);
 	}
+	
+	public ModelQuery selectColumn(Class<?> entityClass, String fieldName) {
+		this.qb.select(F.formatField(entityClass, fieldName));
+		return this;
+	}
+	
+	public ModelQuery selectColumn(Entity e, String fieldName) {
+		this.qb.select(F.formatField(e, fieldName));
+		return this;
+	}
 
 	protected ModelQuery from(Entity... e) {
 		for (Entity a : e) {
@@ -220,7 +230,6 @@ public class ModelQuery {
 		return e;
 	}
 
-	
 	public Query getQuery() {
 		return qb.getQuery();
 	}

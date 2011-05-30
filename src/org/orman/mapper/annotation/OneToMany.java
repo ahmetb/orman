@@ -5,11 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.orman.mapper.EntityList;
 import org.orman.mapper.LoadingPolicy;
 
 /**
  * <p>Place this annotation on columns to create relationship of 1:* cardinality
- * between entities.</p>
+ * between entities. Use this annotation on {@link EntityList}.</p>
  * 
  * <p>These fields are not physically created on the database but populated at the
  * runtime.</p>
@@ -32,7 +33,7 @@ public @interface OneToMany {
 	 * 
 	 * @return
 	 */
-	String on();
+	String onField();
 	
 	/**
 	 * Optionally, to fill target instance's related field

@@ -1,6 +1,7 @@
 package org.orman.mapper;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.orman.mapper.annotation.ManyToMany;
@@ -17,7 +18,7 @@ import org.orman.mapper.exception.NotAnEntityException;
  */
 public class Entity {
 	private Class<?> clazz;
-	private List<Field> fields;
+	private List<Field> fields = new ArrayList<Field>(0);
 	private String originalName;
 	private String originalFullName;
 	private String customName;
@@ -65,6 +66,7 @@ public class Entity {
 	 */
 	protected Entity(Field syntheticEntitySource) {
 		setSynthetic(true);
+		this.clazz = Void.TYPE;
 		Class<?> holderType = syntheticEntitySource.getRawField().getDeclaringClass();
 		Class<?> targetType = syntheticEntitySource.getClazz();
 		syntheticTypes = new Class<?>[]{holderType, targetType};
@@ -74,6 +76,15 @@ public class Entity {
 		this.originalName = holderType.getSimpleName().toString().concat(targetType.getSimpleName().toString());
 		
 		// create two fields regarding holder and target classes.
+		Field f1 = new Field(holderType);
+		f1.setForeignKey(true);
+		f1.setNullable(false);
+		addField(f1);
+		
+		Field f2 = new Field(targetType);
+		f2.setForeignKey(true);
+		f2.setNullable(false);
+		addField(f2);
 		
 		// make custom name binding if specified any on @ManyToMany annotation.
 		// if code reaches here, precondition is satisfied: annotation exists.

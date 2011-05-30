@@ -110,7 +110,8 @@ public class PersistenceSchemeMapper {
 	 * 
 	 */
 	public void checkConflictingFields(Entity e) {
-		for (Field f : e.getFields()) {
+		if(e.getFields() != null)
+			for (Field f : e.getFields()) {
 			// unbinded column name
 			if (f.getGeneratedName() == null || "".equals(f.getGeneratedName()))
 				throw new UnmappedFieldException(f.getOriginalName());
