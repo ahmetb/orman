@@ -71,9 +71,15 @@ public class Entity {
 		Class<?> targetType = syntheticEntitySource.getClazz();
 		syntheticTypes = new Class<?>[]{holderType, targetType};
 		
-		// produce a name for synthetic entity by concatenating holder-target
-		// class names.
-		this.originalName = holderType.getSimpleName().toString().concat(targetType.getSimpleName().toString());
+		// produce a name for synthetic entity by sorting holder-target class
+		// names alphabetically and then concatenating to a single name.
+		String[] syntheticNames = new String[]{holderType.getSimpleName().toString(), targetType.getSimpleName().toString()};
+		StringBuilder origName = new StringBuilder();
+		for(String s : syntheticNames)
+			origName.append(s);
+		this.originalName = origName.toString();
+		this.originalFullName = this.originalName;
+		
 		
 		// create two fields regarding holder and target classes.
 		Field f1 = new Field(holderType);
