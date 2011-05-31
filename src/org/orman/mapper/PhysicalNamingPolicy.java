@@ -9,9 +9,10 @@ package org.orman.mapper;
  */
 public class PhysicalNamingPolicy {
 
-	private boolean uppercase = false; // TODO implement
-	private boolean underscore = true; // TODO implement
-	private boolean pluralize = false; // TODO implement
+	private boolean uppercase = false;
+	private boolean underscore = true;
+	private boolean camelCase = false;
+	private boolean pluralize = false;
 
 	public boolean isUppercase() {
 		return uppercase;
@@ -38,6 +39,19 @@ public class PhysicalNamingPolicy {
 	public PhysicalNamingPolicy pluralize(boolean pluralize) {
 		this.pluralize = pluralize;
 		return this;
+	}
+
+	/**
+	 * Overrides lowercase policy.
+	 * 
+	 * @param camelCase
+	 */
+	public void camelCase(boolean camelCase) {
+		this.camelCase = camelCase;
+	}
+
+	public boolean isCamelCase() {
+		return camelCase;
 	}
 
 }

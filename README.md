@@ -20,6 +20,11 @@ Dev Community
 Feel free to write wikis (if you understand how framework works) or follow
 commit logs by subscribing to our commit-logs list at [groups.google/orman-commits](http://groups.google.com/group/orman-commits).
 
+Stats
+=====
+
+You can reach some framework statistics at http://ahmetalpbalkan.com/ormanstats
+
 Contributors
 ============
 

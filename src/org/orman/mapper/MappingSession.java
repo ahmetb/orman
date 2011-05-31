@@ -12,9 +12,11 @@ import org.orman.datasource.Database;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.mapper.annotation.ManyToMany;
 import org.orman.mapper.exception.AnnotatedClassNotFoundInPackageException;
+import org.orman.mapper.exception.DuplicateTableNamesException;
 import org.orman.mapper.exception.MappingSessionAlreadyStartedException;
 import org.orman.mapper.exception.MappingSessionNotStartedException;
 import org.orman.mapper.exception.NoDatabaseRegisteredException;
+import org.orman.mapper.exception.UnmappedEntityException;
 import org.orman.mapper.exception.UnregisteredEntityException;
 import org.orman.sql.IndexType;
 import org.orman.sql.Query;
@@ -104,10 +106,6 @@ public class MappingSession {
 
 		Entity e = new Entity(entityClass);
 
-		// BIND TABLE NAME
-		PhysicalNameAndTypeBindingEngine.makeBinding(e,
-				configuration.getTableNamePolicy());
-
 		Log.info("Registering entity %s.", e.getOriginalName());
 		scheme.addEntity(e);
 	}
@@ -118,10 +116,6 @@ public class MappingSession {
 			Log.error(ex.getMessage());
 			throw ex;
 		}
-
-		// BIND TABLE NAME
-		PhysicalNameAndTypeBindingEngine.makeBinding(e,
-				configuration.getTableNamePolicy());
 
 		Log.info("Registering synthetic entity %s --> %s.", e.getOriginalName(), e.getGeneratedName());
 		scheme.addEntity(e);
@@ -231,8 +225,13 @@ public class MappingSession {
 	 * </p>
 	 * 
 	 * See <code>start()</code> for a healthy bootstrap.
+	 * 
+	 * @throws UnmappedEntityException if no physical name binding
+	 * done before.
+	 * @throws DuplicateTableNamesException if binded physical name already
+	 * exists in the scheme.
 	 */
-	public static void startNoCheck() {
+	private static void startNoCheck() {
 		preSessionStartHooks();
 
 		sessionStarted = true; // mark the session as started.
@@ -245,10 +244,16 @@ public class MappingSession {
 			// scheme.checkIdBinding(e);
 			// TODO CRITICAL: Enable asap.
 
+			// BIND TABLE NAME
+			PhysicalNameAndTypeBindingEngine.makeBinding(e,
+					configuration.getTableNamePolicy());
+			if (e.getGeneratedName() == null || "".equals(e.getGeneratedName()))
+				throw new UnmappedEntityException(e.getOriginalFullName());
+			scheme.checkConflictingEntities(e); // exception stops the check.
+
 			// make generated name and type bindings to fields.
 			if(e.getFields() != null)
 			for (Field f : e.getFields()) {
-				Log.trace("%s.%s", e.getOriginalName(), f);
 				PhysicalNameAndTypeBindingEngine.makeBinding(e, f,
 						configuration.getColumnNamePolicy(), typeMapper);
 			}

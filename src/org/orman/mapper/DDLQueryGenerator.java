@@ -114,9 +114,15 @@ public class DDLQueryGenerator {
 					: QueryType.CREATE_INDEX_IF_NOT_EXISTS;
 		}
 
-		return QueryBuilder.getBuilder(type).from(e.getGeneratedName())
-				.setIndex(on.getGeneratedName(), on.getIndex().name(), on.getIndex().getType())
-				.getQuery();
+		String physicalIndexName = PhysicalNameGenerator
+				.format(on.getIndex().name(), MappingSession.getConfiguration()
+						.getIndexNamePolicy());
+
+		return QueryBuilder
+				.getBuilder(type)
+				.from(e.getGeneratedName())
+				.setIndex(on.getGeneratedName(), physicalIndexName,
+						on.getIndex().getType()).getQuery();
 	}
 	
 	/**
@@ -163,7 +169,7 @@ public class DDLQueryGenerator {
 		return QueryBuilder
 				.getBuilder(type)
 				.from(e.getGeneratedName())
-				.setIndex(indexFields.toString(), compositeIndexName(e),
+				.setIndex(indexFields.toString(), compositeIndexPhysicalName(e),
 						firstField.getIndex().getType()).getQuery();
 	}
 	
@@ -175,9 +181,10 @@ public class DDLQueryGenerator {
 	public static Query dropIndexQuery(Entity e, Field on) {
 		if (on.getIndex() == null) 
 			throw new IndexNotFoundException(on.getOriginalName());
-		
+		String indexName = PhysicalNameGenerator.format(on.getIndex().name(),
+				MappingSession.getConfiguration().getIndexNamePolicy());
 		return QueryBuilder.getBuilder(QueryType.DROP_INDEX_IF_EXISTS).from(e.getGeneratedName())
-		.setIndex(on.getGeneratedName(), on.getIndex().name(), on.getIndex().getType())
+		.setIndex(on.getGeneratedName(), indexName, on.getIndex().getType())
 		.getQuery();
 	}
 	
@@ -190,15 +197,16 @@ public class DDLQueryGenerator {
 		return QueryBuilder
 				.getBuilder(QueryType.DROP_INDEX_IF_EXISTS)
 				.from(e.getGeneratedName())
-				.setIndex(e.getGeneratedName(), compositeIndexName(e),
+				.setIndex(e.getGeneratedName(), compositeIndexPhysicalName(e),
 						IndexType.HASH) // hash is just dummy.
 				.getQuery();
 	}
 
-	private static String compositeIndexName(Entity e) {
-		return String.format(
+	private static String compositeIndexPhysicalName(Entity e) {
+		return PhysicalNameGenerator.format(String.format(
 				PhysicalNameAndTypeBindingEngine.COMPOSITE_INDEX_FORMAT,
 				e.getGeneratedName(),
-				PhysicalNameAndTypeBindingEngine.INDEX_POSTFIX);
+				PhysicalNameAndTypeBindingEngine.INDEX_POSTFIX), MappingSession
+				.getConfiguration().getIndexNamePolicy());
 	}
 }

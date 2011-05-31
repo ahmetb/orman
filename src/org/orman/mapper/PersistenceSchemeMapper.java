@@ -37,17 +37,8 @@ public class PersistenceSchemeMapper {
 	 * Adds given entity to the mapping scheme.
 	 * 
 	 * Precondition: Physical table name should be binded.
-	 * 
-	 * @throws UnmappedEntityException if no physical name binding
-	 * done before.
-	 * @throws DuplicateTableNamesException if binded physical name already
-	 * exists in the scheme.
 	 */
 	public void addEntity(Entity e) {
-		if (e.getGeneratedName() == null || "".equals(e.getGeneratedName()))
-			throw new UnmappedEntityException(e.getOriginalFullName());
-
-		checkConflictingEntities(e); // exception stops the check.
 
 		this.entities.add(e);
 		this.tableNames.put(e.getGeneratedName(), e);
@@ -79,7 +70,7 @@ public class PersistenceSchemeMapper {
 	 * @return <code>true</code> if no conflict found, throws exception otherwise.
 	 * @throws DuplicateTableNamesException if an entity with this physical name exists.
 	 */
-	private boolean checkConflictingEntities(Entity e) {
+	protected boolean checkConflictingEntities(Entity e) {
 		for (Entity f : this.entities) {
 			if (e != f && e.equals(f)) {
 				throw new DuplicateTableNamesException(f.getOriginalName(), e

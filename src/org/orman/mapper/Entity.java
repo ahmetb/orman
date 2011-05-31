@@ -73,7 +73,10 @@ public class Entity {
 		
 		// produce a name for synthetic entity by sorting holder-target class
 		// names alphabetically and then concatenating to a single name.
-		String[] syntheticNames = new String[]{holderType.getSimpleName().toString(), targetType.getSimpleName().toString()};
+		// TODO reorganize the architecture so that we can use binded (maybe custom) names of entities.
+		String[] syntheticNames = new String[] {
+				holderType.getSimpleName().toString(),
+				targetType.getSimpleName().toString() };
 		StringBuilder origName = new StringBuilder();
 		for(String s : syntheticNames)
 			origName.append(s);
