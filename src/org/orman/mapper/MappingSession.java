@@ -44,6 +44,7 @@ public class MappingSession {
 	private static QueryExecutionContainer executer;
 
 	private static boolean sessionStarted = false;
+	private static boolean autoPackageRegistration = true;
 
 	static {
 		scheme = new PersistenceSchemeMapper();
@@ -52,10 +53,17 @@ public class MappingSession {
 	}
 
 	public static void registerDatabase(Database database) {
+		
+		if (autoPackageRegistration) {
+			Log.info("Auto package registration enabled");
+			registerPackage(PackageEntityInspector.getWorkingRootPackageName());
+		}
+		
 		db = database;
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
 	}
+	
 
 	/**
 	 * Finds and registers @{@link Entity}-annotated classes in given package,
@@ -463,6 +471,14 @@ public class MappingSession {
 		}
 	}
 
+	/**
+	 * Enables/Disables auto package registration system
+	 * @param enabled status of the auto registration
+	 */
+	public static void setAutoPackageRegistration(boolean enabled) {
+		autoPackageRegistration = enabled;
+	}
+	
 	public static MappingConfiguration getConfiguration() {
 		return configuration;
 	}

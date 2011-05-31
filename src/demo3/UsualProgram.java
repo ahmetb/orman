@@ -23,7 +23,7 @@ public class UsualProgram {
 		ILogger log = new Log4jAdapter();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.TRACE);
-		MappingSession.registerPackage("demo3");
+		
 
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.USE_EXISTING);

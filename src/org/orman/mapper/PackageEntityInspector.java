@@ -111,4 +111,18 @@ public class PackageEntityInspector {
 
 		return classObjects.size() == 0 ? null : classObjects;
 	}
+	
+	public static String getWorkingRootPackageName() {
+		int i;
+		
+		StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
+		String rootClass = callStack[callStack.length-1].getClassName();
+		
+		i = rootClass.indexOf('.');
+		
+		if (i == -1)
+			return rootClass;
+		
+		return rootClass.substring(0,i);
+	}
 }

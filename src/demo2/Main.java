@@ -9,15 +9,22 @@ import org.orman.mapper.MappingSession;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mysql.MySQL;
 import org.orman.mysql.MySQLSettingsImpl;
+import org.orman.util.logging.ILogger;
+import org.orman.util.logging.Log;
+import org.orman.util.logging.Log4jAdapter;
+import org.orman.util.logging.LoggingLevel;
 
 public class Main {
 	public static void main(String[] args) {
+		ILogger log = new Log4jAdapter();
+		Log.setLogger(log);
+		Log.setLevel(LoggingLevel.TRACE);
+		
 		MySQLSettingsImpl settings = new MySQLSettingsImpl("root", "root", "test");
+		
 		Database db = new MySQL(settings);
 		
 		MappingSession.registerDatabase(db);
-		
-		MappingSession.registerPackage("demo2");
 		
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);

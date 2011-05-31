@@ -19,7 +19,7 @@ public class CompanyEngine {
 		StandardLogger log = new StandardLogger();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.TRACE);
-		MappingSession.registerPackage("demo5manytoone");
+		
 		MappingSession.registerDatabase(db);
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);

@@ -17,8 +17,14 @@ public class BlogEngine {
 		StandardLogger log = new StandardLogger();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.TRACE);
+		
+		//disable auto entity registration
+		MappingSession.setAutoPackageRegistration(false);
+		
+		//Manual entity register
 		MappingSession.registerEntity(BlogPost.class);
 		MappingSession.registerEntity(Keyword.class);
+		
 		MappingSession.registerDatabase(db);
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);

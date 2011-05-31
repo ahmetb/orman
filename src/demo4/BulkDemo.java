@@ -29,8 +29,6 @@ public class BulkDemo {
 		
 		MappingSession.registerDatabase(db);
 		
-		MappingSession.registerPackage("demo4");
-		
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);
 		MappingSession.getConfiguration().setIdGenerationPolicy(

@@ -14,6 +14,7 @@ import org.orman.util.logging.StandardLogger;
 
 public class InteractiveBlogEngine {
 	public static void main(String[] args) {
+		
 		Database db = new SQLite("blog.db~");
 		StandardLogger log = new StandardLogger();
 		Log.setLogger(log);
