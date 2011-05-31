@@ -53,12 +53,6 @@ public class MappingSession {
 	}
 
 	public static void registerDatabase(Database database) {
-		
-		if (autoPackageRegistration) {
-			Log.info("Auto package registration enabled");
-			registerPackage(PackageEntityInspector.getWorkingRootPackageName());
-		}
-		
 		db = database;
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
@@ -293,6 +287,12 @@ public class MappingSession {
 	}
 
 	private static void preSessionStartHooks() {
+		// scan current package and register @Entities if needed
+		if (autoPackageRegistration) {
+			Log.info("Auto package registration enabled");
+			registerPackage(PackageEntityInspector.getWorkingRootPackageName());
+		}
+		
 		// Prepare synthetic (@ManyToMany) entities.
 		prepareSyntheticEntities();
 	}
