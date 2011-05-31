@@ -19,8 +19,12 @@ public class InteractiveBlogEngine {
 		StandardLogger log = new StandardLogger();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.WARN);
+		
+		MappingSession.setAutoPackageRegistration(false);
+		
 		MappingSession.registerEntity(BlogPost.class);
 		MappingSession.registerEntity(Keyword.class);
+		
 		MappingSession.registerDatabase(db);
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.UPDATE);
