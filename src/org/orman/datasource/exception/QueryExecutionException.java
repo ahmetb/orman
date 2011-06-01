@@ -1,9 +1,9 @@
 package org.orman.datasource.exception;
 
-import org.orman.exception.OrmanException;
+import org.orman.exception.OrmanDatasourceException;
 
 @SuppressWarnings("serial")
-public class QueryExecutionException extends OrmanException {
+public class QueryExecutionException extends OrmanDatasourceException {
 
 	public QueryExecutionException(String err){
 		super("Query execution error: %s", err);

@@ -122,6 +122,7 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 		Log.trace("Fetched %d target entities to EntityList.", elements.size());
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public synchronized boolean add(E e) {
 		if (e == null) return false;
 		lazyLoadIfNeeded();
@@ -141,7 +142,6 @@ public class EntityList<D, E extends Model<E>> implements List<E> {
 			// create insert query on synthetic join table
 			ModelQuery inq = ModelQuery.insert().from(syntheticRelation);
 			
-			@SuppressWarnings("rawtypes")
 			Object holderId = ((Model)holderInstance).getEntityField(holderEntity.getAutoIncrementField());
 			
 			Object targetId = e.getEntityField(targetEntity.getAutoIncrementField());

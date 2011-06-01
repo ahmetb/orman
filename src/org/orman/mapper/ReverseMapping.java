@@ -13,9 +13,6 @@ import org.orman.mapper.annotation.OneToOne;
 import org.orman.sql.Query;
 import org.orman.util.logging.Log;
 
-import demo5manytoone.Department;
-import demo5manytoone.Employee;
-
 /**
  * Provides reverse mapping engine which can convert {@link ResultRow} objects
  * into instances whose their class definitions extend {@link Model}. (which
@@ -87,7 +84,7 @@ public class ReverseMapping {
 	 * @param key
 	 * @return the original key if key is already null.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static <E> Object makeCardinalityBinding(Field f,
 			E instance, Object key) {
 		if (key == null) return key;
@@ -150,7 +147,7 @@ public class ReverseMapping {
 					)
 					.getQuery();
 					
-					List resultList = Model.fetchQuery(q, intendedType);
+					List<?> resultList = Model.fetchQuery(q, intendedType);
 					return new EntityList(instance.getClass(), intendedType, instance, resultList);
 				} else {
 					// set lazy loading EntityList

@@ -11,9 +11,7 @@ import org.orman.mapper.exception.DuplicateTableNamesException;
 import org.orman.mapper.exception.NotDeclaredIdException;
 import org.orman.mapper.exception.TooManyIdException;
 import org.orman.mapper.exception.UnmappedDataTypeException;
-import org.orman.mapper.exception.UnmappedEntityException;
 import org.orman.mapper.exception.UnmappedFieldException;
-import org.orman.util.logging.Log;
 
 /**
  * Holds object mapping scheme and their physical table names.  

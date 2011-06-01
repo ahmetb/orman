@@ -1,6 +1,5 @@
 package org.orman.util.logging;
 
-import java.util.Date;
 
 /**
  * Just an usual logging tool outputs given log to <code>stdout</code> or

@@ -209,6 +209,20 @@ public class MappingSession {
 		}
 		startNoCheck();
 	}
+	
+	/**
+	 * <p>If the mapping session is started, does not do anything,
+	 * if it is not started, starts the session. It can be useful 
+	 * when <code>start()</code> requires to be called in multiple
+	 * contexts in a single execution.</p>
+	 * 
+	 * @see MappingSession#start()
+	 */
+	public static void startSafe() {
+		if (!sessionStarted) {
+			start();
+		}
+	}
 
 	/**
 	 * <p>
@@ -218,7 +232,7 @@ public class MappingSession {
 	 * bindings and execution of scheme generator DDL queries.
 	 * </p>
 	 * 
-	 * See <code>start()</code> for a healthy bootstrap.
+	 * @see MappingSession#start() for a healthy bootstrap.
 	 * 
 	 * @throws UnmappedEntityException if no physical name binding
 	 * done before.
@@ -274,6 +288,8 @@ public class MappingSession {
 
 		// CONSTRUCT DDL SCHEME FINALLY
 		constructScheme();
+		
+		System.gc(); // request garbage collection after session starts.
 	}
 
 	private static void preSessionStartHooks() {

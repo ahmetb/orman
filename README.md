@@ -1,6 +1,11 @@
-ORMAN is an experimental ORM framework for Java aimed to support ISO SQL:1999 standard. Coded purely in Java SE with no dependencies.
+ORMAN is an experimental ORM (object relational mapping) framework for Java
+aimed to support ISO SQL:1999 standard. Coded purely in Java SE with no dependencies.
 
 Designed to be able to handle simple and common cases of SQL usage in CRUD projects.
+
+Using ORMAN, you can save Java objects to the database and query the database without
+writing SQL statements. It is small, lightweight, works on Android devices, as well as 
+Java desktop applications.
 
 Project Aims
 ============
@@ -20,9 +25,6 @@ Dev Community
 Feel free to write wikis (if you understand how framework works) or follow
 commit logs by subscribing to our commit-logs list at [groups.google/orman-commits](http://groups.google.com/group/orman-commits).
 
-Stats
-=====
-
 You can reach some framework statistics at http://ahmetalpbalkan.com/ormanstats
 
 Contributors
@@ -31,4 +33,3 @@ Contributors
 * [Ahmet Alp Balkan](https://github.com/ahmetalpbalkan)
 * [Oguz Kartal](https://github.com/0ffffffffh)
 * [Berker Peksag](https://github.com/berkerpeksag)
-

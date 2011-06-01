@@ -3,8 +3,6 @@ package org.orman.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.orman.util.logging.Log;
-
 /**
  * Provides method to convert given name to a physical name using
  * some {@link PhysicalNamingPolicy}.

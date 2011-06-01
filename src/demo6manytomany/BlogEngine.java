@@ -27,7 +27,7 @@ public class BlogEngine {
 		
 		MappingSession.registerDatabase(db);
 		MappingSession.getConfiguration().setCreationPolicy(
-				SchemeCreationPolicy.CREATE);
+				SchemeCreationPolicy.UPDATE);
 		MappingSession.start();
 		
 		Keyword k1 = new Keyword("general"); k1.insert();
