@@ -1,17 +1,11 @@
 package org.orman.mapper.exception;
 
+import org.orman.exception.OrmanMappingException;
+
 
 @SuppressWarnings("serial")
-public class NotDeclaredSetterException extends RuntimeException {
-	private static String message = "There is no single-argument setter method declared for non-public field `%s` in %s.";
-	private String f,c;
-	
+public class NotDeclaredSetterException extends OrmanMappingException {
 	public NotDeclaredSetterException(String field, String clazz){
-		this.f = field;
-		this.c = clazz;
-	}
-	
-	public String getMessage() {
-		return String.format(message, f, c);
+		super("There is no single-argument setter method declared for non-public field `%s` in %s.", field, clazz);
 	}
 }

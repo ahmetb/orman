@@ -1,19 +1,11 @@
 package org.orman.mapper.exception;
 
+import org.orman.exception.OrmanMappingException;
+
 
 @SuppressWarnings("serial")
-public class UnsupportedPrimaryKeyFieldTypeException extends RuntimeException {
-	private static final String message = "Given type is not supported on @Id field: `%s` in %s.";
-	
-	private String s,t;
-	
+public class UnsupportedPrimaryKeyFieldTypeException extends OrmanMappingException {
 	public UnsupportedPrimaryKeyFieldTypeException(String name, String type){
-		this.s = name;
-		this.t = type;
-	}
-	
-	@Override
-	public String getMessage() {
-		return String.format(message, this.s, this.t);
+		super("Given type is not supported on @Id field: `%s` in %s.", name, type);
 	}
 }

@@ -56,14 +56,14 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 			conn.setAutoCommit(this.settings.isAutoCommit());
 
 		} catch (SQLException e) {
-			Log.error("Unable to establish a connection: %s", e.getMessage());
 			throwError(new DatasourceConnectionException(e.getMessage()));
 		}
 
-		if (conn == null)
+		if (conn == null){
 			throwError(new DatasourceConnectionException(
 					"Could not establish connection to database."));
-		Log.info("Connection established to the database.");
+		} else 
+			Log.info("Connection established to the database.");
 	}
 
 	private void throwError(OrmanException e) {

@@ -245,7 +245,7 @@ public class ReverseMapping {
 					}
 					return d;
 				} catch (ParseException e) {
-					Log.error("The following could not be parsed: " + value.toString());
+					Log.error("The following date could not be parsed: " + value.toString());
 					return null;
 				}
 			}

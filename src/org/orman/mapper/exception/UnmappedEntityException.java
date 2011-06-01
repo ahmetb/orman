@@ -1,16 +1,11 @@
 package org.orman.mapper.exception;
 
+import org.orman.exception.OrmanMappingException;
+
 
 @SuppressWarnings("serial")
-public class UnmappedEntityException extends RuntimeException {
-	private static String message = "No table name has been generated for the following entity: %s";
-	private String s;
-	
+public class UnmappedEntityException extends OrmanMappingException {
 	public UnmappedEntityException(String s){
-		this.s = s;
-	}
-	
-	public String getMessage() {
-		return String.format(message, s);
+		super("No table name has been generated for the following entity: %s", s);
 	}
 }

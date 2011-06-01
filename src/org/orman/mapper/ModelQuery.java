@@ -1,8 +1,8 @@
 package org.orman.mapper;
 
+import org.orman.exception.OrmanMappingException;
 import org.orman.mapper.exception.EntityNotFoundException;
 import org.orman.mapper.exception.FieldNotFoundException;
-import org.orman.mapper.exception.GenericOrmanException;
 import org.orman.sql.Criterion;
 import org.orman.sql.JoinType;
 import org.orman.sql.Query;
@@ -195,7 +195,7 @@ public class ModelQuery {
 		int s = expr.indexOf('.');
 
 		if (s < 0)
-			throw new GenericOrmanException(String.format(
+			throw new OrmanMappingException(String.format(
 					"Invalid field format: `%s`. (e.g. EntityName.fieldName)",
 					expr));
 
@@ -219,7 +219,7 @@ public class ModelQuery {
 		int s = expr.indexOf('.');
 
 		if (s < 0)
-			throw new GenericOrmanException(String.format(
+			throw new OrmanMappingException(String.format(
 					"Invalid field format: `%s`. (e.g. EntityName.fieldName)",
 					expr));
 

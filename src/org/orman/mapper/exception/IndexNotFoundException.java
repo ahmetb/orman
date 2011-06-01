@@ -1,18 +1,11 @@
 package org.orman.mapper.exception;
 
+import org.orman.exception.OrmanMappingException;
+
 
 @SuppressWarnings("serial")
-public class IndexNotFoundException extends RuntimeException {
-	private static final String message = "Unable to create index from a non-indexed field. Use @Index annotation on the following field: %s";
-	
-	private String s;
-	
+public class IndexNotFoundException extends OrmanMappingException {
 	public IndexNotFoundException(String name){
-		this.s = name;
-	}
-	
-	@Override
-	public String getMessage() {
-		return String.format(message, this.s);
+		super("Unable to create index from a non-indexed field. Use @Index annotation on the following field: %s", name);
 	}
 }

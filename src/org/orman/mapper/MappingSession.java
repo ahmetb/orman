@@ -79,10 +79,8 @@ public class MappingSession {
 
 		if (annotatedClasses == null || annotatedClasses.size() == 0) {
 			// no @Entity-annotated classes found in package.
-			AnnotatedClassNotFoundInPackageException ex = new AnnotatedClassNotFoundInPackageException(
+			throw new AnnotatedClassNotFoundInPackageException(
 					packageName);
-			Log.error(ex.getMessage());
-			throw ex;
 		}
 
 		// still throws exception
@@ -101,9 +99,7 @@ public class MappingSession {
 	 */
 	public static void registerEntity(Class<?> entityClass) {
 		if (sessionStarted) {
-			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
-			Log.error(ex.getMessage());
-			throw ex;
+			throw new MappingSessionAlreadyStartedException();
 		}
 
 		Entity e = new Entity(entityClass);
@@ -114,9 +110,7 @@ public class MappingSession {
 
 	protected static void registerSyntheticEntity(Entity e) {
 		if (sessionStarted) {
-			MappingSessionAlreadyStartedException ex = new MappingSessionAlreadyStartedException();
-			Log.error(ex.getMessage());
-			throw ex;
+			throw new MappingSessionAlreadyStartedException();
 		}
 
 		Log.info("Registering synthetic entity %s --> %s.", e.getOriginalName(), e.getGeneratedName());
@@ -211,9 +205,7 @@ public class MappingSession {
 	 */
 	public static void start() {
 		if (sessionStarted) {
-			MappingSessionAlreadyStartedException e = new MappingSessionAlreadyStartedException();
-			Log.error(e.getMessage());
-			throw e;
+			throw new MappingSessionAlreadyStartedException();
 		}
 		startNoCheck();
 	}
@@ -267,9 +259,7 @@ public class MappingSession {
 		}
 
 		if (db == null) {
-			NoDatabaseRegisteredException e = new NoDatabaseRegisteredException();
-			Log.error(e.getMessage());
-			throw e;
+			throw new NoDatabaseRegisteredException();
 		}
 
 		// set custom SQL grammar provider binding

@@ -1,13 +1,11 @@
 package org.orman.mapper.exception;
 
-public class AnnotatedClassNotFoundInPackageException extends RuntimeException {
-	private String packageName;
-	
+import org.orman.exception.OrmanMappingException;
+
+@SuppressWarnings("serial")
+public class AnnotatedClassNotFoundInPackageException extends
+		OrmanMappingException {
 	public AnnotatedClassNotFoundInPackageException(String packageName) {
-		this.packageName = packageName;
-	}
-	
-	public String getMessage() {
-		return String.format("Could not find any entity marked class in \'%s\'",packageName);
+		super("Could not find any entity marked class in \'%s\'", packageName);
 	}
 }

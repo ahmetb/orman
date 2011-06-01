@@ -111,19 +111,15 @@ public class PersistenceSchemeMapper {
 			if (f.getType() == null && !MappingSession.entityExists(f.getClazz())
 					//&& f.getType().equals(List.class) //TODO seems unnecessary
 			) {
-				UnmappedDataTypeException ex =  new UnmappedDataTypeException(f.getOriginalName(), f
+				throw new UnmappedDataTypeException(f.getOriginalName(), f
 						.getClazz().getName());
-				Log.error(ex.getMessage());
-				throw ex;
 			}
 
 			// conflicting column name bindings
 			for (Field g : e.getFields()) {
 				if (f != g && f.equals(g)) {
-					DuplicateColumnNamesException ex = new DuplicateColumnNamesException(
+					throw new DuplicateColumnNamesException(
 							f.getOriginalName(), g.getOriginalName());
-					Log.error(ex.getMessage());
-					throw ex;
 				}
 			}
 		}

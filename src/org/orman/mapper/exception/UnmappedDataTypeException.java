@@ -1,17 +1,11 @@
 package org.orman.mapper.exception;
 
+import org.orman.exception.OrmanMappingException;
+
 
 @SuppressWarnings("serial")
-public class UnmappedDataTypeException extends RuntimeException {
-	private static String message = "There is no corresponding data type found for column: %s (%s).";
-	private String f,t;
-	
+public class UnmappedDataTypeException extends OrmanMappingException {
 	public UnmappedDataTypeException(String f, String t){
-		this.f = f;
-		this.t = t;
-	}
-	
-	public String getMessage() {
-		return String.format(message, f, t);
+		super("There is no corresponding data type found for column: %s (%s).", f, t);
 	}
 }

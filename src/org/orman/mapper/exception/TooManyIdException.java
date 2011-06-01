@@ -1,16 +1,11 @@
 package org.orman.mapper.exception;
 
+import org.orman.exception.OrmanMappingException;
+
 
 @SuppressWarnings("serial")
-public class TooManyIdException extends RuntimeException {
-	private static String message = "Too many @Id annotations used for this entity. Allowed only one: %s";
-	private String s1;
-	
+public class TooManyIdException extends OrmanMappingException {
 	public TooManyIdException(String s1){
-		this.s1 = s1;
-	}
-	
-	public String getMessage() {
-		return String.format(message, s1);
+		super("Too many @Id annotations used for this entity. Allowed only one: %s", s1);
 	}
 }

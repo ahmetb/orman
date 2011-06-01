@@ -1,6 +1,7 @@
 package org.orman.exception;
 
-public class FeatureNotImplementedException extends RuntimeException {
+@SuppressWarnings("serial")
+public class FeatureNotImplementedException extends OrmanException {
 
 	public FeatureNotImplementedException(String message) {
 		super(message);
