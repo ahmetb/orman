@@ -14,6 +14,7 @@ import org.orman.util.logging.StandardLogger;
 public class BlogEngine {
 	public static void main(String[] args) {
 		Database db = new SQLite("blog.db~");
+		//Database db = new MySQL(new MySQLSettingsImpl("root", "root", "test"));
 		StandardLogger log = new StandardLogger();
 		Log.setLogger(log);
 		Log.setLevel(LoggingLevel.TRACE);
@@ -27,7 +28,7 @@ public class BlogEngine {
 		
 		MappingSession.registerDatabase(db);
 		MappingSession.getConfiguration().setCreationPolicy(
-				SchemeCreationPolicy.UPDATE);
+				SchemeCreationPolicy.CREATE);
 		MappingSession.start();
 		
 		Keyword k1 = new Keyword("general"); k1.insert();

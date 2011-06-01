@@ -1,8 +1,6 @@
 package org.orman.mapper;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -268,14 +266,14 @@ public class MappingSession {
 
 			// check conflicting fields after bindings.
 			scheme.checkConflictingFields(e);
-			Log.info("No conflicting field names found on entity %s.",
+			Log.trace("No conflicting field names found on entity %s.",
 					e.getOriginalName());
 		}
 
 		if (db == null) {
 			throw new NoDatabaseRegisteredException();
 		}
-
+		
 		// set custom SQL grammar provider binding
 		SQLGrammarProvider p = db.getSQLGrammar();
 
@@ -391,18 +389,10 @@ public class MappingSession {
 		if (policy.equals(SchemeCreationPolicy.CREATE)
 				|| policy.equals(SchemeCreationPolicy.UPDATE)) {
 
-			// TODO Discuss: Order of drop of existing tables. Current policy,
-			// tbls with most FK first.
-			Collections.sort(scheme.getEntities(), new Comparator<Entity>() {
-				@Override
-				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count
-															// DESC
-					return new Integer(o2.getForeignKeyCount()).compareTo(o1
-							.getForeignKeyCount());
-				}
-			});
-
-			for (Entity e : scheme.getEntities()) {
+			EntityDependencyGraph serialSchedule = new EntityDependencyGraph(scheme.getEntities());
+			
+			// Drop tables
+			for (Entity e : serialSchedule.getDestroySchedule()) {
 				if (policy.equals(SchemeCreationPolicy.CREATE)) {
 					// DROP TABLE IF EXISTS
 					Query dT = DDLQueryGenerator.dropTableQuery(e);
@@ -410,18 +400,8 @@ public class MappingSession {
 				}
 			}
 
-			// TODO Discuss: Order of creation of tables. Current policy,
-			// entities with lesser FK first.
-			Collections.sort(scheme.getEntities(), new Comparator<Entity>() {
-				@Override
-				public int compare(Entity o1, Entity o2) { // ORDER BY fk_count
-															// ASC
-					return new Integer(o1.getForeignKeyCount()).compareTo(o2
-							.getForeignKeyCount());
-				}
-			});
-
-			for (Entity e : scheme.getEntities()) {
+			// Create tables
+			for (Entity e : serialSchedule.getConstructSchedule()) {
 				// CREATE TABLE
 				Query cT = DDLQueryGenerator.createTableQuery(e,
 						policy.equals(SchemeCreationPolicy.UPDATE));
@@ -430,7 +410,6 @@ public class MappingSession {
 				// CREATE INDEXES
 				List<Field> compositeIndexFields = new ArrayList<Field>(2);
 				List<Field> singleIndexFields = new ArrayList<Field>(2);
-				// TODO implement composite indexes.
 				for (Field f : e.getFields()) {
 					if (f.getIndex() != null) {
 						if (f.isPrimaryKey() && !f.isAutoIncrement())

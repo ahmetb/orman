@@ -9,6 +9,7 @@ import org.orman.mapper.MappingSession;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.mysql.MySQL;
 import org.orman.mysql.MySQLSettingsImpl;
+import org.orman.sqlite.SQLite;
 import org.orman.util.logging.ILogger;
 import org.orman.util.logging.Log;
 import org.orman.util.logging.Log4jAdapter;
@@ -21,8 +22,8 @@ public class Main {
 		Log.setLevel(LoggingLevel.TRACE);
 		
 		MySQLSettingsImpl settings = new MySQLSettingsImpl("root", "root", "test");
-		
-		Database db = new MySQL(settings);
+		//Database db = new MySQL(settings);
+		Database db = new SQLite("demo2.db~");
 		
 		MappingSession.registerDatabase(db);
 		

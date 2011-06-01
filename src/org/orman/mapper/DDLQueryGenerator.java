@@ -40,6 +40,7 @@ public class DDLQueryGenerator {
 		List<Field> primaryKeyFields = new ArrayList<Field>();
 		List<TableConstraint> foreignKeys = new ArrayList<TableConstraint>();
 		boolean autoIncrementFound = false;
+		
 		for (Field f : e.getFields()) {
 			if (!f.isList() && (f.getGeneratedName() == null || f.getType() == null)) {
 				throw new UnmappedFieldException(f.getOriginalName() + " ("
@@ -117,7 +118,7 @@ public class DDLQueryGenerator {
 		String physicalIndexName = PhysicalNameGenerator
 				.format(on.getIndex().name(), MappingSession.getConfiguration()
 						.getIndexNamePolicy());
-
+		
 		return QueryBuilder
 				.getBuilder(type)
 				.from(e.getGeneratedName())

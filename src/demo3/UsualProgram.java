@@ -8,8 +8,7 @@ import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.mapper.SchemeCreationPolicy;
-import org.orman.mysql.MySQL;
-import org.orman.mysql.MySQLSettingsImpl;
+import org.orman.sqlite.SQLite;
 import org.orman.util.logging.ILogger;
 import org.orman.util.logging.Log;
 import org.orman.util.logging.Log4jAdapter;
@@ -17,8 +16,8 @@ import org.orman.util.logging.LoggingLevel;
 
 public class UsualProgram {
 	public static void main(String[] args) {
-		//Database db = new SQLite("lite.db");
-		Database db = new MySQL(new MySQLSettingsImpl("root", "root", "test"));
+		Database db = new SQLite("lite.db");
+		//Database db = new MySQL(new MySQLSettingsImpl("root", "root", "test"));
 
 		ILogger log = new Log4jAdapter();
 		Log.setLogger(log);

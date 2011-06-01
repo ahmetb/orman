@@ -117,12 +117,16 @@ public class PhysicalNameAndTypeBindingEngine {
 				// "Index" policy.
 				String indexName = null;
 				
-				if(field.isPrimaryKey()){
+				if (field.isPrimaryKey()) {
 					indexName = String.format(COMPOSITE_INDEX_FORMAT,
-							entity.getGeneratedName(), INDEX_POSTFIX);
+							PhysicalNameGenerator.capitalize(entity
+									.getGeneratedName()), INDEX_POSTFIX);
 				} else {
-					indexName = String.format(FIELD_INDEX_FORMAT, entity.getGeneratedName(),
-						field.getGeneratedName(), INDEX_POSTFIX);
+					indexName = String.format(FIELD_INDEX_FORMAT,
+							PhysicalNameGenerator.capitalize(entity
+									.getGeneratedName()), PhysicalNameGenerator
+									.capitalize(field.getGeneratedName()),
+							INDEX_POSTFIX);
 				}
 				Log.trace("Field '%s' index name binded as '%s'",
 						field.getOriginalName(), indexName);
