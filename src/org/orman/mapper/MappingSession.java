@@ -55,12 +55,13 @@ public class MappingSession {
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
 	}
-	
 
 	/**
 	 * Finds and registers @{@link Entity}-annotated classes in given package,
 	 * recursively. See also <code>registerEntity(Class<?>)</code> method for
 	 * more.
+	 * 
+	 * <p>Note: (postcondition) disables auto-package scanning for entities.</p>
 	 * 
 	 * @param packageName
 	 *            Entity container package name. e.g. com.my.entities
@@ -77,19 +78,22 @@ public class MappingSession {
 
 		if (annotatedClasses == null || annotatedClasses.size() == 0) {
 			// no @Entity-annotated classes found in package.
-			throw new AnnotatedClassNotFoundInPackageException(
-					packageName);
+			throw new AnnotatedClassNotFoundInPackageException(packageName);
 		}
 
 		// still throws exception
 		for (Class<?> currentClass : annotatedClasses) {
 			registerEntity(currentClass);
 		}
+		
+		setAutoPackageRegistration(false);
 	}
 
 	/**
 	 * Makes physical name and data type bindings to entity and its fields then
 	 * registers to the scheme.
+	 * 
+	 * Postcondition: Disables auto-entity scanning.
 	 * 
 	 * @param entityClass
 	 * @throws MappingSessionAlreadyStartedException
@@ -99,6 +103,7 @@ public class MappingSession {
 		if (sessionStarted) {
 			throw new MappingSessionAlreadyStartedException();
 		}
+		setAutoPackageRegistration(false);
 
 		Entity e = new Entity(entityClass);
 
@@ -123,7 +128,7 @@ public class MappingSession {
 	 *             while using without a unregistered class. This throws
 	 *             exception because getEntity() method assumed to be not
 	 *             <code>null</code> in the rest of the project.
-	 * @throws MappingSessionNotStartedException 
+	 * @throws MappingSessionNotStartedException
 	 * 
 	 */
 	public static Entity getEntity(Class<?> entityClass) {
@@ -190,16 +195,38 @@ public class MappingSession {
 	}
 
 	/**
-	 * Starts the mapping session. Should be called after registering all the
-	 * {@link Entity}(s). According to {@link SchemeCreationPolicy}, in
+	 * Starts the mapping session. According to {@link SchemeCreationPolicy}, in
 	 * {@link MappingConfiguration}, it may drop and reconstruct all the tables
 	 * from scratch.
+	 * 
+	 * <p>
+	 * If no entities and packages are registered manually, it will create
+	 * current project for @{@link Entity}-annotated classes and will throw
+	 * {@link AnnotatedClassNotFoundInPackageException} if not found.
+	 * </p>
+	 * 
+	 * <p>
+	 * If you register an entity or package manually, automatic classpath
+	 * scanning for entities will be disabled. This method should be called
+	 * after registering all the @{@link Entity} annotated classes or containing
+	 * packages if manual entity registration is used.
+	 * </p>
+	 * 
+	 * <p>
+	 * If the database is not registered before calling this method, again, an
+	 * exception {@link NoDatabaseRegisteredException} will be thrown.
+	 * </p>
 	 * 
 	 * <p>
 	 * If the session is already started
 	 * {@link MappingSessionAlreadyStartedException} will be thrown.
 	 * </p>
 	 * 
+	 * @throws MappingSessionAlreadyStartedException
+	 *             if already started
+	 * @see MappingSession#registerEntity(Class)
+	 * @see MappingSession#registerPackage(String)
+	 * @see MappingSession#registerDatabase(Database)
 	 */
 	public static void start() {
 		if (sessionStarted) {
@@ -207,12 +234,13 @@ public class MappingSession {
 		}
 		startNoCheck();
 	}
-	
+
 	/**
-	 * <p>If the mapping session is started, does not do anything,
-	 * if it is not started, starts the session. It can be useful 
-	 * when <code>start()</code> requires to be called in multiple
-	 * contexts in a single execution.</p>
+	 * <p>
+	 * If the mapping session is started, does not do anything, if it is not
+	 * started, starts the session. It can be useful when <code>start()</code>
+	 * requires to be called in multiple contexts in a single execution.
+	 * </p>
 	 * 
 	 * @see MappingSession#start()
 	 */
@@ -232,10 +260,10 @@ public class MappingSession {
 	 * 
 	 * @see MappingSession#start() for a healthy bootstrap.
 	 * 
-	 * @throws UnmappedEntityException if no physical name binding
-	 * done before.
-	 * @throws DuplicateTableNamesException if binded physical name already
-	 * exists in the scheme.
+	 * @throws UnmappedEntityException
+	 *             if no physical name binding done before.
+	 * @throws DuplicateTableNamesException
+	 *             if binded physical name already exists in the scheme.
 	 */
 	private static void startNoCheck() {
 		preSessionStartHooks();
@@ -258,11 +286,11 @@ public class MappingSession {
 			scheme.checkConflictingEntities(e); // exception stops the check.
 
 			// make generated name and type bindings to fields.
-			if(e.getFields() != null)
-			for (Field f : e.getFields()) {
-				PhysicalNameAndTypeBindingEngine.makeBinding(e, f,
-						configuration.getColumnNamePolicy(), typeMapper);
-			}
+			if (e.getFields() != null)
+				for (Field f : e.getFields()) {
+					PhysicalNameAndTypeBindingEngine.makeBinding(e, f,
+							configuration.getColumnNamePolicy(), typeMapper);
+				}
 
 			// check conflicting fields after bindings.
 			scheme.checkConflictingFields(e);
@@ -273,7 +301,7 @@ public class MappingSession {
 		if (db == null) {
 			throw new NoDatabaseRegisteredException();
 		}
-		
+
 		// set custom SQL grammar provider binding
 		SQLGrammarProvider p = db.getSQLGrammar();
 
@@ -286,7 +314,7 @@ public class MappingSession {
 
 		// CONSTRUCT DDL SCHEME FINALLY
 		constructScheme();
-		
+
 		System.gc(); // request garbage collection after session starts.
 	}
 
@@ -296,7 +324,7 @@ public class MappingSession {
 			Log.info("Auto package registration enabled");
 			registerPackage(PackageEntityInspector.getWorkingRootPackageName());
 		}
-		
+
 		// Prepare synthetic (@ManyToMany) entities.
 		prepareSyntheticEntities();
 	}
@@ -308,28 +336,29 @@ public class MappingSession {
 	 */
 	private static void prepareSyntheticEntities() {
 		List<Entity> syntheticRegisterQueue = new LinkedList<Entity>();
-		
+
 		for (Entity e : scheme.getEntities()) {
 			for (Field f : e.getFields()) {
 				if (f.isList() && f.isAnnotationPresent(ManyToMany.class)) {
 					// if not already mapped on reverse side
 					boolean exists = false;
-					
+
 					// already mapped?
-					for(Entity cand : syntheticRegisterQueue){
-						Class<?>[] types = cand.getSyntheticTypes(); 
-						if (types != null && types.length == 2){
+					for (Entity cand : syntheticRegisterQueue) {
+						Class<?>[] types = cand.getSyntheticTypes();
+						if (types != null && types.length == 2) {
 							// required to have 2 types by definition.
-							Class<?> holderType = f.getRawField().getDeclaringClass();
+							Class<?> holderType = f.getRawField()
+									.getDeclaringClass();
 							Class<?> targetType = f.getClazz();
-							
+
 							exists = (holderType.equals(types[0]) && targetType
 									.equals(types[1]))
 									|| (holderType.equals(types[1]) && targetType
 											.equals(types[0]));
 						}
 					}
-					if (!exists){
+					if (!exists) {
 						Entity synthetic = new Entity(f);
 						Log.trace(
 								"Synthetic entity (%s, %s) created, registering.",
@@ -341,22 +370,25 @@ public class MappingSession {
 				}
 			}
 		}
-		
+
 		// process registration queue. registration inside loop causes
 		// concurrent modification problems.
-		for(Entity s : syntheticRegisterQueue){
+		for (Entity s : syntheticRegisterQueue) {
 			registerSyntheticEntity(s);
 		}
 	}
-	
+
 	/**
 	 * Returns synthetic entity managing {@link ManyToMany} relation.
 	 * 
-	 * @param holderType a side of {@link ManyToMany} relation.
-	 * @param targetType a side of {@link ManyToMany} relation.
+	 * @param holderType
+	 *            a side of {@link ManyToMany} relation.
+	 * @param targetType
+	 *            a side of {@link ManyToMany} relation.
 	 * @return <code>null</code> if not found.
 	 */
-	public static Entity getSyntheticEntity(Class<?> holderType, Class<?> targetType) {
+	public static Entity getSyntheticEntity(Class<?> holderType,
+			Class<?> targetType) {
 		for (Entity cand : scheme.getEntities()) {
 			if (cand.isSynthetic()) {
 				Class<?>[] types = cand.getSyntheticTypes();
@@ -389,8 +421,9 @@ public class MappingSession {
 		if (policy.equals(SchemeCreationPolicy.CREATE)
 				|| policy.equals(SchemeCreationPolicy.UPDATE)) {
 
-			EntityDependencyGraph serialSchedule = new EntityDependencyGraph(scheme.getEntities());
-			
+			EntityDependencyGraph serialSchedule = new EntityDependencyGraph(
+					scheme.getEntities());
+
 			// Drop tables
 			for (Entity e : serialSchedule.getDestroySchedule()) {
 				if (policy.equals(SchemeCreationPolicy.CREATE)) {
@@ -458,12 +491,14 @@ public class MappingSession {
 
 	/**
 	 * Enables/Disables auto package registration system
-	 * @param enabled status of the auto registration
+	 * 
+	 * @param enabled
+	 *            status of the auto registration
 	 */
 	public static void setAutoPackageRegistration(boolean enabled) {
 		autoPackageRegistration = enabled;
 	}
-	
+
 	public static MappingConfiguration getConfiguration() {
 		return configuration;
 	}

@@ -19,6 +19,7 @@ public class StringLiteral {
 	}
 	
 	public static String sanitize(String s){
+		// sql injection defence
 		s = s.replace(""+surroundChar, ""+surroundChar+surroundChar);
 		return s;
 	}
