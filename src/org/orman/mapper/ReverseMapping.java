@@ -53,9 +53,23 @@ public class ReverseMapping {
 						// TODO do needed conversions. (McCabe cyclomatic complexity)
 						fieldValue = smartCasting(fieldValue, f.getClazz());
 		
-						// TODO make relational mapping if @*To* entities exist
 						// according to lazy loading policy.
 						fieldValue = makeCardinalityBinding(f, instance, fieldValue);
+						
+						// Reverse Map enum fields.
+						if (f.getClazz().isEnum()){
+							Object[] enumConstant =   f.getClazz().getEnumConstants();
+							try {
+								fieldValue = enumConstant[(Integer) fieldValue];	
+							} catch (Exception ex) {
+							Log.error(
+									"Unable to reverse map enum type %s with value %s",
+									f.getClazz().getName(),
+									fieldValue == null ? null : fieldValue);
+								fieldValue = null;
+							}
+							
+						}
 		
 						// set field
 						if (fieldValue != null) ((Model<?>) instance).setEntityField(f, e, fieldValue);

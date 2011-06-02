@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.orman.datasource.Database;
+import org.orman.mapper.C;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
@@ -34,9 +35,12 @@ public class UsualProgram {
 		p.insert();
 
 		Ticket t = new Ticket();
-		t.seat = "';DROP table {TABLE_LIST};";
+		t.seat = "someSeat";
 		t.payment = p;
 		t.date = new Date();
+		int type = (int) (Math.random()*3);
+		t.type = (type == 0) ? TicketType.ECONOMY
+				: (type == 1) ? TicketType.BUSINESS : TicketType.FIRST;
 		t.insert();
 
 		
@@ -48,5 +52,23 @@ public class UsualProgram {
 		Object count = Model.fetchSingleValue(
 				ModelQuery.select().count().from(Ticket.class).getQuery());
 		System.out.println("Count = " + count);
+		
+		
+		Object economyCount = Model.fetchSingleValue(
+				ModelQuery.select().count().from(Ticket.class).
+				where(C.eq(Ticket.class, "type", TicketType.ECONOMY)).getQuery());
+		System.out.println("Economy Class Count = " + economyCount);
+		
+		Object businessCount = Model.fetchSingleValue(
+				ModelQuery.select().count().from(Ticket.class).
+				where(C.eq(Ticket.class, "type", TicketType.BUSINESS)).getQuery());
+		System.out.println("Business Class Count = " + businessCount);
+		
+		Object firstClassCount = Model.fetchSingleValue(
+				ModelQuery.select().count().from(Ticket.class).
+				where(C.eq(Ticket.class, "type", TicketType.FIRST)).getQuery());
+		System.out.println("Fist Class Count = " + firstClassCount);
+		
+		
 	}
 }

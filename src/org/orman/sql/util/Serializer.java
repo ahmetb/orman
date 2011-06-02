@@ -16,6 +16,10 @@ public class Serializer {
 
 	public static String serialize(Object o){
 		
+		if (o.getClass().isEnum()){
+			return new Integer(((Enum<?>)o).ordinal()).toString();
+		}
+		
 		if (o instanceof Query){
 			return ((Query) o).nest(); // return nested query
 		}

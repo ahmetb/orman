@@ -15,6 +15,8 @@ public class Ticket extends Model<Ticket>{
 	
 	public String seat;
 	
+	public TicketType type = TicketType.ECONOMY;
+	
 	@Index(type=IndexType.BTREE)
 	public Payment payment;
 	
@@ -22,6 +24,6 @@ public class Ticket extends Model<Ticket>{
 	
 	@Override
 	public String toString() {
-		return  "ID:"+id + " (" + date + ") " + seat + " " + ((payment == null) ? null : payment.amount)+"\n";
+		return  "ID:"+id + " (" + date + ") " + seat + " "+type+" " + ((payment == null) ? null : payment.amount)+"\n";
 	}
 }

@@ -99,8 +99,14 @@ public class PhysicalNameAndTypeBindingEngine {
 			
 			if (customizedBindingType != null) // there exists a binding with @Column(name=..)
 				field.setType(customizedBindingType); 
-			else
-				field.setType(dataTypeMapper.getTypeFor(fieldType));
+			else {
+				// If field is enum, use enum data type mapping.
+				if (fieldType.isEnum()){
+					field.setType(dataTypeMapper.getTypeFor(Enum.class));
+				} else {
+					field.setType(dataTypeMapper.getTypeFor(fieldType));
+				}
+			}
 			
 			Log.debug("Field '%s'(%s) mapped to '%s'(%s) using %s.", field
 					.getOriginalName(), field.getClazz().getName(), field

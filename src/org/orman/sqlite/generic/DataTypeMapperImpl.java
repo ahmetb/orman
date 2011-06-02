@@ -24,6 +24,7 @@ public class DataTypeMapperImpl implements DataTypeMapper {
 		typeMap.put(Boolean.TYPE, "INTEGER");
 		typeMap.put(Double.TYPE, "REAL");
 		typeMap.put(Float.TYPE, "REAL");
+		typeMap.put(Enum.class, "INTEGER");
 		typeMap.put(Date.class, "TEXT"); // as ISO8601 strings ("YYYY-MM-DD HH:MM:SS").
 	}
 

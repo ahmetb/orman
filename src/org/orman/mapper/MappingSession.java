@@ -111,7 +111,7 @@ public class MappingSession {
 			throw new MappingSessionAlreadyStartedException();
 		}
 
-		Log.info("Registering synthetic entity %s --> %s.", e.getOriginalName(), e.getGeneratedName());
+		Log.info("Registering synthetic entity %s.", e.getOriginalName());
 		scheme.addEntity(e);
 	}
 

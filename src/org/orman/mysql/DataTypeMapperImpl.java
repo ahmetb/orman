@@ -18,6 +18,7 @@ public class DataTypeMapperImpl implements DataTypeMapper {
 		typeMap.put(Double.TYPE, "DOUBLE");
 		typeMap.put(Float.TYPE, "FLOAT");
 		typeMap.put(Date.class, "DATETIME");
+		typeMap.put(Enum.class, "SMALLINT");
 		typeMap.put(java.util.Date.class, "DATETIME");
 	}
 
