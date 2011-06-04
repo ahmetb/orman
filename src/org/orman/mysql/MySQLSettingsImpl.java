@@ -3,7 +3,7 @@ package org.orman.mysql;
 import org.orman.datasource.DatabaseSettings;
 
 public class MySQLSettingsImpl implements DatabaseSettings {
-	private short port = 3306;
+	private int port = 3306;
 	private String host = "localhost";
 	private String username = "";
 	private String password = "";
@@ -18,7 +18,7 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 		this(username, password, db, host, (short) -1);
 	}
 	
-	public MySQLSettingsImpl(String username, String password, String db, String host, short port){
+	public MySQLSettingsImpl(String username, String password, String db, String host, int port){
 		if (username != null) this.username = username;
 		if (password != null) this.password = password;
 		if (db != null) this.database = db;
@@ -26,7 +26,7 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 		if (port >= 0) this.port = port;
 	}
 
-	public short getPort() {
+	public int getPort() {
 		return port;
 	}
 
@@ -54,8 +54,8 @@ public class MySQLSettingsImpl implements DatabaseSettings {
 		return autoCommit;
 	}
 
-	public void setPort(short port) {
-		this.port = port<0 || port>0xffff? -1 : port;
+	public void setPort(int port) {
+		this.port = port<0 || port>0xffff ? -1 : port;
 	}
 
 	public void setHost(String host) {
