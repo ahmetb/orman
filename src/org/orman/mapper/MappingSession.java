@@ -419,7 +419,7 @@ public class MappingSession {
 		Log.info("Scheme creation policy is %s.", policy.toString());
 
 		if (policy.equals(SchemeCreationPolicy.CREATE)
-				|| policy.equals(SchemeCreationPolicy.UPDATE)) {
+				|| policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS)) {
 
 			EntityDependencyGraph serialSchedule = new EntityDependencyGraph(
 					scheme.getEntities());
@@ -437,7 +437,7 @@ public class MappingSession {
 			for (Entity e : serialSchedule.getConstructSchedule()) {
 				// CREATE TABLE
 				Query cT = DDLQueryGenerator.createTableQuery(e,
-						policy.equals(SchemeCreationPolicy.UPDATE));
+						policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS));
 				constructionQueries.offer(cT);
 
 				// CREATE INDEXES
@@ -463,7 +463,7 @@ public class MappingSession {
 				// CREATE INDEX compositely, then
 				Query cCI = DDLQueryGenerator.createCompositeIndexQuery(e,
 						compositeIndexFields,
-						policy.equals(SchemeCreationPolicy.UPDATE));
+						policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS));
 				if (cCI != null)
 					constructionQueries.offer(cCI);
 
@@ -476,7 +476,7 @@ public class MappingSession {
 					}
 					// CREATE INDEX then
 					Query cI = DDLQueryGenerator.createIndexQuery(e, f,
-							policy.equals(SchemeCreationPolicy.UPDATE));
+							policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS));
 					constructionQueries.offer(cI);
 				}
 			}

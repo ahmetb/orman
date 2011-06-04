@@ -21,7 +21,10 @@ public class PhysicalNameGenerator {
 	 * @return converted name
 	 */
 	public static String format(String originalName, PhysicalNamingPolicy policy){
-
+		if(policy.isPluralize()){
+			originalName = pluralize(originalName);
+		}
+		
 		if (!policy.isUnderscore()){
 			// do not allow underscorores.
 			originalName = _toCamelCase(originalName); // remove existing _(s) and camelize.
@@ -35,10 +38,6 @@ public class PhysicalNameGenerator {
 			originalName = originalName.toUpperCase();
 		} else if (!policy.isUppercase() && !policy.isCamelCase()) {
 			originalName = originalName.toLowerCase();
-		}
-
-		if(policy.isPluralize()){
-			originalName = pluralize(originalName);
 		}
 		
 		return originalName;

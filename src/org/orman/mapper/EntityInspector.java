@@ -194,10 +194,6 @@ public class EntityInspector {
 			add("set"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));
 			// "set"+fieldName
 			add("set"+fieldName);
-			//"is"+FieldName
-			add("is"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));
-			// "is"+fieldName
-			add("is"+fieldName);
 			// fieldName
 			add(fieldName);
 		}};
@@ -229,6 +225,10 @@ public class EntityInspector {
 			add("get"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));
 			// "get"+fieldName
 			add("get"+fieldName);
+			//"is"+FieldName
+			add("is"+Character.toUpperCase(fieldName.charAt(0))+(fieldName.length()>1?fieldName.substring(1):""));
+			// "is"+fieldName
+			add("is"+fieldName);
 			// fieldName
 			add(fieldName);
 		}};

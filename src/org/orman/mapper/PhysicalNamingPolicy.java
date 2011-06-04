@@ -46,8 +46,9 @@ public class PhysicalNamingPolicy {
 	 * 
 	 * @param camelCase
 	 */
-	public void camelCase(boolean camelCase) {
+	public PhysicalNamingPolicy camelCase(boolean camelCase) {
 		this.camelCase = camelCase;
+		return this;
 	}
 
 	public boolean isCamelCase() {

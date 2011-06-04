@@ -5,6 +5,7 @@ import java.util.List;
 import org.orman.datasource.Database;
 import org.orman.mapper.MappingSession;
 import org.orman.mapper.Model;
+import org.orman.mapper.PhysicalNamingPolicy;
 import org.orman.mapper.SchemeCreationPolicy;
 import org.orman.sqlite.SQLite;
 import org.orman.util.logging.Log;
@@ -29,6 +30,9 @@ public class BlogEngine {
 		MappingSession.registerDatabase(db);
 		MappingSession.getConfiguration().setCreationPolicy(
 				SchemeCreationPolicy.CREATE);
+		
+		PhysicalNamingPolicy columnNamePolicy = new  PhysicalNamingPolicy().camelCase(true).underscore(false);
+		MappingSession.getConfiguration().setColumnNamePolicy(columnNamePolicy);
 		MappingSession.start();
 		
 		Keyword k1 = new Keyword("general"); k1.insert();

@@ -9,7 +9,7 @@ import org.orman.mapper.annotation.PrimaryKey;
 
 @Entity
 public class Account extends Model<Account> {
-	@PrimaryKey
+	@PrimaryKey(autoIncrement=true)
 	@Column(type = "CHAR(8)")
 	private String aid;
 	

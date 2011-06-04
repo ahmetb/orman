@@ -27,7 +27,7 @@ public class InteractiveBlogEngine {
 		
 		MappingSession.registerDatabase(db);
 		MappingSession.getConfiguration().setCreationPolicy(
-				SchemeCreationPolicy.UPDATE);
+				SchemeCreationPolicy.CREATE_IF_NOT_EXISTS);
 		MappingSession.start();
 		
 		Scanner scan = new Scanner(System.in);

@@ -9,7 +9,7 @@ import org.orman.mapper.annotation.PrimaryKey;
 
 @Entity
 public class Customer extends Model<Customer> {
-	@PrimaryKey
+	@PrimaryKey(autoIncrement=true)
 	@Column(type = "CHAR(12)")
 	private String cid;
 	

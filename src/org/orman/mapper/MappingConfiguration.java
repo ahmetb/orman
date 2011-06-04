@@ -16,7 +16,7 @@ public class MappingConfiguration {
 			.uppercase(false).pluralize(false).underscore(true);
 
 	// default policies
-	private SchemeCreationPolicy creationPolicy = SchemeCreationPolicy.UPDATE;
+	private SchemeCreationPolicy creationPolicy = SchemeCreationPolicy.CREATE_IF_NOT_EXISTS;
 	private IdGenerationPolicy idGenerationPolicy = IdGenerationPolicy.DEFER_TO_DBMS;
 
 	public IdGenerationPolicy getIdGenerationPolicy() {

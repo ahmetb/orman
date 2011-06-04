@@ -28,7 +28,7 @@ public enum SchemeCreationPolicy {
 	 * 
 	 * It has an overhead of CREATE TABLE IF NOT EXISTS query per table. 
 	 */
-	UPDATE,
+	CREATE_IF_NOT_EXISTS,
 	
 	/**
 	 * Assumes that the table is identical to the existing scheme and does NOT

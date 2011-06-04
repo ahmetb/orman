@@ -101,7 +101,7 @@ public class PhysicalNameAndTypeBindingEngine {
 				field.setType(customizedBindingType); 
 			else {
 				// If field is enum, use enum data type mapping.
-				if (fieldType.isEnum()){
+				if (fieldType != null) if (fieldType.isEnum()){
 					field.setType(dataTypeMapper.getTypeFor(Enum.class));
 				} else {
 					field.setType(dataTypeMapper.getTypeFor(fieldType));
