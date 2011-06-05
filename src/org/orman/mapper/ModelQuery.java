@@ -71,6 +71,11 @@ public class ModelQuery {
 		}
 		return this;
 	}
+	
+	public ModelQuery set(Class<?> entityClass, String fieldName, Object value) {
+		this.qb.set(F.f(entityClass, fieldName).getGeneratedName(), value);
+		return this;
+	}
 
 	public ModelQuery set(Field f, Object value) {
 		this.qb.set(f.getGeneratedName(), value);
@@ -109,7 +114,7 @@ public class ModelQuery {
 
 			Entity e = parseEntity(expr);
 			Field f = parseField(expr);
-			String fieldName = f.getGeneratedName();
+			String fieldName = f.getOriginalName();
 
 			fields[i] = (desc ? "-" : "") + F.formatField(e, fieldName);
 		}

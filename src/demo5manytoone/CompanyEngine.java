@@ -43,9 +43,8 @@ public class CompanyEngine {
 		
 		Employee e2 = new Employee();
 		e2.name = "Onur";
-		e2.insert();
 		e2.dept = d2;
-		e2.update();
+		e2.insert();
 		
 		d2.employees = new EntityList(Department.class, Employee.class, d2);
 		

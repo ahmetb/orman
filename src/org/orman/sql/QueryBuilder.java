@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.orman.exception.OrmanQueryBuilderException;
 import org.orman.mapper.ModelQuery;
 import org.orman.sql.exception.NoTableSpecifiedException;
-import org.orman.sql.exception.QueryBuilderException;
 import org.orman.sql.util.Glue;
 import org.orman.sql.util.Serializer;
 
@@ -439,7 +439,7 @@ public class QueryBuilder {
 		return this.query.getIndexName();
 	}
 
-	private String getTemplateFieldValue(String tplField) throws QueryBuilderException {
+	private String getTemplateFieldValue(String tplField) throws OrmanQueryBuilderException {
 		if ("SELECT_COLUMN_LIST".equals(tplField))
 			return prepareSelectFieldList();
 		if ("COLUMN_OR_CONSTRAINT_DESCRIPTION_LIST".equals(tplField))
