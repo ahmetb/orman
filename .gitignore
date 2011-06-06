@@ -2,6 +2,7 @@
 bin/**
 tmp/**
 tmp/**/*
+demo*/**
 *.tmp
 *.bak
 *.swp
@@ -13,5 +14,4 @@ local.properties
 
 lite.db
 
-# disable playground -- later.
-# src/demo*
+src/demo*/**
