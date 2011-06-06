@@ -20,6 +20,7 @@ import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnannotatedCollectionFieldException;
 import org.orman.mapper.exception.UnsupportedPrimaryKeyFieldTypeException;
 import org.orman.sql.IndexType;
+import org.orman.util.logging.Log;
 
 /**
  * Finds fields and getter-setter methods of a given {@link Entity} using Reflection API.
@@ -52,10 +53,12 @@ public class EntityInspector {
 	@SuppressWarnings("static-access")
 	private List<Field> extractFields(){
 		this.fields.clear();
+		int modifiers;
 		
 		for(java.lang.reflect.Field f : this.clazz.getDeclaredFields()){
+			modifiers = f.getModifiers();
 			// Only non-`transient` (threatened as persistent) fields
-			if(!Modifier.isTransient(f.getModifiers())){
+			if(!Modifier.isTransient(modifiers) && !Modifier.isVolatile(modifiers)){
 				
 				Class<?> fieldType = f.getType();
 
@@ -82,8 +85,9 @@ public class EntityInspector {
 				if (isList) newF.setList(true);
 					
 				// Find getters and setters for non-public field.
-				int accessibility = f.getModifiers();
-				if (!(Modifier.isPublic(accessibility))){
+				modifiers = f.getModifiers();
+				
+				if (!(Modifier.isPublic(modifiers))){
 					// if setter does not exist, throw exception.
 					Method setter = this.findSetterFor(this.clazz, f.getName());
 					if(setter == null)
@@ -187,6 +191,7 @@ public class EntityInspector {
 	private static Method findSetterFor(Class<?> forClass, final String fieldName) {
 		if (fieldName == null || "".equals(fieldName))
 			throw new IllegalArgumentException("Field name cannot be empty for finding setter method.");
+		
 		
 		@SuppressWarnings("serial")
 		List<String> methodNameCandidates = new ArrayList<String>(){{

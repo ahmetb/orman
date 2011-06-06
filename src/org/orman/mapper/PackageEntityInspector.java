@@ -15,19 +15,23 @@ import org.orman.util.logging.Log;
  * Automatic @{@link Entity} annotated class finder from a given package. Uses
  * classpath scanning.
  * 
- * @author 0ffffffffh
+ * @author oguz kartal
  */
 public class PackageEntityInspector {
-
+	private static boolean recursiveScan = true;
+	
 	@SuppressWarnings("rawtypes")
 	private static Class<?> getClassFor(File classFile, String packageName) {
 		String fileName = classFile.getName();
+		String className;
 		Class classObj = null;
 
 		if (fileName.endsWith(".class")) {
 			try {
-				classObj = Class.forName(packageName + "."
-						+ fileName.substring(0, fileName.length() - 6));
+				className = packageName != null ? packageName + "." : "";
+				className += fileName.substring(0,fileName.length()-6);
+				
+				classObj = Class.forName(className);
 			} catch (ClassNotFoundException e) {
 				return null;
 			}
@@ -43,7 +47,7 @@ public class PackageEntityInspector {
 		for (File classFile : classFiles) {
 			if (!classFile.isDirectory())
 				classes.add(getClassFor(classFile, packageName));
-			else
+			else if (recursiveScan)
 				classes.addAll(populateClasses(classFile, packageName));
 		}
 
@@ -59,7 +63,7 @@ public class PackageEntityInspector {
 	 * @return List of all annotated classes
 	 */
 	public static List<Class<?>> findEntitiesInPackage(String packageName) {
-		String packageUrl, fileName;
+		String packageUrl = null, fileName;
 		URL element;
 		Enumeration<URL> classResources;
 
@@ -71,8 +75,11 @@ public class PackageEntityInspector {
 
 		if (classLoader == null)
 			return null;
-
-		packageUrl = packageName.replace('.', '/');
+		
+		if (packageName == null)
+			packageUrl = "./"; //Search into root class path
+		else 
+			packageUrl = packageName.replace('.', '/');
 
 		try {
 			classResources = classLoader.getResources(packageUrl);
@@ -108,7 +115,7 @@ public class PackageEntityInspector {
 				}
 			}
 		}
-
+		
 		return classObjects.size() == 0 ? null : classObjects;
 	}
 	
@@ -120,8 +127,10 @@ public class PackageEntityInspector {
 		
 		i = rootClass.indexOf('.');
 		
-		if (i == -1)
-			return rootClass;
+		if (i == -1) {
+			recursiveScan = false;
+			return null;
+		}
 		
 		return rootClass.substring(0,i);
 	}

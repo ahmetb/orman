@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.orman.mapper.exception.NotDeclaredDefaultConstructorException;
 import org.orman.sql.util.TypeCastHandler;
@@ -20,7 +22,7 @@ import org.orman.util.logging.Log;
 /**
  * Bulk record insertion support class for {@link Model} classes.
  * 
- * @author 0ffffffffh
+ * @author oguz kartal
  */
 public class BulkInsert<E extends Model<E>> {
 	
@@ -30,6 +32,9 @@ public class BulkInsert<E extends Model<E>> {
 	private List<Field> fields;
 	private InputStreamReader sourceStream;
 	private Map<String,TypeCastHandler> castMap = null;
+	
+	
+	private final int DEFAULT_BUFFER_SIZE = 2 * 1024;
 	
 	private final static String[] dateFormats = {"dd-MM-yyyy","yyyy-MM-dd","MM/dd/yyyy",
 												"dd MMM yyyy", "dd MMMM yyyy","dd-MM-yyyy",
@@ -404,6 +409,13 @@ public class BulkInsert<E extends Model<E>> {
 			Log.error(e.getMessage());
 		}
 		
+		/*
+		if (fileEncoding.equals("UTF-16"))
+			this.sourceIsUnicode = true;
+		
+		this.sourceLength = sourceFileObject.length();
+		*/
+		
 		try {
 			fis = new FileInputStream(sourceFileObject);
 			sourceStream = new InputStreamReader(fis,fileEncoding);
@@ -491,13 +503,31 @@ public class BulkInsert<E extends Model<E>> {
 		while (len-- > 0) {
 			val = readChar();
 			
-			if (val == -1)
+			if (val == (char)-1)
 				break;
 			
 			sb.append(val);
 		}
 		
 		return sb.toString();
+	}
+	
+	private int readBlock(StringBuilder buffer, int length) {
+		char[] block = new char[length];
+		int readed=0;
+		
+		try {
+			readed = sourceStream.read(block, 0, length);
+		} catch (IOException e) {
+			Log.error(e.getMessage());
+		}
+		
+		if (readed == -1)
+			return -1;
+		
+		buffer.append(block,0,readed);
+		
+		return readed;
 	}
 	
 	private String readRow() {
@@ -536,9 +566,61 @@ public class BulkInsert<E extends Model<E>> {
 	}
 	
 	
+	
+	@SuppressWarnings("unchecked")
 	private int startBulkInsertUsingRegex() {
-		//TODO: Implement regular expression based bulk insertion
-		return -1;
+		StringBuilder fileBuffer;
+		Model<E> model;
+		Pattern pattern;
+		Matcher matcher;
+		String [] rowFields;
+		boolean atLeastOneMatch=false;
+		int matchEnd=0,affectedRecordCount=0;
+		
+		if (!createInputStream())
+			return -1;
+		
+		fileBuffer = new StringBuilder(DEFAULT_BUFFER_SIZE);
+		
+		while (readBlock(fileBuffer,DEFAULT_BUFFER_SIZE) != -1) {
+			
+			pattern = Pattern.compile(this.regExp,Pattern.MULTILINE | Pattern.UNIX_LINES);
+			
+			matcher = pattern.matcher(fileBuffer.toString());
+			
+			while (matcher.find()) {
+				atLeastOneMatch = true;
+				matchEnd = matcher.end();
+				
+				if ((matcher.groupCount()) != getActualFieldsSize()) {
+					Log.error("Mismatched record found = %s",matcher.group(0));
+					continue;
+				}
+				
+				rowFields = new String[getActualFieldsSize()];
+				
+				for (int i=0;i<matcher.groupCount();i++) {
+					rowFields[i] = matcher.group(i+1);
+				}
+				
+				model = (E)createObjectUsingFields(rowFields);
+				
+				if (model != null) {
+					model.insert();
+					affectedRecordCount++;
+				}
+				else {
+					Log.error("Could not create object for row = %s", matcher.group(0));
+				}
+			}
+			
+			if (atLeastOneMatch) {
+				fileBuffer.delete(0, matchEnd);
+				atLeastOneMatch = false;
+			}
+		}
+		
+		return affectedRecordCount;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -579,14 +661,16 @@ public class BulkInsert<E extends Model<E>> {
 		if (!this.isReady)
 			return -1;
 		
-		if (regExp != null)
+		if (regExp != null) {
 			affectedRecords = startBulkInsertUsingRegex();
-		
-		try {
-			affectedRecords = startBulkInsertUsingSeperators();
-		} catch (Exception e) {
-			Log.error(e.getMessage());
-			affectedRecords = -1;
+		}
+		else {
+			try {
+				affectedRecords = startBulkInsertUsingSeperators();
+			} catch (Exception e) {
+				Log.error(e.getMessage());
+				affectedRecords = -1;
+			}
 		}
 		
 		releaseSourceStream();

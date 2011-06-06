@@ -31,7 +31,7 @@ import org.orman.util.logging.Log;
  * class.
  * 
  * @author ahmet alp balkan
- * @author 0ffffffffh
+ * @author oguz kartal
  */
 public class MappingSession {
 	private static PersistenceSchemeMapper scheme;
@@ -55,7 +55,6 @@ public class MappingSession {
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
 	}
-
 	/**
 	 * Finds and registers @{@link Entity}-annotated classes in given package,
 	 * recursively. See also <code>registerEntity(Class<?>)</code> method for
