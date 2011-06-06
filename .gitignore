@@ -15,3 +15,5 @@ local.properties
 lite.db
 
 src/demo*/**
+
+build/
