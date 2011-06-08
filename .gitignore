@@ -8,6 +8,7 @@ demo*/**
 *.swp
 *~.nib
 *~
+orman.jar
 local.properties
 .settings/**
 .loadpath
@@ -15,3 +16,5 @@ local.properties
 lite.db
 
 src/demo*/**
+
+build/
