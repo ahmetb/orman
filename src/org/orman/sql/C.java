@@ -3,7 +3,7 @@ package org.orman.sql;
 import org.orman.sql.util.Serializer;
 
 /**
- * Façade class for criterion operations such as creating simple queries,
+ * Fa\u00E7ade class for criterion operations such as creating simple queries,
  * logical expressions, conjuctions and manual criteria etc.
  * 
  * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
