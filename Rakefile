@@ -1,8 +1,8 @@
 # ORMAN Rakefile
 # ==============
 #
-# Author: berker peksag
-# Author: ahmet alp balkan
+# Author: Berker Peksag
+# Author: Ahmet Alp Balkan
 
 require 'rubygems'
 require 'rake'
@@ -12,21 +12,22 @@ def java_files
 end
 
 def jar_files
-  @jar_files = Dir['lib/**.jar'].join(':')
+  @jar_files = Dir['lib/*.jar'].join(':')
 end
 
 task :default => [:build]
 
 task :build => :compile do
-  print "Packaging JAR...\n"  
+  puts 'Packaging JAR...'  
   sh "jar -cf orman.jar -C build ."
   sh "rm -rf build/"
-  print "Done.\n"
+  puts 'Done.'
 end
 
 task :compile do
-  print "Compiling...\n"  
+  puts 'Compiling...'  
   sh "mkdir -p build/"
   sh "javac -d build -classpath #{jar_files} #{java_files}"
+  puts 'Done.'
 end
 
