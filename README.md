@@ -7,6 +7,13 @@ Using ORMAN, you can save Java objects to the database and query the database wi
 writing SQL statements. It is small, lightweight, works on Android devices, as well as 
 Java desktop applications.
 
+Documentation & Summary
+=======================
+
+You can find pros & cons, introduction, examples and reference documents from our Wiki pages.
+
+**Please [read our Wiki](https://github.com/ahmetalpbalkan/orman/wiki).**
+
 Project Aims
 ============
 
