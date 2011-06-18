@@ -54,6 +54,7 @@ public class MappingSession {
 		db = database;
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
+		EntityNameValidator.initialize(database);
 	}
 	/**
 	 * Finds and registers @{@link Entity}-annotated classes in given package,
@@ -268,7 +269,7 @@ public class MappingSession {
 		preSessionStartHooks();
 
 		sessionStarted = true; // mark the session as started.
-
+		
 		Log.info("Mapping session starting...");
 
 		// BIND NAMES AND TYPES FOR FIELDS
@@ -295,6 +296,8 @@ public class MappingSession {
 			scheme.checkConflictingFields(e);
 			Log.trace("No conflicting field names found on entity %s.",
 					e.getOriginalName());
+			
+			EntityNameValidator.validateEntity(e);
 		}
 
 		if (db == null) {
