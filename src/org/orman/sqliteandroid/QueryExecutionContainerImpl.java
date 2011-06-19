@@ -143,4 +143,16 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		db.close();
 	}
 
+	@Override
+	public boolean open(long cookie) {
+		return true;
+	}
+
+	@Override
+	public boolean isAlive() {
+		if (db == null)
+			return false;
+		return db.isOpen();
+	}
+
 }

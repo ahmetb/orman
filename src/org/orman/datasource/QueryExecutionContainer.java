@@ -10,7 +10,7 @@ import org.orman.sql.Query;
  * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
-public interface QueryExecutionContainer {
+public interface QueryExecutionContainer extends ConnectionEstablisher {
 
 	/**
 	 * Just executes the given query without obtaining any results from result
@@ -63,12 +63,5 @@ public interface QueryExecutionContainer {
 	 *             if error occurs during execution
 	 */
 	public <T> Object getLastInsertId(Class<T> ofType);
-
-	/**
-	 * Closes/disposes database connection held in query execution container.
-	 * 
-	 * @throws QueryExecutionException
-	 *             if error occurs during disconnecting event.
-	 */
-	public void close();
+	
 }

@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.Properties;
 
 import org.gjt.mm.mysql.Driver;
+import org.orman.datasource.OnDemandConnection;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
 import org.orman.datasource.exception.DatasourceConnectionException;
+import org.orman.datasource.exception.IllegalConnectionOpenCallException;
 import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.exception.OrmanException;
 import org.orman.sql.Query;
@@ -29,41 +31,16 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	private MySQLSettingsImpl settings;
 	private Connection conn = null;
+	private OnDemandConnection demandConnector = 
+			new OnDemandConnection(this);
 
 	/**
-	 * Initialize database, create db file if not exists.
+	 * Initialize database
 	 * 
 	 * @param settings
 	 */
 	public QueryExecutionContainerImpl(MySQLSettingsImpl settings) {
 		this.settings = settings;
-
-		Properties props = new Properties();
-		props.put("user", this.settings.getUsername());
-		props.put("password", this.settings.getPassword());
-
-		// Establish DB connection.
-		try {
-			Log.info("Trying to establish MySQL connection to %s at %s.",
-					this.settings.getHost(), this.settings.getPort());
-
-			DriverManager.registerDriver(new Driver());
-			conn = DriverManager.getConnection(
-					"jdbc:mysql://" + this.settings.getHost() + ":"
-							+ this.settings.getPort() + "/"
-							+ this.settings.getDatabase(), props);
-
-			conn.setAutoCommit(this.settings.isAutoCommit());
-
-		} catch (SQLException e) {
-			throwError(new DatasourceConnectionException(e.getMessage()));
-		}
-
-		if (conn == null){
-			throwError(new DatasourceConnectionException(
-					"Could not establish connection to database."));
-		} else 
-			Log.info("Connection established to the database.");
 	}
 
 	private void throwError(OrmanException e) {
@@ -77,6 +54,8 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public ResultList executeForResultList(Query q) {
 		Log.trace(q.getExecutableSql());
+		
+		demandConnector.requestConnection();
 
 		try {
 			Statement stmt = conn.createStatement();
@@ -125,6 +104,8 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public Object executeForSingleValue(Query q) {
 		Log.trace(q.getExecutableSql());
 
+		demandConnector.requestConnection();
+		
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
@@ -147,6 +128,8 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public void executeOnly(Query q) {
 		Log.trace(q.getExecutableSql());
 
+		demandConnector.requestConnection();
+		
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.execute(q.getExecutableSql());
@@ -159,6 +142,8 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public Object getLastInsertId() {
 		String lastIdQuery = "SELECT LAST_INSERT_ID();";
 
+		demandConnector.requestConnection();
+		
 		Log.trace(lastIdQuery);
 
 		try {
@@ -188,9 +173,60 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	}
 
 	@Override
+	public boolean isAlive() {
+		if (conn == null)
+			return false;
+		
+		try {
+			return !conn.isClosed();
+		} catch (SQLException e) {
+			Log.error(e.getMessage());
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean open(long cookie) throws IllegalConnectionOpenCallException {
+		
+		demandConnector.checkCallCookie(cookie);
+		
+		Properties props = new Properties();
+		props.put("user", this.settings.getUsername());
+		props.put("password", this.settings.getPassword());
+
+		// Establish DB connection.
+		try {
+			Log.info("Trying to establish MySQL connection to %s at %s.",
+					this.settings.getHost(), this.settings.getPort());
+
+			DriverManager.registerDriver(new Driver());
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://" + this.settings.getHost() + ":"
+							+ this.settings.getPort() + "/"
+							+ this.settings.getDatabase(), props);
+
+			conn.setAutoCommit(this.settings.isAutoCommit());
+
+		} catch (SQLException e) {
+			throwError(new DatasourceConnectionException(e.getMessage()));
+		}
+
+		if (conn == null){
+			throwError(new DatasourceConnectionException(
+					"Could not establish connection to database."));
+			return false;
+		} else 
+			Log.info("Connection established to the database.");
+		
+		return true;
+	}
+	
+	@Override
 	public void close() {
 		try {
 			conn.close();
+			conn = null;
 			Log.info("Connection to the database is now closed.");
 		} catch (SQLException e) {
 			throwError(e);

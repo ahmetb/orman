@@ -5,8 +5,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orman.datasource.OnDemandConnection;
 import org.orman.datasource.QueryExecutionContainer;
 import org.orman.datasource.ResultList;
+import org.orman.datasource.exception.IllegalConnectionOpenCallException;
 import org.orman.datasource.exception.QueryExecutionException;
 import org.orman.sql.Query;
 import org.orman.util.logging.Log;
@@ -21,22 +23,15 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	private SQLiteSettingsImpl settings;
 	private File dbFile;
 	private SQLiteConnection db;
+	private OnDemandConnection demandConnector = 
+			new OnDemandConnection(this);
 	
 	/**
-	 * Initialize database, create db file if not exists.
+	 * Initialize database
 	 * @param settings
 	 */
 	public QueryExecutionContainerImpl(SQLiteSettingsImpl settings){
 		this.settings = settings;
-		
-		dbFile = new File(this.settings.getFilePath());
-		db = new SQLiteConnection(dbFile);
-		
-		try {
-			db.open(true);
-		} catch (SQLiteException e) {
-			throwError(e);
-		}
 	}
 	
 	private void throwError(SQLiteException e){
@@ -46,6 +41,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public ResultList executeForResultList(Query q) {
 		Log.trace("Executing: " + q); 
+		
+		demandConnector.requestConnection();
+		
 		try {
 			SQLiteStatement s = db.prepare(q.getExecutableSql());
 			
@@ -87,6 +85,8 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	public Object executeForSingleValue(Query q) {
 		Log.trace("Executing: " + q); 
 		
+		demandConnector.requestConnection();
+		
 		try {
 			SQLiteStatement s = db.prepare(q.getExecutableSql());
 			while(s.step()){
@@ -105,6 +105,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public void executeOnly(Query q) {
 		Log.trace("Executing: " + q); // TODO log.
+		
+		demandConnector.requestConnection();
+		
 		try {
 			db.exec(q.getExecutableSql());
 		} catch (SQLiteException e) {
@@ -114,6 +117,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public Object getLastInsertId() {
+		
+		demandConnector.requestConnection();
+		
 		try {
 			return new Long(db.getLastInsertId()); // TODO returns long. test for int and String behavior. 
 		} catch (SQLiteException e) {
@@ -136,9 +142,35 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		return val;
 	}
 	
+	@Override
+	public boolean isAlive() {
+		if (db == null)
+			return false;
+		
+		return db.isOpen();
+	}
+	
+	@Override
+	public boolean open(long cookie) throws IllegalConnectionOpenCallException {
+		
+		demandConnector.checkCallCookie(cookie);
+		
+		dbFile = new File(this.settings.getFilePath());
+		db = new SQLiteConnection(dbFile);
+		
+		try {
+			db.open(true);
+			return true;
+		} catch (SQLiteException e) {
+			throwError(e);
+		}
+		
+		return false;
+	}
 
 	@Override
 	public void close() {
 		db.dispose();
+		db = null;
 	}
 }
