@@ -34,4 +34,12 @@ public interface SQLGrammarProvider {
 	 * @return
 	 */
 	public String getIndexType(IndexType indexType);
+	
+	/**
+	 * Returns reserved keyword array. All of the words assumed to
+	 * be uppercase and trimmed. Word groups are allowed.
+	 * 
+	 * @return not-null array of reserved keywords in DBMS. 
+	 */
+	public String[] getReservedKeywords();
 }

@@ -63,6 +63,33 @@ public class SQLiteGrammar implements SQLGrammarProvider {
 		put(IndexType.HASH, "HASH");
 	}};
 	
+	private static final String[] reservedKeywords = {
+		"ABORT","ACTION","ADD","AFTER",
+		"ALTER","ANALYZE","AND","AS",
+		"ATTACH","AUTOINCREMENT","BEFORE","BEGIN",
+		"BY","CASCADE","CASE","CAST",
+		"COLLATE","COLUMN","COMMIT","CONFLICT",
+		"CREATE","CROSS","CURRENT_DATE","CURRENT_TIME",
+		"DATABASE","DEFAULT","DEFERRABLE","DEFERRED",
+		"DESC","DETACH","DISTINCT","DROP",
+		"ELSE","END","ESCAPE","EXCEPT",
+		"EXISTS","EXPLAIN","FAIL","FOR",
+		"FROM","FULL","GLOB","GROUP",
+		"IF","IGNORE","IMMEDIATE","IN",
+		"INDEXED","INITIALLY","INNER","INSERT",
+		"INTERSECT","INTO","IS","ISNULL",
+		"KEY","LEFT","LIKE","LIMIT",
+		"NATURAL","NO","NOT","NOTNULL",
+		"OF","OFFSET","ON","OR",
+		"OUTER","PLAN","PRAGMA","PRIMARY",
+		"RAISE","REFERENCES","REGEXP","REINDEX",
+		"RENAME","REPLACE","RESTRICT","RIGHT",
+		"ROW","SAVEPOINT","SELECT","SET",
+		"TEMP","TEMPORARY","THEN","TO",
+		"TRIGGER","UNION","UNIQUE","UPDATE",
+		"VACUUM","VALUES","VIEW","VIRTUAL", "WHERE"
+	};
+
 	
 	@Override
 	public String getTemplate(QueryType type) {
@@ -88,5 +115,10 @@ public class SQLiteGrammar implements SQLGrammarProvider {
 		if (tpl == null)
 			throw new QueryTypeNotImplementedException(indexType.toString());
 		return tpl;
+	}
+
+	@Override
+	public String[] getReservedKeywords() {
+		return reservedKeywords;
 	}
 }

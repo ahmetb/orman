@@ -54,6 +54,8 @@ public class MappingSession {
 		db = database;
 		typeMapper = database.getTypeMapper();
 		executer = database.getExecuter();
+		
+		// register grammar to reserved keyword checker
 		EntityNameValidator.initialize(database);
 	}
 	/**
@@ -300,10 +302,6 @@ public class MappingSession {
 			EntityNameValidator.validateEntity(e);
 		}
 
-		if (db == null) {
-			throw new NoDatabaseRegisteredException();
-		}
-
 		// set custom SQL grammar provider binding
 		SQLGrammarProvider p = db.getSQLGrammar();
 
@@ -329,6 +327,10 @@ public class MappingSession {
 
 		// Prepare synthetic (@ManyToMany) entities.
 		prepareSyntheticEntities();
+		
+		if (db == null) {
+			throw new NoDatabaseRegisteredException();
+		}
 	}
 
 	/**
