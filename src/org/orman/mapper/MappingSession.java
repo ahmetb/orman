@@ -34,7 +34,7 @@ import org.orman.util.logging.Log;
  * @author oguz kartal
  */
 public class MappingSession {
-	private static PersistenceSchemeMapper scheme;
+	private static PersistenceSchemaMapper schema;
 	private static MappingConfiguration configuration;
 
 	private static Database db;
@@ -45,7 +45,7 @@ public class MappingSession {
 	private static boolean autoPackageRegistration = true;
 
 	static {
-		scheme = new PersistenceSchemeMapper();
+		schema = new PersistenceSchemaMapper();
 		configuration = new MappingConfiguration();
 		// implementation, remove soon.
 	}
@@ -93,7 +93,7 @@ public class MappingSession {
 
 	/**
 	 * Makes physical name and data type bindings to entity and its fields then
-	 * registers to the scheme.
+	 * registers to the schema.
 	 * 
 	 * Postcondition: Disables auto-entity scanning.
 	 * 
@@ -110,7 +110,7 @@ public class MappingSession {
 		Entity e = new Entity(entityClass);
 
 		Log.info("Registering entity %s.", e.getOriginalName());
-		scheme.addEntity(e);
+		schema.addEntity(e);
 	}
 
 	protected static void registerSyntheticEntity(Entity e) {
@@ -119,7 +119,7 @@ public class MappingSession {
 		}
 
 		Log.info("Registering synthetic entity %s.", e.getOriginalName());
-		scheme.addEntity(e);
+		schema.addEntity(e);
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class MappingSession {
 		if (!sessionStarted)
 			throw new MappingSessionNotStartedException();
 
-		Entity e = scheme.getBindedEntity(entityClass);
+		Entity e = schema.getBindedEntity(entityClass);
 
 		if (e == null)
 			throw new UnregisteredEntityException(entityClass.getName());
@@ -168,7 +168,7 @@ public class MappingSession {
 		if (!sessionStarted)
 			throw new MappingSessionNotStartedException();
 
-		return scheme.getEntityByTableName(tableName);
+		return schema.getEntityByTableName(tableName);
 	}
 
 	/**
@@ -193,11 +193,11 @@ public class MappingSession {
 		if (!sessionStarted)
 			throw new MappingSessionNotStartedException();
 
-		return scheme.getEntityByClassName(className);
+		return schema.getEntityByClassName(className);
 	}
 
 	/**
-	 * Starts the mapping session. According to {@link SchemeCreationPolicy}, in
+	 * Starts the mapping session. According to {@link SchemaCreationPolicy}, in
 	 * {@link MappingConfiguration}, it may drop and reconstruct all the tables
 	 * from scratch.
 	 * 
@@ -257,7 +257,7 @@ public class MappingSession {
 	 * Does not throw {@link MappingSessionAlreadyStartedException} if the
 	 * session already started. If used instead of <code>start()</code>, does
 	 * not check whether session is already started or not and triggers physical
-	 * bindings and execution of scheme generator DDL queries.
+	 * bindings and execution of schema generator DDL queries.
 	 * </p>
 	 * 
 	 * @see MappingSession#start() for a healthy bootstrap.
@@ -265,7 +265,7 @@ public class MappingSession {
 	 * @throws UnmappedEntityException
 	 *             if no physical name binding done before.
 	 * @throws DuplicateTableNamesException
-	 *             if binded physical name already exists in the scheme.
+	 *             if binded physical name already exists in the schema.
 	 */
 	private static void startNoCheck() {
 		preSessionStartHooks();
@@ -276,8 +276,8 @@ public class MappingSession {
 
 		// BIND NAMES AND TYPES FOR FIELDS
 		Log.info("Preparing to make physical bindings for entities.");
-		for (Entity e : scheme.getEntities()) {
-			// scheme.checkIdBinding(e);
+		for (Entity e : schema.getEntities()) {
+			// schema.checkIdBinding(e);
 			// TODO CRITICAL: Enable asap.
 
 			// BIND TABLE NAME
@@ -285,7 +285,7 @@ public class MappingSession {
 					configuration.getTableNamePolicy());
 			if (e.getGeneratedName() == null || "".equals(e.getGeneratedName()))
 				throw new UnmappedEntityException(e.getOriginalFullName());
-			scheme.checkConflictingEntities(e); // exception stops the check.
+			schema.checkConflictingEntities(e); // exception stops the check.
 
 			// make generated name and type bindings to fields.
 			if (e.getFields() != null)
@@ -295,7 +295,7 @@ public class MappingSession {
 				}
 
 			// check conflicting fields after bindings.
-			scheme.checkConflictingFields(e);
+			schema.checkConflictingFields(e);
 			Log.trace("No conflicting field names found on entity %s.",
 					e.getOriginalName());
 			
@@ -312,8 +312,8 @@ public class MappingSession {
 			IndexType.setProvider(p);
 		}
 
-		// CONSTRUCT DDL SCHEME FINALLY
-		constructScheme();
+		// CONSTRUCT DDL SCHEMA FINALLY
+		constructSchema();
 
 		System.gc(); // request garbage collection after session starts.
 	}
@@ -334,14 +334,14 @@ public class MappingSession {
 	}
 
 	/**
-	 * Scans the whole registered entities in the scheme along with their fields
+	 * Scans the whole registered entities in the schema along with their fields
 	 * and finds @{@link ManyToMany} annotated-fields then creates synthetic
 	 * entities and *registers* them to the {@link MappingSession}.
 	 */
 	private static void prepareSyntheticEntities() {
 		List<Entity> syntheticRegisterQueue = new LinkedList<Entity>();
 
-		for (Entity e : scheme.getEntities()) {
+		for (Entity e : schema.getEntities()) {
 			for (Field f : e.getFields()) {
 				if (f.isList() && f.isAnnotationPresent(ManyToMany.class)) {
 					// if not already mapped on reverse side
@@ -393,7 +393,7 @@ public class MappingSession {
 	 */
 	public static Entity getSyntheticEntity(Class<?> holderType,
 			Class<?> targetType) {
-		for (Entity cand : scheme.getEntities()) {
+		for (Entity cand : schema.getEntities()) {
 			if (cand.isSynthetic()) {
 				Class<?>[] types = cand.getSyntheticTypes();
 				if (types != null && types.length == 2) {
@@ -411,26 +411,26 @@ public class MappingSession {
 	}
 
 	/**
-	 * Prepares DDL queries to create existing scheme from scrats.
+	 * Prepares DDL queries to create existing schema from scratch.
 	 * 
 	 * TODO return them as a list to execute somehow.
 	 */
-	private static void constructScheme() {
+	private static void constructSchema() {
 		Queue<Query> constructionQueries = new LinkedList<Query>();
 
-		SchemeCreationPolicy policy = configuration.getCreationPolicy();
+		SchemaCreationPolicy policy = configuration.getCreationPolicy();
 
-		Log.info("Scheme creation policy is %s.", policy.toString());
+		Log.info("Schema creation policy is %s.", policy.toString());
 
-		if (policy.equals(SchemeCreationPolicy.CREATE)
-				|| policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS)) {
+		if (policy.equals(SchemaCreationPolicy.CREATE)
+				|| policy.equals(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS)) {
 
 			EntityDependencyGraph serialSchedule = new EntityDependencyGraph(
-					scheme.getEntities());
+					schema.getEntities());
 
 			// Drop tables
 			for (Entity e : serialSchedule.getDestroySchedule()) {
-				if (policy.equals(SchemeCreationPolicy.CREATE)) {
+				if (policy.equals(SchemaCreationPolicy.CREATE)) {
 					// DROP TABLE IF EXISTS
 					Query dT = DDLQueryGenerator.dropTableQuery(e);
 					constructionQueries.offer(dT);
@@ -441,7 +441,7 @@ public class MappingSession {
 			for (Entity e : serialSchedule.getConstructSchedule()) {
 				// CREATE TABLE
 				Query cT = DDLQueryGenerator.createTableQuery(e,
-						policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS));
+						policy.equals(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS));
 				constructionQueries.offer(cT);
 
 				// CREATE INDEXES
@@ -458,7 +458,7 @@ public class MappingSession {
 				}
 
 				// Process composite index (primary keys).
-				if (policy.equals(SchemeCreationPolicy.CREATE)) {
+				if (policy.equals(SchemaCreationPolicy.CREATE)) {
 					// DROP INDEX first
 					Query dCI = DDLQueryGenerator.dropCompositeIndexQuery(e);
 					if (dCI != null)
@@ -467,20 +467,20 @@ public class MappingSession {
 				// CREATE INDEX compositely, then
 				Query cCI = DDLQueryGenerator.createCompositeIndexQuery(e,
 						compositeIndexFields,
-						policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS));
+						policy.equals(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS));
 				if (cCI != null)
 					constructionQueries.offer(cCI);
 
 				// Create single indexes
 				for (Field f : singleIndexFields) {
-					if (policy.equals(SchemeCreationPolicy.CREATE)) {
+					if (policy.equals(SchemaCreationPolicy.CREATE)) {
 						// DROP INDEX first
 						Query dI = DDLQueryGenerator.dropIndexQuery(e, f);
 						constructionQueries.offer(dI);
 					}
 					// CREATE INDEX then
 					Query cI = DDLQueryGenerator.createIndexQuery(e, f,
-							policy.equals(SchemeCreationPolicy.CREATE_IF_NOT_EXISTS));
+							policy.equals(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS));
 					constructionQueries.offer(cI);
 				}
 			}

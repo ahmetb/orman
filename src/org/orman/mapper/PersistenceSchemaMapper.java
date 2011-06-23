@@ -14,25 +14,25 @@ import org.orman.mapper.exception.UnmappedDataTypeException;
 import org.orman.mapper.exception.UnmappedFieldException;
 
 /**
- * Holds object mapping scheme and their physical table names.  
+ * Holds object mapping schema and their physical table names.  
  * 
  * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  *
  */
-public class PersistenceSchemeMapper {
+public class PersistenceSchemaMapper {
 	private List<Entity> entities;
 	private Map<String, Entity> tableNames; // no need for DoubleAssociativeMap
 
 	/**
-	 * Initializes an empty ORM scheme.
+	 * Initializes an empty ORM schema.
 	 */
-	public PersistenceSchemeMapper() {
+	public PersistenceSchemaMapper() {
 		this.entities = new ArrayList<Entity>();
 		this.tableNames = new HashMap<String, Entity>();
 	}
 
 	/**
-	 * Adds given entity to the mapping scheme.
+	 * Adds given entity to the mapping schema.
 	 * 
 	 * Precondition: Physical table name should be binded.
 	 */
@@ -79,7 +79,7 @@ public class PersistenceSchemeMapper {
 	}
 
 	/**
-	 * @return all {@link Entity}s in scheme.
+	 * @return all {@link Entity}s in schema.
 	 */
 	public List<Entity> getEntities() {
 		return this.entities;

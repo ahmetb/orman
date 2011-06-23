@@ -46,7 +46,7 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		//TODO currently defers creation of database to SchemeCreationPolicy.
+		//TODO currently defers creation of database to SchemaCreationPolicy.
 		// and does not create database here.
 		Log.warn("Orman: SQLite database onCreate invoked. Database path %s.", db.getPath());
 	}

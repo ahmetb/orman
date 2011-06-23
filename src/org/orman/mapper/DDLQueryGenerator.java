@@ -16,12 +16,12 @@ import org.orman.sql.TableConstraintType;
 
 /**
  * Generates DDL (data description language) {@link Query} for given entity
- * scheme.
+ * schema.
  * 
  * @author ahmet alp balkan <ahmetalpbalkan@gmail.com>
  * 
  */
-// TODO implement tableexists(..)? query and then schemegenerationpolicy.
+// TODO implement tableexists(..)? query and then schemagenerationpolicy.
 public class DDLQueryGenerator {
 
 	/**

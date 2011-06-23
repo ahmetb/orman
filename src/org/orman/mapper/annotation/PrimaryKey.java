@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 public @interface PrimaryKey {
 	/**
 	 * Indicates that the column is an auto increment field so that it will be
-	 * generated upon scheme construction. Make sure that this field is an
+	 * generated upon schema construction. Make sure that this field is an
 	 * augmentable (numeric) type which your DBMS can handle if you set this to
 	 * <code>true</code>. It is <code>false</code> by default.
 	 */
