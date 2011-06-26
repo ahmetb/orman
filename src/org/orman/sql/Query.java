@@ -18,10 +18,11 @@ public class Query extends DataSource implements Aliasable {
 	private Map<SubclauseType, ISubclause> subclauses;
 	private List<TableConstraint> constraints;
 
-
 	private String indexName;
 
 	private String alias;
+	
+	private String nativeQuery = null;
 
 	public Query() {
 		tables = new ArrayList<Table>();
@@ -34,6 +35,19 @@ public class Query extends DataSource implements Aliasable {
 	public Query(QueryType queryType) {
 		this();
 		this.type = queryType;
+	}
+	
+	/**
+	 * Way to execute native DBMS queries. Overrides all other
+	 * query builder methods and custom query settings.
+	 * 
+	 * <p>Warning: This may cause security vulnerabilities. Use
+	 * at your own risk.</p>
+	 * 
+	 * @param nativeQuery
+	 */
+	public Query(String nativeQuery){
+		this.nativeQuery = nativeQuery;
 	}
 
 	public Query as(String alias) {
@@ -119,6 +133,7 @@ public class Query extends DataSource implements Aliasable {
 	 */
 	@Override
 	public String toString(){
+		if (nativeQuery != null) return nativeQuery;
 		return QueryBuilder.getBuilder(this).prepareSql();
 	}
 	

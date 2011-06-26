@@ -2,6 +2,7 @@ package org.orman.dbms.mysql;
 
 import org.orman.dbms.DataTypeMapper;
 import org.orman.dbms.Database;
+import org.orman.dbms.DatabaseSchemaInspector;
 import org.orman.dbms.QueryExecutionContainer;
 import org.orman.sql.SQLGrammarProvider;
 
@@ -15,12 +16,14 @@ public class MySQL implements Database {
 	private DataTypeMapperImpl typeMapper;
 	private QueryExecutionContainer executer;
 	private MySQLGrammar grammar;
+	private DatabaseSchemaInspectorImpl schemaInspector;
 	
 	public MySQL(MySQLSettingsImpl settings){
+		grammar = new MySQLGrammar();
 		setSettings(settings);
 		typeMapper = new DataTypeMapperImpl();
 		executer = new QueryExecutionContainerImpl(getSettings());
-		grammar = new MySQLGrammar();
+		schemaInspector = new DatabaseSchemaInspectorImpl(getExecuter());
 	}
 
 	private void setSettings(MySQLSettingsImpl settings) {
@@ -29,6 +32,10 @@ public class MySQL implements Database {
 
 	public MySQLSettingsImpl getSettings() {
 		return settings;
+	}
+
+	public DatabaseSchemaInspector getSchemaInspector() {
+		return schemaInspector;
 	}
 
 	@Override

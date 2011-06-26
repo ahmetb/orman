@@ -2,6 +2,7 @@ package org.orman.dbms.sqlite;
 
 import org.orman.dbms.DataTypeMapper;
 import org.orman.dbms.Database;
+import org.orman.dbms.DatabaseSchemaInspector;
 import org.orman.dbms.QueryExecutionContainer;
 import org.orman.dbms.sqlite.generic.DataTypeMapperImpl;
 import org.orman.dbms.sqlite.generic.SQLiteGrammar;
@@ -61,6 +62,12 @@ public class SQLite implements Database {
 	@Override
 	public SQLGrammarProvider getSQLGrammar() {
 		return grammar;
+	}
+
+	@Override
+	public DatabaseSchemaInspector getSchemaInspector() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

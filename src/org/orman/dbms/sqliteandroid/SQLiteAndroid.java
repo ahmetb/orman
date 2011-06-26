@@ -2,6 +2,7 @@ package org.orman.dbms.sqliteandroid;
 
 import org.orman.dbms.DataTypeMapper;
 import org.orman.dbms.Database;
+import org.orman.dbms.DatabaseSchemaInspector;
 import org.orman.dbms.QueryExecutionContainer;
 import org.orman.dbms.sqlite.generic.DataTypeMapperImpl;
 import org.orman.dbms.sqlite.generic.SQLiteGrammar;
@@ -83,6 +84,12 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	
 	public String getDatabaseName() {
 		return databaseName;
+	}
+
+	@Override
+	public DatabaseSchemaInspector getSchemaInspector() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

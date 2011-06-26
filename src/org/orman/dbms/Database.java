@@ -12,5 +12,6 @@ public interface Database {
 	public DataTypeMapper getTypeMapper();
 	public SQLGrammarProvider getSQLGrammar();
 	public QueryExecutionContainer getExecuter();
+	public DatabaseSchemaInspector getSchemaInspector();
 	public void closeConnection();
 }
