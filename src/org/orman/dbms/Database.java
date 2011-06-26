@@ -1,4 +1,4 @@
-package org.orman.datasource;
+package org.orman.dbms;
 
 import org.orman.sql.SQLGrammarProvider;
 

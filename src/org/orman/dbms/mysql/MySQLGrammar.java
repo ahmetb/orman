@@ -1,4 +1,4 @@
-package org.orman.mysql;
+package org.orman.dbms.mysql;
 
 import java.util.EnumMap;
 import java.util.Map;

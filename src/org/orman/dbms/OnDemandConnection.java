@@ -1,9 +1,8 @@
-package org.orman.datasource;
+package org.orman.dbms;
 
 import java.util.Random;
 
-import org.orman.datasource.exception.IllegalConnectionOpenCallException;
-import org.orman.util.logging.Log;
+import org.orman.dbms.exception.IllegalConnectionOpenCallException;
 
 /***
  * On demand connection requestor

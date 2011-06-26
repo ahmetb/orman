@@ -1,4 +1,4 @@
-package org.orman.datasource.exception;
+package org.orman.dbms.exception;
 
 import org.orman.exception.OrmanDatasourceException;
 

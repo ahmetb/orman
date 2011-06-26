@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.orman.datasource.DataTypeMapper;
-import org.orman.datasource.Database;
-import org.orman.datasource.QueryExecutionContainer;
+import org.orman.dbms.DataTypeMapper;
+import org.orman.dbms.Database;
+import org.orman.dbms.QueryExecutionContainer;
 import org.orman.mapper.annotation.ManyToMany;
 import org.orman.mapper.exception.AnnotatedClassNotFoundInPackageException;
 import org.orman.mapper.exception.DuplicateTableNamesException;

@@ -1,6 +1,6 @@
-package org.orman.datasource;
+package org.orman.dbms;
 
-import org.orman.datasource.exception.IllegalConnectionOpenCallException;
+import org.orman.dbms.exception.IllegalConnectionOpenCallException;
 
 /***
  * Connection establish provider interface for {@link QueryExecutionContainer}

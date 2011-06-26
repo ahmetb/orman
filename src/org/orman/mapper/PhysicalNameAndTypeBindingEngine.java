@@ -1,6 +1,6 @@
 package org.orman.mapper;
 
-import org.orman.datasource.DataTypeMapper;
+import org.orman.dbms.DataTypeMapper;
 import org.orman.mapper.annotation.Column;
 import org.orman.mapper.annotation.Index;
 import org.orman.mapper.annotation.OneToOne;

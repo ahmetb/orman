@@ -1,6 +1,6 @@
-package org.orman.datasource;
+package org.orman.dbms;
 
-import org.orman.datasource.exception.QueryExecutionException;
+import org.orman.dbms.exception.QueryExecutionException;
 import org.orman.sql.Query;
 
 /**

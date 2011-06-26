@@ -1,4 +1,4 @@
-package org.orman.datasource;
+package org.orman.dbms;
 
 /**
  * Maps primitive data types, their wrappers and literals to actual column types

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.orman.datasource.ResultList;
+import org.orman.dbms.ResultList;
 import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.NotNullableFieldException;
 import org.orman.mapper.exception.UnableToPersistDetachedEntityException;

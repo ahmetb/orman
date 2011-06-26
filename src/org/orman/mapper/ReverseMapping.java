@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.orman.datasource.ResultList.ResultRow;
+import org.orman.dbms.ResultList.ResultRow;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.OneToOne;

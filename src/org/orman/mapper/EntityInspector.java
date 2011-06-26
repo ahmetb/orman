@@ -20,7 +20,6 @@ import org.orman.mapper.exception.NotDeclaredSetterException;
 import org.orman.mapper.exception.UnannotatedCollectionFieldException;
 import org.orman.mapper.exception.UnsupportedPrimaryKeyFieldTypeException;
 import org.orman.sql.IndexType;
-import org.orman.util.logging.Log;
 
 /**
  * Finds fields and getter-setter methods of a given {@link Entity} using Reflection API.

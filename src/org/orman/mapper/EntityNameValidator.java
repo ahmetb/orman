@@ -1,10 +1,9 @@
 package org.orman.mapper;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.orman.datasource.Database;
+import org.orman.dbms.Database;
 import org.orman.mapper.exception.ReservedKeywordUsedException;
 
 /***

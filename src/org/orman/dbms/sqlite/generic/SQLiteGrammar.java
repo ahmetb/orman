@@ -1,4 +1,4 @@
-package org.orman.sqlite.generic;
+package org.orman.dbms.sqlite.generic;
 
 import java.util.EnumMap;
 import java.util.Map;

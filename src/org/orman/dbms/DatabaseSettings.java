@@ -1,4 +1,4 @@
-package org.orman.datasource;
+package org.orman.dbms;
 
 /**
  * Placeholder interface for storing various database 
