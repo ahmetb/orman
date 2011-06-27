@@ -6,6 +6,7 @@ import org.orman.dbms.DatabaseSchemaInspector;
 import org.orman.dbms.QueryExecutionContainer;
 import org.orman.dbms.sqlite.generic.DataTypeMapperImpl;
 import org.orman.dbms.sqlite.generic.SQLiteGrammar;
+import org.orman.dbms.sqlite.generic.SQLiteSchemaInspector;
 import org.orman.sql.SQLGrammarProvider;
 import org.orman.util.logging.Log;
 
@@ -28,6 +29,7 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	private DataTypeMapper typeMapper;
 	private QueryExecutionContainerImpl executer;
 	private SQLiteGrammar grammar;
+	private SQLiteSchemaInspector schemaInspector;
 	
 	private String databaseName;
 	private SQLiteDatabase db;
@@ -41,6 +43,7 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 		typeMapper = new DataTypeMapperImpl();
 		executer = new QueryExecutionContainerImpl(this.db); //bind database onCreate.
 		grammar = new SQLiteGrammar();
+		schemaInspector = new SQLiteSchemaInspector(getExecuter());
 		
 		Log.trace("Orman: DB initialized at %s", this.db.getPath());
 	}
@@ -88,8 +91,7 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 
 	@Override
 	public DatabaseSchemaInspector getSchemaInspector() {
-		// TODO Auto-generated method stub
-		return null;
+		return schemaInspector;
 	}
 
 }

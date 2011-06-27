@@ -16,14 +16,14 @@ public class MySQL implements Database {
 	private DataTypeMapperImpl typeMapper;
 	private QueryExecutionContainer executer;
 	private MySQLGrammar grammar;
-	private DatabaseSchemaInspectorImpl schemaInspector;
+	private MySQLSchemaInspector schemaInspector;
 	
 	public MySQL(MySQLSettingsImpl settings){
 		grammar = new MySQLGrammar();
 		setSettings(settings);
 		typeMapper = new DataTypeMapperImpl();
 		executer = new QueryExecutionContainerImpl(getSettings());
-		schemaInspector = new DatabaseSchemaInspectorImpl(getExecuter());
+		schemaInspector = new MySQLSchemaInspector(getExecuter());
 	}
 
 	private void setSettings(MySQLSettingsImpl settings) {

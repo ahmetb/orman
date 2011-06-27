@@ -1,8 +1,5 @@
 package org.orman.dbms;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
  * An interface that provides methods to concrete classes which are going to
  * investigate enclosing database schema of DBMS implementation.
@@ -20,13 +17,8 @@ public interface DatabaseSchemaInspector {
 	public void setQueryExecuter(QueryExecutionContainer db);
 
 	/**
-	 * @return map of tables each associated with a set of their columns. all
-	 *         names are in lowercase for comparison.
-	 */
-	Map<String, Set<String>> getSchema();
-
-	/**
-	 * comparison done case-insensitive.
+	 * checks whether table exists in existing database schema. comparison done
+	 * case-insensitive.
 	 * 
 	 * @param tableName
 	 *            table name to check.
@@ -36,6 +28,7 @@ public interface DatabaseSchemaInspector {
 	public boolean tableExists(String tableName);
 
 	/**
+	 * checks whether column of given table exists in existing database schema.
 	 * comparison done case-insensitive.
 	 * 
 	 * @param tableName
@@ -47,5 +40,15 @@ public interface DatabaseSchemaInspector {
 	 */
 	public boolean columnExists(String tableName, String columnName);
 
-	// TODO add indexExists(String tableName, String indexName)?
+	/**
+	 * checks existance of index on given table of existing database schema.
+	 * 
+	 * @param indexName
+	 *            case-insensitive comparison is done.
+	 * @param tableName
+	 *            index defined on. might be ignored according to dbms.
+	 * @return <code>true</code> if index with given name exists,
+	 *         <code>false</code> if not.
+	 */
+	public boolean indexExists(String indexName, String tableName);
 }
