@@ -170,6 +170,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public void close() {
+		if (db == null)
+			return; // if not initialized yet
+		
 		db.dispose();
 		db = null;
 	}

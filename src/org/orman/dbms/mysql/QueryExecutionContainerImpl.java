@@ -224,6 +224,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
 	@Override
 	public void close() {
+		if (conn == null)
+			return; // if not initialized yet
+
 		try {
 			conn.close();
 			conn = null;
