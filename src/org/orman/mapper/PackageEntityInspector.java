@@ -44,11 +44,13 @@ public class PackageEntityInspector {
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		File[] classFiles = objectDir.listFiles();
 
-		for (File classFile : classFiles) {
-			if (!classFile.isDirectory())
-				classes.add(getClassFor(classFile, packageName));
-			else if (recursiveScan)
-				classes.addAll(populateClasses(classFile, packageName));
+		if (classFiles != null && classFiles.length > 0) { // prevent npe
+			for (File classFile : classFiles) {
+				if (!classFile.isDirectory())
+					classes.add(getClassFor(classFile, packageName));
+				else if (recursiveScan)
+					classes.addAll(populateClasses(classFile, packageName));
+			}
 		}
 
 		return classes;
