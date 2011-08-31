@@ -41,7 +41,7 @@ public class ReverseMapping {
 			Log.error(e1.getMessage());
 		}
 
-		if (instance != null)
+		if (instance != null){
 			for (Field f : e.getFields()) {
 					if (!f.isList()){
 						/* Use direct value from database */
@@ -82,6 +82,8 @@ public class ReverseMapping {
 						if (fieldValue != null) ((Model<?>) instance).setEntityField(f, e, fieldValue);
 					}
 			}
+			((Model<?>) instance).makePersistent(); // because record is not dirty.
+		}
 		return instance;
 	}
 

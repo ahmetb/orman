@@ -281,7 +281,7 @@ public class Model<E> {
 	 * Set the {@link Model} flags and hashes using the persistent fields of the
 	 * entity to detect that object is changed later.
 	 */
-	private void makePersistent() {
+	protected void makePersistent() {
 		List<Field> fields = getEntity().getFields();
 		__persistencyFieldHashes = new int[fields.size()];
 
