@@ -183,9 +183,12 @@ public class EntityDependencyGraph {
 	public List<Entity> getDestroySchedule(){
 		// clone already arranged list in reverse order
 		List<Entity> schedule = new ArrayList<Entity>(nodes.size());
-		Iterator<Node> reversed = nodes.descendingIterator();
-		while (reversed.hasNext()) {
-			schedule.add(reversed.next().entity);
+		
+		// caution: O(N^2) time complexity but saves memory space
+		// the reason we don't use LinkedList.descendingIterator is,
+		// it is not implemented Android API<9.
+		for(int i = nodes.size()-1, j = 0; i >= 0; i--, j++){
+			schedule.add(j, nodes.get(i).entity);
 		}
 		return schedule;
 	}
