@@ -3,10 +3,12 @@ package org.orman.dbms.sqliteandroid;
 import org.orman.dbms.DataTypeMapper;
 import org.orman.dbms.Database;
 import org.orman.dbms.DatabaseSchemaInspector;
+import org.orman.dbms.PackageEntityInspector;
 import org.orman.dbms.QueryExecutionContainer;
 import org.orman.dbms.sqlite.generic.DataTypeMapperImpl;
 import org.orman.dbms.sqlite.generic.SQLiteGrammar;
 import org.orman.dbms.sqlite.generic.SQLiteSchemaInspector;
+import org.orman.mapper.annotation.inspector.AndroidPackageEntityInspector;
 import org.orman.sql.SQLGrammarProvider;
 import org.orman.util.logging.Log;
 
@@ -23,6 +25,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  * package.
  * 
  * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>
+ * @author oguz kartal <0xffffffff@oguzkartal.net>
+ * 
  */
 public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	private static final int SQLITE_VERSION = 33; //TODO read from somewhere else ASAP
@@ -30,6 +34,7 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	private QueryExecutionContainerImpl executer;
 	private SQLiteGrammar grammar;
 	private SQLiteSchemaInspector schemaInspector;
+	private AndroidPackageEntityInspector packageInspector;
 	
 	private String databaseName;
 	private SQLiteDatabase db;
@@ -44,6 +49,7 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 		executer = new QueryExecutionContainerImpl(this.db); //bind database onCreate.
 		grammar = new SQLiteGrammar();
 		schemaInspector = new SQLiteSchemaInspector(getExecuter());
+		packageInspector = new AndroidPackageEntityInspector(context);
 		
 		Log.trace("Orman: DB initialized at %s", this.db.getPath());
 	}
@@ -92,6 +98,11 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	@Override
 	public DatabaseSchemaInspector getSchemaInspector() {
 		return schemaInspector;
+	}
+
+	@Override
+	public PackageEntityInspector getPackageInspector() {
+		return packageInspector;
 	}
 
 }

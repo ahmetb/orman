@@ -1,4 +1,4 @@
-package org.orman.mapper;
+package org.orman.mapper.annotation.inspector;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,15 +9,17 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.orman.dbms.PackageEntityInspector;
+import org.orman.mapper.Entity;
 import org.orman.util.logging.Log;
 
 /**
  * Automatic @{@link Entity} annotated class finder from a given package. Uses
  * classpath scanning.
  * 
- * @author oguz kartal
+ * @author oguz kartal <0xffffffff@oguzkartal.net>
  */
-public class PackageEntityInspector {
+public class PackageEntityInspectorImpl implements PackageEntityInspector {
 	private static boolean recursiveScan = true;
 	
 	@SuppressWarnings("rawtypes")
@@ -38,18 +40,38 @@ public class PackageEntityInspector {
 		}
 		return classObj;
 	}
-
-	private static List<Class<?>> populateClasses(File objectDir,
-			String packageName) {
+	
+	private static String getInnerClassPath(File classPath) {
+		String path = classPath.getAbsolutePath();
+		int i = path.lastIndexOf(File.separator);
+		
+		if (i != -1) {
+			return path.substring(i+1,path.length());
+		}
+		
+		return path;
+	}
+	
+	private static List<Class<?>> populateClasses(File objectDir,String packageName) {
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		File[] classFiles = objectDir.listFiles();
-
+		Class<?> clazz = null;
+		
 		if (classFiles != null && classFiles.length > 0) { // prevent npe
 			for (File classFile : classFiles) {
-				if (!classFile.isDirectory())
-					classes.add(getClassFor(classFile, packageName));
+				if (!classFile.isDirectory()) {
+					clazz = getClassFor(classFile,packageName);
+					if (clazz != null) {
+						classes.add(clazz);
+					}
+					else {
+						Log.warn("Could not load class object for %s->%s",
+								classFile.getAbsolutePath(),
+								packageName);
+					}
+				}
 				else if (recursiveScan)
-					classes.addAll(populateClasses(classFile, packageName));
+					classes.addAll(populateClasses(classFile, packageName + "." + getInnerClassPath(classFile)));
 			}
 		}
 
@@ -64,7 +86,7 @@ public class PackageEntityInspector {
 	 *            Entity container package
 	 * @return List of all annotated classes
 	 */
-	public static List<Class<?>> findEntitiesInPackage(String packageName) {
+	public static List<Class<?>> _findEntitiesInPackage(String packageName) {
 		String packageUrl = null, fileName;
 		URL element;
 		Enumeration<URL> classResources;
@@ -121,13 +143,14 @@ public class PackageEntityInspector {
 		return classObjects.size() == 0 ? null : classObjects;
 	}
 	
-	public static String getWorkingRootPackageName() {
+	@Override
+	public String getWorkingRootPackageName() {
 		int i;
 		
 		StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
 		String rootClass = callStack[callStack.length-1].getClassName();
 		
-		i = rootClass.indexOf('.');
+		i = rootClass.lastIndexOf('.');
 		
 		if (i == -1) {
 			recursiveScan = false;
@@ -135,5 +158,10 @@ public class PackageEntityInspector {
 		}
 		
 		return rootClass.substring(0,i);
+	}
+
+	@Override
+	public List<Class<?>> findEntitiesInPackage(String packageName) {
+		return _findEntitiesInPackage(packageName);
 	}
 }

@@ -51,6 +51,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 			String[] colNames = new String[columnCount];
 			List<Object[]> result = new ArrayList<Object[]>();
 				
+			@SuppressWarnings("unused")
 			int rowIndex = 0;
 				
 			while(s.step()){ // for each row.

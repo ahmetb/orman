@@ -57,9 +57,16 @@ public class PersistenceSchemaMapper {
 	 * @return null if not found.
 	 */
 	public Entity getBindedEntity(Class<?> entityClass) {
-		for (Entity e : getEntities())
+		String typeStr1,typeStr2 = entityClass.getName();
+		
+		for (Entity e : getEntities()) {
+			typeStr1 = e.getType().getName();
+			
 			if (e.getType().equals(entityClass))
 				return e;
+			else if (typeStr1.equals(typeStr2))
+				return e;
+		}
 		return null;
 	}
 

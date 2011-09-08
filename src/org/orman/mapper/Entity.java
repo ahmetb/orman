@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.orman.mapper.annotation.ManyToMany;
 import org.orman.mapper.annotation.PrimaryKey;
+import org.orman.mapper.annotation.inspector.GenericAnnotation;
 import org.orman.mapper.exception.FieldNotFoundException;
 import org.orman.mapper.exception.NotAnEntityException;
+import org.orman.util.logging.Log;
 
 /**
  * Entity information holder for classes annotated with
@@ -38,10 +40,12 @@ public class Entity {
 	 *            class type of the entity.
 	 */
 	public Entity(Class<?> clazz) {
-		if (!clazz
-				.isAnnotationPresent(org.orman.mapper.annotation.Entity.class))
-			throw new NotAnEntityException(clazz.getName()); // require @Entity
-
+		
+		if (!GenericAnnotation.
+				isAnnotationPresent(clazz, org.orman.mapper.annotation.Entity.class)) {
+			throw new NotAnEntityException(clazz.getName()); //require @Entity
+		}
+		
 		this.clazz = clazz;
 		this.originalName = clazz.getSimpleName();
 		this.originalFullName = clazz.getName();
@@ -50,10 +54,22 @@ public class Entity {
 		EntityInspector ei = new EntityInspector(clazz);
 		this.fields = ei.getFields();
 		this.setDefaultConstructor(ei.getDefaultConstructor());
-
-		// make custom name binding if specified any on @Entity annotation.
-		String tmpCustomName = clazz.getAnnotation(
-				org.orman.mapper.annotation.Entity.class).table();
+		
+		String tmpCustomName = null;
+		
+		
+		try {
+			//TODO FIX ME!! 
+			//It doesn't working on Android when manual entity registration disabled
+			// make custom name binding if specified any on @Entity annotation.
+			tmpCustomName = clazz.getAnnotation(
+					org.orman.mapper.annotation.Entity.class).table();
+		}
+		catch (Exception e) 
+		{
+			Log.error("Currently custom table name set disabled for android");
+		}
+		
 		this.customName = (tmpCustomName == null || "".equals(tmpCustomName)) ? null
 				: tmpCustomName;
 	}

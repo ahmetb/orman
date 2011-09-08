@@ -54,6 +54,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 			
 			List<Object[]> result = new ArrayList<Object[]>();
 				
+			@SuppressWarnings("unused")
 			int rowIndex = 0;
 			
 			boolean hasRecord = cur.moveToFirst();

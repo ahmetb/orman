@@ -75,9 +75,14 @@ public class MappingSession {
 	 *             package name usage.
 	 */
 	public static void registerPackage(String packageName) {
-		List<Class<?>> annotatedClasses = PackageEntityInspector
-				.findEntitiesInPackage(packageName);
-
+		
+		if (db == null) {
+			throw new NoDatabaseRegisteredException();
+		}
+		
+		List<Class<?>> annotatedClasses = db.getPackageInspector().
+											findEntitiesInPackage(packageName);
+				
 		if (annotatedClasses == null || annotatedClasses.size() == 0) {
 			// no @Entity-annotated classes found in package.
 			throw new AnnotatedClassNotFoundInPackageException(packageName);
@@ -321,16 +326,18 @@ public class MappingSession {
 	private static void preSessionStartHooks() {
 		// scan current package and register @Entities if needed
 		if (autoPackageRegistration) {
+			
+			if (db == null) {
+				throw new NoDatabaseRegisteredException();
+			}
+			
 			Log.info("Auto package registration enabled");
-			registerPackage(PackageEntityInspector.getWorkingRootPackageName());
+			registerPackage(db.getPackageInspector().
+					getWorkingRootPackageName());
 		}
 
 		// Prepare synthetic (@ManyToMany) entities.
 		prepareSyntheticEntities();
-		
-		if (db == null) {
-			throw new NoDatabaseRegisteredException();
-		}
 	}
 
 	/**
