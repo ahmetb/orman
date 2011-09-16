@@ -40,7 +40,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public ResultList executeForResultList(Query q) {
-		Log.trace("Executing: " + q); 
+		Log.trace("Executing: %s", q); 
 		
 		demandConnector.requestConnection();
 		
@@ -83,7 +83,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public Object executeForSingleValue(Query q) {
-		Log.trace("Executing: " + q); 
+		Log.trace("Executing: %s", q);
 		
 		demandConnector.requestConnection();
 		
@@ -104,7 +104,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	 */
 	@Override
 	public void executeOnly(Query q) {
-		Log.trace("Executing: " + q); // TODO log.
+		Log.trace("Executing: %s", q);
 		
 		demandConnector.requestConnection();
 		
@@ -117,7 +117,6 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public Object getLastInsertId() {
-		
 		demandConnector.requestConnection();
 		
 		try {
@@ -152,7 +151,6 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
 	@Override
 	public boolean open(long cookie) throws IllegalConnectionOpenCallException {
-		
 		demandConnector.checkCallCookie(cookie);
 		
 		dbFile = new File(this.settings.getFilePath());

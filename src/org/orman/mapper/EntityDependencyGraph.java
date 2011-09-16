@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,6 @@ public class EntityDependencyGraph {
 
 		buildSerialDependencyGraph();
 		
-		
 		Log.debug("Arranged serial schedule for entity construction:");
 		Log.debug("Serial schedule: " + Glue.concat(nodes, " --> "));
 	}
@@ -70,8 +68,9 @@ public class EntityDependencyGraph {
 	private void buildSerialDependencyGraph() {
 		for (Entity e : this.entityList) { // for each entity
 			for (Field f : e.getFields()) {
-				// detect one to one & one to many connections
-				if (!f.isList() && getEntityOfType(f.getClazz()) != null) {
+				// detect one to one & one to many connections, except self-type references
+				if (!f.isList() && getEntityOfType(f.getClazz()) != null
+						&& !f.getClazz().equals(e.getType())) { 
 					Entity requirement = getEntityOfType(f.getClazz());
 					entityMap.get(e).requires.add(requirement);
 				}

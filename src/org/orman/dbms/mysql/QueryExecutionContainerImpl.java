@@ -53,7 +53,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public ResultList executeForResultList(Query q) {
-		Log.trace(q.getExecutableSql());
+		Log.trace("Executing: %s", q);
 		
 		demandConnector.requestConnection();
 
@@ -91,7 +91,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 																	// 1.
 				}
 
-				Log.trace("  Query returned %d rows.", result.size());
+				Log.trace("Query returned %d rows.", result.size());
 				return new ResultList(columnNames, resultArr);
 			}
 		} catch (SQLException ex) {
@@ -102,7 +102,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public Object executeForSingleValue(Query q) {
-		Log.trace(q.getExecutableSql());
+		Log.trace("Executing: %s", q);
 
 		demandConnector.requestConnection();
 		
@@ -126,7 +126,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	 */
 	@Override
 	public void executeOnly(Query q) {
-		Log.trace(q.getExecutableSql());
+		Log.trace("Executing: %s", q);
 
 		demandConnector.requestConnection();
 		
@@ -141,6 +141,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	@Override
 	public Object getLastInsertId() {
 		String lastIdQuery = "SELECT LAST_INSERT_ID();";
+		Log.trace("Executing: %s", lastIdQuery);
 
 		demandConnector.requestConnection();
 		
@@ -197,7 +198,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 		// Establish DB connection.
 		try {
-			Log.info("Trying to establish MySQL connection to %s at %s.",
+			Log.debug("Trying to establish MySQL connection to %s at %s.",
 					this.settings.getHost(), this.settings.getPort());
 
 			DriverManager.registerDriver(new Driver());
@@ -217,7 +218,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 					"Could not establish connection to database."));
 			return false;
 		} else 
-			Log.info("Connection established to the database.");
+			Log.debug("Connection established to the database.");
 		
 		return true;
 	}
@@ -230,7 +231,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		try {
 			conn.close();
 			conn = null;
-			Log.info("Connection to the database is now closed.");
+			Log.debug("Connection to the database is now closed.");
 		} catch (SQLException e) {
 			throwError(e);
 		}

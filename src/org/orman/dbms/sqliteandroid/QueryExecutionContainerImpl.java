@@ -33,7 +33,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public void executeOnly(Query q) {		
-		Log.trace("Executing: " + q);
+		Log.trace("Executing: %s", q);
 		
 		try {
 			db.execSQL(q.getExecutableSql());
@@ -44,7 +44,7 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 
 	@Override
 	public ResultList executeForResultList(Query q) {
-		Log.trace("Executing: " + q);
+		Log.trace("Executing: %s", q);
 		
 		try {
 			Cursor cur = db.rawQuery(q.getExecutableSql(), null);
@@ -70,6 +70,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 				hasRecord = cur.moveToNext();
 			}
 			
+			cur.close();
+			
+			
 			if(result.size() > 0){
 				Object[][] resultArr = new Object[result.size()][columnCount];
 				int i = 0;
@@ -87,10 +90,13 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 	
 	@Override
 	public Object executeForSingleValue(Query q) {
-		Log.trace("Executing: " + q); 
+		Log.trace("Executing: %s", q);
+		
+		Cursor cur = null;
 		
 		try {
-			Cursor cur = db.rawQuery(q.getExecutableSql(), null);
+			cur = db.rawQuery(q.getExecutableSql(), null);
+			
 			if (!cur.moveToNext()){
 				return null;
 			} else {
@@ -98,14 +104,19 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 			}
 		} catch (SQLiteException e) {
 			throwError(e);
+			return null;
+		} finally {
+			if (cur != null)
+				cur.close();
 		}
-		return null;
 	}
 
 	@Override
 	public Object getLastInsertId() {
+		Cursor cur = null;
+		
 		try {
-			Cursor cur = db.rawQuery("SELECT last_insert_rowid()", null);
+			cur = db.rawQuery("SELECT last_insert_rowid()", null);	
 			
 			boolean status = cur.moveToFirst();
 			if (!status){
@@ -116,6 +127,9 @@ public class QueryExecutionContainerImpl implements QueryExecutionContainer {
 		} catch (SQLiteException e) {
 			throwError(e);
 			return null;
+		} finally {
+			if (cur != null)
+				cur.close();
 		}
 	}
 
