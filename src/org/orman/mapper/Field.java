@@ -195,4 +195,9 @@ public class Field implements Comparable<Field> {
 	public boolean isPrimaryKey() {
 		return isPrimaryKey;
 	}
+	
+	@Override
+	public String toString() {
+		return originalName+"["+clazz.getSimpleName()+"]";
+	}
 }

@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import org.orman.dbms.ResultList;
 import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.NotNullableFieldException;
@@ -13,6 +15,7 @@ import org.orman.sql.C;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
 import org.orman.sql.QueryType;
+import org.orman.util.logging.Log;
 
 /**
  * Parent class for {@link org.orman.mapper.annotation.Entity}-annoted classes
@@ -170,7 +173,7 @@ public class Model<E> {
 	private Query prepareUpdateQuery() {
 		List<Field> fields = getEntity().getFields();
 		List<Field> updatedFields = getChangedFields(fields);
-
+		
 		if (!updatedFields.isEmpty()) {
 			QueryBuilder qb = QueryBuilder.update().from(
 					getEntity().getGeneratedName());
@@ -217,6 +220,13 @@ public class Model<E> {
 
 		for (int i = 0; i < __persistencyFieldHashes.length; i++) {
 			Object o = getEntityField(allFields.get(i));
+			
+			if (o instanceof EntityList){
+				continue;
+				// because entity lists are always persistent and 
+				// executes add/remove etc. immediately.
+			}
+			
 			if (((o == null) ? DEFAULT_TRANSIENT_HASHCODE : o.hashCode()) != __persistencyFieldHashes[i])
 				updatedFields.add(allFields.get(i));
 		}
