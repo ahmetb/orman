@@ -4,8 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import org.orman.dbms.ResultList;
 import org.orman.mapper.annotation.PrimaryKey;
 import org.orman.mapper.exception.NotNullableFieldException;
@@ -15,7 +13,6 @@ import org.orman.sql.C;
 import org.orman.sql.Query;
 import org.orman.sql.QueryBuilder;
 import org.orman.sql.QueryType;
-import org.orman.util.logging.Log;
 
 /**
  * Parent class for {@link org.orman.mapper.annotation.Entity}-annoted classes
