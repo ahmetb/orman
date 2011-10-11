@@ -59,6 +59,10 @@ public class Serializer {
 		if (o instanceof List<?>) {
 			return "(" + Glue.concat((List<?>) o, ", ") + ")";
 		}
+		
+		if (o != null && o instanceof Boolean){
+			return o.equals(Boolean.TRUE) ? "1" : "0"; 
+		}
 
 		return (o == null) ? NULL_CONSTANT : o.toString();
 	}
