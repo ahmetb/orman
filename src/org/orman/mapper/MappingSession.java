@@ -102,7 +102,7 @@ public class MappingSession {
 	 *             if session is already started.
 	 */
 	public static void registerEntity(Class<?> entityClass) {
-		if (sessionStarted) {
+		if (isSessionStarted()) {
 			throw new MappingSessionAlreadyStartedException();
 		}
 		setAutoPackageRegistration(false);
@@ -114,7 +114,7 @@ public class MappingSession {
 	}
 
 	protected static void registerSyntheticEntity(Entity e) {
-		if (sessionStarted) {
+		if (isSessionStarted()) {
 			throw new MappingSessionAlreadyStartedException();
 		}
 
@@ -195,6 +195,22 @@ public class MappingSession {
 
 		return schema.getEntityByClassName(className);
 	}
+	
+	/** 
+	 * An helper method to tell whether the mapping session is started
+	 * by invoking one of start() methods so that any database or
+	 * entity registrations will throw 
+	 * {@link MappingSessionAlreadyStartedException}.
+	 * 
+	 * This method is written for Android since there may be lots of use
+	 * cases that require to check whether session is started or not.
+	 * 
+	 * @see MappingSession#start()
+	 * @see MappingSession#startSafe();
+	 */
+	public static boolean isSessionStarted(){
+		return sessionStarted;
+	}
 
 	/**
 	 * Starts the mapping session. According to {@link SchemaCreationPolicy}, in
@@ -231,7 +247,7 @@ public class MappingSession {
 	 * @see MappingSession#registerDatabase(Database)
 	 */
 	public static void start() {
-		if (sessionStarted) {
+		if (isSessionStarted()) {
 			throw new MappingSessionAlreadyStartedException();
 		}
 		startNoCheck();
@@ -247,7 +263,7 @@ public class MappingSession {
 	 * @see MappingSession#start()
 	 */
 	public static void startSafe() {
-		if (!sessionStarted) {
+		if (! isSessionStarted()) {
 			start();
 		}
 	}
