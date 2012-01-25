@@ -25,7 +25,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @author ahmet alp balkan <ahmetalpbalkan at gmail.com>
  */
 public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
-	private static final int SQLITE_VERSION = 33; //TODO read from somewhere else ASAP
+	private static final int SQLITE_VERSION = 33; // legacy support for deprecated constructor. instead, specify db version explicitly.
 	private DataTypeMapper typeMapper;
 	private QueryExecutionContainerImpl executer;
 	private SQLiteGrammar grammar;
@@ -34,8 +34,30 @@ public class SQLiteAndroid extends SQLiteOpenHelper implements Database {
 	private String databaseName;
 	private SQLiteDatabase db;
 	
+	/**
+	 * android sets the version of the DB when it is opened.
+	 */
+	public SQLiteAndroid(Context context, String dbFilename, int version) {
+		super(context, dbFilename, null, version);
+		init(dbFilename);
+	}
+
+	/**
+	 * constructor kept for legacy purposes: all DBs created before this patch
+	 * will have version '33' and therefore need to specify a version equal or
+	 * greater (in case of a schema upgrade).
+	 * 
+	 * where is the db version stored? see:
+	 * http://stackoverflow.com/questions/3707797/where-does-android-store-sqlite-database-version
+	 * 
+	 * @deprecated use SQLiteAndroid(Context context, String dbFilename, int version) instead
+	 */
 	public SQLiteAndroid(Context context, String dbFilename) {
 		super(context, dbFilename, null, SQLITE_VERSION);
+		init(dbFilename);
+	}
+	
+	private void init(String dbFilename) {
 		SQLiteDatabase db = getWritableDatabase();
 		this.db = db;
 		
