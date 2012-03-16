@@ -43,9 +43,13 @@ public class F {
 	 * {@link Entity} <code>e</code>.
 	 */
 	public static Field getField(Entity e, String fieldName) {
-		for (Field f : e.getFields())
-			if (f.getOriginalName().equals(fieldName))
+		for (Field f : e.getFields()) {
+			if (f.getOriginalName().equals(fieldName)
+					|| f.getGeneratedName().equals(fieldName)) {
+				// 'or' due to https://github.com/ahmetalpbalkan/orman/issues/41
 				return f;
+			}
+		}
 		return null;
 	}
 
