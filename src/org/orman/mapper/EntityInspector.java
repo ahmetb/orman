@@ -124,7 +124,6 @@ public class EntityInspector {
 				if(f.isAnnotationPresent(Index.class)){
 					Index ann = f.getAnnotation(Index.class);
 					newF.setIndex(new FieldIndexHolder(ann.name(), ann.unique(), ann.type(), false));
-					newF.setNullable(false);
 				}
 				
 				// Recognize @NotNull annotation.
