@@ -19,9 +19,10 @@ public enum JoinType {
 	private JoinType(String s) {
 		this.repr = s;
 	}
-
-	public String getTemplate() {
-		return this.repr.toString();
+	
+	@Override
+	public String toString() {
+	        return this.repr;	
 	}
 
 }
