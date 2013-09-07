@@ -23,6 +23,11 @@ public enum JoinType {
 	public String getTemplate() {
 		return this.repr.toString();
 	}
+	
+	@Override
+	public String toString() {
+	        return this.repr;	
+	}
 
 }
 
