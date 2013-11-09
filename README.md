@@ -55,3 +55,7 @@ Contributors
 * [Ahmet Alp Balkan](https://github.com/ahmetalpbalkan)
 * [Oguz Kartal](https://github.com/0ffffffffh)
 * [Berker Peksag](https://github.com/berkerpeksag)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ahmetalpbalkan/orman/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
